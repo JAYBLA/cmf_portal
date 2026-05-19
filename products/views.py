@@ -1,31 +1,47 @@
+# views.py
+
+import json
+
 from django.shortcuts import render, get_object_or_404
+
 from django.http import HttpResponse
+
 from .models import Product
 from .forms import ProductForm
-
+from django.db.models import ProtectedError
 
 # =========================================
-# LIST
+# PRODUCT LIST
 # =========================================
+
 
 def product_list(request):
 
     products = Product.objects.all()
 
-    context = {
-        "products": products
-    }
+    context = {"products": products}
 
-    return render(
-        request,
-        "products/product_list.html",
-        context
-    )
+    return render(request, "products/product_list.html", context)
 
 
 # =========================================
-# CREATE
+# PRODUCT TABLE PARTIAL
 # =========================================
+
+
+def product_table(request):
+
+    products = Product.objects.all()
+
+    context = {"products": products}
+
+    return render(request, "products/partials/product_table.html", context)
+
+
+# =========================================
+# CREATE PRODUCT
+# =========================================
+
 
 def product_create(request):
 
@@ -35,114 +51,114 @@ def product_create(request):
 
         if form.is_valid():
 
-            product = form.save()
+            form.save()
 
-            context = {
-                "product": product
-            }
+            response = HttpResponse("")
 
-            response = render(
-                request,
-                "products/partials/product_row.html",
-                context
+            response["HX-Trigger"] = json.dumps(
+                {"productChanged": True, "closeModal": True}
             )
-
-            # CLOSE MODAL
-
-            response["HX-Trigger"] = "closeModal"
 
             return response
 
-    context = {
-        "form": form
-    }
+    context = {"form": form}
 
-    return render(
-        request,
-        "products/partials/product_form.html",
-        context
-    )
+    return render(request, "products/partials/product_form.html", context)
 
 
 # =========================================
-# UPDATE
+# UPDATE PRODUCT
 # =========================================
+
 
 def product_update(request, pk):
 
-    product = get_object_or_404(
-        Product,
-        pk=pk
-    )
+    product = get_object_or_404(Product, pk=pk)
 
-    form = ProductForm(
-        request.POST or None,
-        instance=product
-    )
+    form = ProductForm(request.POST or None, instance=product)
 
     if request.method == "POST":
 
         if form.is_valid():
 
-            product = form.save()
+            form.save()
 
-            context = {
-                "product": product
-            }
+            response = HttpResponse("")
 
-            response = render(
-                request,
-                "products/partials/product_row.html",
-                context
+            response["HX-Trigger"] = json.dumps(
+                {"productChanged": True, "closeModal": True}
             )
-
-            # CLOSE MODAL
-
-            response["HX-Trigger"] = "closeModal"
 
             return response
 
-    context = {
-        "form": form,
-        "product": product
-    }
+    context = {"form": form, "product": product}
 
-    return render(
-        request,
-        "products/partials/product_form.html",
-        context
-    )
+    return render(request, "products/partials/product_form.html", context)
 
 
 # =========================================
-# DELETE
+# DELETE PRODUCT
 # =========================================
+
 
 def product_delete(request, pk):
 
-    product = get_object_or_404(
-        Product,
-        pk=pk
-    )
+    product = get_object_or_404(Product, pk=pk)
 
     if request.method == "POST":
 
-        product.delete()
+        try:
 
-        response = HttpResponse("")
+            product.delete()
 
-        # CLOSE MODAL
+            response = HttpResponse("")
 
-        response["HX-Trigger"] = "closeModal"
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "productChanged": True,
+                    "closeModal": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": "Product deleted successfully.",
+                    },
+                }
+            )
 
-        return response
+            return response
 
-    context = {
-        "product": product
-    }
+        except ProtectedError:
 
-    return render(
-        request,
-        "products/partials/product_delete.html",
-        context
-    )
+            response = HttpResponse("")
+
+            response.headers["HX-Trigger"] = json.dumps(
+                {
+                    "closeModal": True,
+                    "showMessage": {
+                        "type": "error",
+                        "message": (
+                            "This product is already used "
+                            "in transactions and cannot "
+                            "be deleted."
+                        ),
+                    },
+                }
+            )
+            return response
+
+    context = {"product": product}
+
+    return render(request, "products/partials/product_delete.html", context)
+
+
+# =========================================
+# PRODUCT TABLE PARTIAL
+# =========================================
+
+
+def product_table(request):
+
+    products = Product.objects.all()
+
+    context = {"products": products}
+
+    return render(request, "products/partials/product_table.html", context)

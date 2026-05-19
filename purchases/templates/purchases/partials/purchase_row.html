@@ -1,155 +1,126 @@
 <tr id="purchase-{{ purchase.id }}">
+  <!-- PURCHASE NUMBER -->
 
-    <!-- PURCHASE NUMBER -->
+  <td class="fw-semibold">{{ purchase.purchase_number }}</td>
 
-    <td class="fw-semibold">
+  <!-- SUPPLIER -->
 
-        {{ purchase.purchase_number }}
+  <td>{{ purchase.supplier }}</td>
 
-    </td>
+  <!-- SUPPLIER INVOICE -->
 
+  <td>
+    {% if purchase.supplier_invoice_number %}
+      {{ purchase.supplier_invoice_number }}
+    {% else %}
+      <span class="text-muted">N/A</span>
+    {% endif %}
+  </td>
 
-    <!-- SUPPLIER -->
+  <!-- PURCHASE DATE -->
 
-    <td>
+  <td>{{ purchase.purchase_date|date:'M d, Y' }}</td>
 
-        {{ purchase.supplier }}
+  <!-- TOTAL -->
 
-    </td>
+  <td class="text-end fw-semibold">TZS {{ purchase.total_amount|floatformat:2 }}</td>
 
+  <!-- AMOUNT PAID -->
 
-    <!-- SUPPLIER INVOICE -->
+  <td class="text-end">TZS {{ purchase.amount_paid|floatformat:2 }}</td>
 
-    <td>
+  <!-- BALANCE -->
 
-        {% if purchase.supplier_invoice_number %}
+  <td class="text-end text-danger fw-bold">TZS {{ purchase.balance|floatformat:2 }}</td>
 
-            {{ purchase.supplier_invoice_number }}
+  <!-- STATUS -->
 
-        {% else %}
+  <td>
+    {% if purchase.payment_status == 'paid' %}
+      <span class="badge badge-success light">Paid</span>
+    {% elif purchase.payment_status == 'partial' %}
+      <span class="badge badge-warning light">Partial</span>
+    {% else %}
+      <span class="badge badge-danger light">Pending</span>
+    {% endif %}
+  </td>
 
-            <span class="text-muted">
-                N/A
-            </span>
+  <!-- ACTIONS -->
 
-        {% endif %}
+  <td>
+    <div class="d-flex justify-content-end">
+      <!-- EDIT -->
 
-    </td>
+<a
 
+    hx-get="{% url 'purchases:purchase_update' purchase.id %}"
 
-    <!-- PURCHASE DATE -->
+    hx-target="#modal-body"
 
-    <td>
+    hx-swap="innerHTML"
 
-        {{ purchase.purchase_date|date:"M d, Y" }}
+    class="btn btn-warning btn-sm shadow me-1"
 
-    </td>
+    data-bs-toggle="tooltip"
 
+    data-bs-placement="top"
 
-    <!-- TOTAL -->
+    title="Edit Purchase"
+>
 
-    <td class="text-end fw-semibold">
+    <i class="fa-solid fa-pen-to-square"></i>
 
-        TZS {{ purchase.total_amount|floatformat:2 }}
+</a>
 
-    </td>
 
 
-    <!-- AMOUNT PAID -->
+<!-- DELETE -->
 
-    <td class="text-end">
+<a
 
-        TZS {{ purchase.amount_paid|floatformat:2 }}
+    hx-get="{% url 'purchases:purchase_delete' purchase.id %}"
 
-    </td>
+    hx-target="#modal-body"
 
+    hx-swap="innerHTML"
 
-    <!-- BALANCE -->
+    class="btn btn-danger btn-sm shadow me-1"
 
-    <td class="text-end text-danger fw-bold">
+    data-bs-toggle="tooltip"
 
-        TZS {{ purchase.balance|floatformat:2 }}
+    data-bs-placement="top"
 
-    </td>
+    title="Delete Purchase"
+>
 
+    <i class="fa-solid fa-trash-can"></i>
 
-    <!-- STATUS -->
+</a>
 
-    <td>
 
-        {% if purchase.payment_status == 'paid' %}
 
-            <span class="badge badge-success light">
+<!-- PAYMENT -->
 
-                Paid
+<a
 
-            </span>
+    hx-get="{% url 'purchases:purchase_payment_create' purchase.id %}"
 
-        {% elif purchase.payment_status == 'partial' %}
+    hx-target="#modal-body"
 
-            <span class="badge badge-warning light">
+    hx-swap="innerHTML"
 
-                Partial
+    class="btn btn-success btn-sm shadow"
 
-            </span>
+    data-bs-toggle="tooltip"
 
-        {% else %}
+    data-bs-placement="top"
 
-            <span class="badge badge-danger light">
+    title="Make Purchase Payment"
+>
 
-                Pending
+    <i class="fa-solid fa-money-bill-wave"></i>
 
-            </span>
-
-        {% endif %}
-
-    </td>
-
-
-    <!-- ACTIONS -->
-
-    <td>
-
-        <div class="d-flex justify-content-end">
-
-
-            <!-- EDIT -->
-
-            <a
-
-                hx-get="{% url 'purchases:purchase_update' purchase.id %}"
-
-                hx-target="#modal-body"
-
-                hx-swap="innerHTML"
-
-                class="btn btn-warning btn-sm shadow me-1"
-            >
-
-                <i class="fa-solid fa-pen-to-square"></i>
-
-            </a>
-
-
-            <!-- DELETE -->
-
-            <a
-
-                hx-get="{% url 'purchases:purchase_delete' purchase.id %}"
-
-                hx-target="#modal-body"
-
-                hx-swap="innerHTML"
-
-                class="btn btn-danger btn-sm shadow"
-            >
-
-                <i class="fa-solid fa-trash-can"></i>
-
-            </a>
-
-        </div>
-
-    </td>
-
+</a>
+    </div>
+  </td>
 </tr>

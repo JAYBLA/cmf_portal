@@ -14,18 +14,15 @@
     <link href="{% static 'assets/bootstrap-select/css/bootstrap-select.min.css' %}" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'assets/nouislider/nouislider.min.css' %}" />
     <link href="{% static 'css/style.css' %}" rel="stylesheet" />
-	    <link href="{% static 'css/custom.css' %}" rel="stylesheet" />
-	    <!-- remix icon font css  -->
-    <link rel="stylesheet" href="{% static 'css/all-fontawesome.min.css' %}">
-	<link
-    href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css"
-    rel="stylesheet"
-/>
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet" />
+    <!-- remix icon font css -->
+    <link rel="stylesheet" href="{% static 'css/all-fontawesome.min.css' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet" />
   </head>
   <body>
-    <!-- *******************
+    <!--   *******************
         Preloader start
-    ******************** -->
+    ********************   -->
     <div id="preloader">
       <div class="lds-ripple">
         <div class="item1"></div>
@@ -35,17 +32,17 @@
       </div>
       <h3 class="dz-loader-h">CMF PORTAL</h3>
     </div>
-    <!-- *******************
+    <!--   *******************
         Preloader end
-    ******************** -->
+    ********************   -->
 
-    <!-- **********************************
+    <!--   **********************************
         Main wrapper start
-    *********************************** -->
+    ***********************************   -->
     <div id="main-wrapper">
-      <!-- **********************************
+      <!--   **********************************
             Nav header start
-        *********************************** -->
+        ***********************************   -->
       <div class="nav-header">
         <a href="index.html" class="brand-logo">
           <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,13 +81,13 @@
           </div>
         </div>
       </div>
-      <!-- **********************************
+      <!--   **********************************
             Nav header end
-        *********************************** -->
+        ***********************************   -->
 
-      <!-- **********************************
+      <!--   **********************************
             Chat box start
-        *********************************** -->
+        ***********************************   -->
       <div class="chatbox">
         <div class="chatbox-close"></div>
         <div class="custom-tab-1">
@@ -657,13 +654,13 @@
           </div>
         </div>
       </div>
-      <!-- **********************************
+      <!--   **********************************
             Chat box End
-        *********************************** -->
+        ***********************************   -->
 
-      <!-- **********************************
+      <!--   **********************************
             Header start
-        *********************************** -->
+        ***********************************   -->
       <div class="header">
         <div class="header-content">
           <nav class="navbar navbar-expand">
@@ -942,32 +939,33 @@
         </div>
       </div>
 
-      <!-- **********************************
+      <!--   **********************************
             Header end ti-comment-alt
-        *********************************** -->
+        ***********************************   -->
 
-      <!-- **********************************
+      <!--   **********************************
             Sidebar start
-        *********************************** -->
-		{% include "sidebar.html" %}
-      <!-- **********************************
+        ***********************************   -->
+      {% include 'sidebar.html' %}
+      <!--   **********************************
             Sidebar end
-        *********************************** -->
+        ***********************************   -->
 
-      <!-- **********************************
+      <!--   **********************************
             Content body start
-        *********************************** -->
+        ***********************************   -->
       <div class="content-body">
         <!-- row -->
         <div class="container-fluid">
           {% block content %}
+
           {% endblock %}
         </div>
       </div>
 
-      <!-- **********************************
+      <!--   **********************************
             Content body end
-        *********************************** -->
+        ***********************************   -->
       <!-- Button trigger modal -->
 
       <!-- Modal -->
@@ -996,9 +994,9 @@
         </div>
       </div>
 
-      <!-- **********************************
+      <!--   **********************************
             Footer start
-        *********************************** -->
+        ***********************************   -->
       <div class="footer">
         <div class="copyright">
           <p>
@@ -1006,31 +1004,31 @@
           </p>
         </div>
       </div>
-      <!-- **********************************
+      <!--   **********************************
             Footer end
 			
 			
-        *********************************** -->
+        ***********************************   -->
 
-      <!-- **********************************
+      <!--   **********************************
            Support ticket button start
-        *********************************** -->
+        ***********************************   -->
 
-      <!-- **********************************
+      <!--   **********************************
            Support ticket button end
-        *********************************** -->
+        ***********************************   -->
     </div>
-    <!-- **********************************
+    <!--   **********************************
         Main wrapper end
-    *********************************** -->
+    ***********************************   -->
 
-    <!-- **********************************
+    <!--   **********************************
         Scripts
-    *********************************** -->
+    ***********************************   -->
 
     <!-- Required vendors -->
-	<!-- HTMX -->
-	<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <script src="{% static 'assets/global/global.min.js' %}"></script>
     <script src="{% static 'assets/bootstrap-select/js/bootstrap-select.min.js' %}"></script>
     <!-- Chart piety plugin files -->
@@ -1044,7 +1042,7 @@
     <script src="{% static 'js/custom.min.js' %}"></script>
     <script src="{% static 'js/deznav-init.js' %}"></script>
     <script src="{% static 'js/htmx.js' %}"></script>
-	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <script>
       //Number formatting
       var sliderFormat = document.getElementById('slider-format')
@@ -1081,9 +1079,83 @@
         }, 1000)
       })
       //Number formatting ^
+      
+      /* =========================================
+               BOOTSTRAP TOOLTIPS
+            ========================================= */
+      
+      function initializeTooltips(parent = document) {
+        const tooltipTriggerList = parent.querySelectorAll('[data-bs-toggle="tooltip"]')
+      
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+          // PREVENT DUPLICATES
+      
+          if (bootstrap.Tooltip.getInstance(tooltipTriggerEl)) {
+            return
+          }
+      
+          new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+      }
+      /* =========================================
+         HTMX NATIVE TOASTS
+      ========================================= */
+      
+      document.body.addEventListener(
+        'showMessage',
+      
+        function (event) {
+          console.log(event.detail)
+      
+          const data = event.detail
+      
+          if (!data) return
+      
+          // =========================================
+          // CREATE CONTAINER IF NOT EXISTS
+          // =========================================
+      
+          let container = document.getElementById('toast-container')
+      
+          if (!container) {
+            container = document.createElement('div')
+      
+            container.id = 'toast-container'
+      
+            document.body.appendChild(container)
+          }
+      
+          // =========================================
+          // CREATE TOAST
+          // =========================================
+      
+          const toast = document.createElement('div')
+      
+          toast.className = `custom-toast ${data.type}`
+      
+          toast.innerHTML = data.message
+      
+          // APPEND TO CONTAINER
+      
+          container.appendChild(toast)
+      
+          // =========================================
+          // AUTO REMOVE
+          // =========================================
+      
+          setTimeout(() => {
+            toast.classList.add('toast-hide')
+      
+            setTimeout(() => {
+              toast.remove()
+            }, 300)
+          }, 4000)
+        }
+      )
     </script>
     {% block scripts %}
-    {% endblock scripts %}
+
+    {% endblock %}
     <!-- GLOBAL MODAL -->
 
     <div class="modal fade" id="globalModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">

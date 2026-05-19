@@ -10,14 +10,10 @@ from django.shortcuts import (
 
 from django.http import HttpResponse
 
-from .models import Purchase
+from .models import *
 from products.models import Product
 
-from .forms import (
-    PurchaseForm,
-    PurchaseItemFormSet
-)
-
+from .forms import *
 
 # =========================================
 # PURCHASE LIST
@@ -167,10 +163,6 @@ def purchase_create(request):
 # UPDATE PURCHASE
 # =========================================
 
-# =========================================
-# UPDATE PURCHASE
-# =========================================
-
 def purchase_update(request, pk):
 
     purchase = get_object_or_404(
@@ -195,29 +187,18 @@ def purchase_update(request, pk):
 
             purchase = form.save(commit=False)
 
+            # SAVE FORMSET
+
+            formset.instance = purchase
+
+            formset.save()
+
+
+            # RECALCULATE SUBTOTAL FROM DATABASE
+
             subtotal = Decimal("0.00")
 
-
-            # IMPORTANT:
-            # SAVE FORMSET FIRST
-
-            items = formset.save(commit=False)
-
-
-            # DELETE REMOVED ITEMS
-
-            for obj in formset.deleted_objects:
-
-                obj.delete()
-
-
-            # SAVE ITEMS
-
-            for item in items:
-
-                item.purchase = purchase
-
-                item.save()
+            for item in purchase.items.all():
 
                 subtotal += item.subtotal
 
@@ -229,13 +210,18 @@ def purchase_update(request, pk):
             purchase.total_amount = subtotal
 
             purchase.balance = (
-                subtotal - purchase.amount_paid
+                purchase.total_amount -
+                purchase.amount_paid
             )
 
 
             # PAYMENT STATUS
 
-            if purchase.amount_paid <= 0:
+            if purchase.total_amount <= 0:
+
+                purchase.payment_status = "pending"
+
+            elif purchase.amount_paid <= 0:
 
                 purchase.payment_status = "pending"
 
@@ -327,4 +313,59 @@ def purchase_delete(request, pk):
         request,
         "purchases/partials/purchase_delete.html",
         context
+    )
+    
+# =========================================
+# CREATE PAYMENT
+# =========================================
+
+def purchase_payment_create(request, purchase_id):
+
+    purchase = get_object_or_404(
+        Purchase,
+        pk=purchase_id
+    )
+
+    form = PurchasePaymentForm(
+        request.POST or None
+    )
+
+    if request.method == "POST":
+
+        if form.is_valid():
+
+            payment = form.save(commit=False)
+
+            payment.purchase = purchase
+
+            payment.save()
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps({
+
+                "purchaseChanged": True,
+
+                "closeModal": True
+
+            })
+
+            return response
+
+    context = {
+
+        "form": form,
+
+        "purchase": purchase
+
+    }
+
+    return render(
+
+        request,
+
+        "purchases/payments/payment_form.html",
+
+        context
+
     )

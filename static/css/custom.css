@@ -15,3 +15,116 @@
 .table-responsive {
     overflow: visible !important;
 }
+
+[data-bs-toggle="tooltip"] {
+    cursor: pointer;
+}
+
+/* =========================================
+   HTMX TOASTS
+========================================= */
+
+#toast-container {
+
+    position: fixed;
+
+    top: 20px;
+
+    right: 20px;
+
+    z-index: 999999;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+.custom-toast {
+
+    min-width: 280px;
+
+    max-width: 400px;
+
+    padding: 14px 18px;
+
+    border-radius: 10px;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,.15);
+
+    animation: toastSlide .3s ease;
+
+    transition: all .3s ease;
+
+}
+
+
+.custom-toast.success {
+
+    background: #198754;
+
+}
+
+
+.custom-toast.error {
+
+    background: #dc3545;
+
+}
+
+
+.custom-toast.warning {
+
+    background: #ffc107;
+
+    color: #000;
+
+}
+
+
+.custom-toast.info {
+
+    background: #0dcaf0;
+
+    color: #000;
+
+}
+
+
+.toast-hide {
+
+    opacity: 0;
+
+    transform: translateX(100%);
+
+}
+
+
+@keyframes toastSlide {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateX(100%);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateX(0);
+
+    }
+
+}

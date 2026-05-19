@@ -149,3 +149,130 @@ class PurchaseItem(models.Model):
     def __str__(self):
 
         return f"{self.product.product_name}"
+    
+# =========================================
+# PURCHASE PAYMENT
+# =========================================
+
+class PurchasePayment(models.Model):
+
+    PAYMENT_METHODS = (
+
+        ("cash", "Cash"),
+
+        ("bank", "Bank Transfer"),
+
+        ("mobile", "Mobile Money"),
+
+        ("cheque", "Cheque"),
+
+    )
+
+    purchase = models.ForeignKey(
+
+        Purchase,
+
+        on_delete=models.CASCADE,
+
+        related_name="payments"
+
+    )
+
+    payment_date = models.DateField(
+        default=timezone.now
+    )
+
+    amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHODS
+    )
+
+    reference_number = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    notes = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+
+        ordering = ["-id"]
+
+
+    def __str__(self):
+
+        return f"{self.purchase.purchase_number} - {self.amount}"
+
+
+    def save(self, *args, **kwargs):
+
+        super().save(*args, **kwargs)
+
+        self.update_purchase_payment_status()
+
+
+    def delete(self, *args, **kwargs):
+
+        purchase = self.purchase
+
+        super().delete(*args, **kwargs)
+
+        self.update_purchase_totals(purchase)
+
+
+    # =========================================
+    # UPDATE PURCHASE TOTALS
+    # =========================================
+
+    def update_purchase_payment_status(self):
+
+        self.update_purchase_totals(
+            self.purchase
+        )
+
+
+    @staticmethod
+    def update_purchase_totals(purchase):
+
+        total_paid = purchase.payments.aggregate(
+            total=models.Sum("amount")
+        )["total"] or 0
+
+        purchase.amount_paid = total_paid
+
+        purchase.balance = (
+            purchase.total_amount - total_paid
+        )
+
+        # PAYMENT STATUS
+
+        if purchase.total_amount <= 0:
+
+            purchase.payment_status = "pending"
+
+        elif total_paid <= 0:
+
+            purchase.payment_status = "pending"
+
+        elif total_paid < purchase.total_amount:
+
+            purchase.payment_status = "partial"
+
+        else:
+
+            purchase.payment_status = "paid"
+
+        purchase.save()

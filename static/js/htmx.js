@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+         initializeTooltips(document)
+
     })
 
 
@@ -180,6 +182,19 @@ document.body.addEventListener("purchaseChanged", function () {
         "/purchases/table/",
         {
             target: "#purchase-table-body",
+            swap: "outerHTML"
+        }
+    )
+
+})
+
+document.body.addEventListener("productChanged", function () {
+
+    htmx.ajax(
+        "GET",
+        "/products/table/",
+        {
+            target: "#product-table-body",
             swap: "outerHTML"
         }
     )

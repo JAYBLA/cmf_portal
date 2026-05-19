@@ -3,7 +3,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 
-from .models import Purchase, PurchaseItem
+from .models import *
 
 
 # =========================================
@@ -94,3 +94,43 @@ PurchaseItemFormSet = inlineformset_factory(
     extra=1,
     can_delete=True
 )
+
+# =========================================
+# PURCHASE PAYMENT FORM
+# =========================================
+
+class PurchasePaymentForm(forms.ModelForm):
+
+    class Meta:
+
+        model = PurchasePayment
+
+        fields = [
+
+            "payment_date",
+
+            "amount",
+
+            "payment_method",
+
+            "reference_number",
+
+            "notes",
+
+        ]
+
+        widgets = {
+
+            "payment_date": forms.DateInput(
+                attrs={
+                    "type": "date"
+                }
+            ),
+
+            "notes": forms.Textarea(
+                attrs={
+                    "rows": 3
+                }
+            )
+
+        }

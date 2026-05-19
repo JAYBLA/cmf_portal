@@ -48,15 +48,7 @@
 
                 </thead>
 
-                <tbody id="product-table-body">
-
-                    {% for product in products %}
-
-                        {% include "products/partials/product_row.html" %}
-
-                    {% endfor %}
-
-                </tbody>
+                {% include "products/partials/product_table.html" %}
 
             </table>
 

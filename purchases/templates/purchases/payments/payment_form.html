@@ -1,0 +1,179 @@
+<!-- payment_form.html -->
+
+{% load widget_tweaks %}
+
+<div class="modal-header">
+
+    <h5 class="modal-title">
+
+        Add Supplier Payment
+
+    </h5>
+
+    <button
+        type="button"
+        class="btn border-0 shadow-none p-0"
+        data-bs-dismiss="modal"
+    >
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+</div>
+
+
+<form
+
+    method="POST"
+
+    hx-post="{% url 'purchases:purchase_payment_create' purchase.id %}"
+
+    hx-swap="none"
+>
+
+    {% csrf_token %}
+
+
+    <div class="modal-body">
+
+        <!-- PURCHASE INFO -->
+
+        <div class="alert alert-light border">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <strong>Purchase:</strong><br>
+
+                    {{ purchase.purchase_number }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Total:</strong><br>
+
+                    TZS {{ purchase.total_amount|floatformat:2 }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Balance:</strong><br>
+
+                    <span class="text-danger fw-bold">
+
+                        TZS {{ purchase.balance|floatformat:2 }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+            <!-- PAYMENT DATE -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    Payment Date
+
+                </label>
+
+                {% render_field form.payment_date class="form-control" %}
+
+            </div>
+
+
+            <!-- AMOUNT -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    Amount Paid
+
+                </label>
+
+                {% render_field form.amount class="form-control" placeholder="Enter amount paid" %}
+
+            </div>
+
+
+            <!-- PAYMENT METHOD -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    Payment Method
+
+                </label>
+
+                {% render_field form.payment_method class="form-select tom-select" %}
+
+            </div>
+
+
+            <!-- REFERENCE -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    Reference Number
+
+                </label>
+
+                {% render_field form.reference_number class="form-control" placeholder="Optional reference number" %}
+
+            </div>
+
+
+            <!-- NOTES -->
+
+            <div class="col-12 mb-3">
+
+                <label class="form-label">
+
+                    Notes
+
+                </label>
+
+                {% render_field form.notes class="form-control" rows="3" placeholder="Optional notes..." %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal-footer">
+
+        <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+        >
+            Close
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-success"
+        >
+
+            Save Payment
+
+        </button>
+
+    </div>
+
+</form>

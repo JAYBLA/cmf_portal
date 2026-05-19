@@ -17,13 +17,12 @@
 
 
 <form
+    
     method="POST"
 
     hx-post="{% url 'products:product_delete' product.id %}"
 
-    hx-target="#product-{{ product.id }}"
-
-    hx-swap="outerHTML"
+    hx-swap="none"
 >
 
     {% csrf_token %}
