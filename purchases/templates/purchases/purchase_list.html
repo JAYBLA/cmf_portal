@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title">Purchases</h4>
+        <button class="btn btn-primary" hx-get="{% url 'purchases:purchase_create' %}" hx-target="#modal-body" hx-swap="innerHTML">Add Purchase</button>
+      </div>
+      <div class="card-body">
+        <table id="responsiveTable" class="table table-striped table-hover table-sm align-middle" style="width:100%">
+          <thead>
+            <tr>
+              <th>Purchase No</th>
+              <th>Supplier</th>
+              <th>Supplier Invoice</th>
+              <th>Purchase Date</th>
+              <th class="text-end">Total Amount</th>
+              <th class="text-end">Amount Paid</th>
+              <th class="text-end">Balance</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          {% include "purchases/partials/purchase_table.html" %}
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script>
+    document.body.addEventListener('click', function (e) {
+      // =========================================
+      // ADD ROW
+      // =========================================
+    
+      if (e.target.closest('#add-item-row')) {
+        const tableBody = document.getElementById('purchase-items-body')
+    
+        const totalForms = document.getElementById('id_items-TOTAL_FORMS')
+    
+        const template = document.getElementById('empty-form-template').innerHTML
+    
+        let formIndex = parseInt(totalForms.value)
+    
+        // REPLACE __prefix__
+    
+        const formHtml = template.replace(/__prefix__/g, formIndex)
+    
+        // APPEND ROW
+    
+        tableBody.insertAdjacentHTML('beforeend', formHtml)
+    
+        // UPDATE TOTAL FORMS
+    
+        totalForms.value = formIndex + 1
+    
+        // INITIALIZE TOMSELECT ONLY FOR NEW ROW
+    
+        const newSelect = document.getElementById(`id_items-${formIndex}-product`)
+    
+        if (newSelect) {
+          new TomSelect(newSelect)
+        }
+      }
+    
+      // =========================================
+      // REMOVE ROW
+      // =========================================
+    
+      if (e.target.closest('.remove-row')) {
+        e.target.closest('tr').remove()
+      }
+    })
+  </script>
+{% endblock %}

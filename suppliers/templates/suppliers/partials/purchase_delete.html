@@ -1,0 +1,112 @@
+{% load widget_tweaks %}
+
+<div class="modal-header bg-danger text-white">
+
+    <h5 class="modal-title">
+        Delete Purchase
+    </h5>
+
+    <button
+        type="button"
+        class="btn border-0 shadow-none p-0 text-white"
+        data-bs-dismiss="modal"
+    >
+
+        <i class="fa-solid fa-xmark"></i>
+
+    </button>
+
+</div>
+
+
+<form
+    method="POST"
+
+    hx-post="{% url 'purchases:purchase_delete' purchase.id %}"
+
+    hx-target="#purchase-{{ purchase.id }}"
+
+    hx-swap="outerHTML"
+>
+
+    {% csrf_token %}
+
+
+    <div class="modal-body">
+
+        <div class="text-center">
+
+            <div class="mb-3">
+
+                <i
+                    class="fa-solid fa-trash-can text-danger"
+                    style="font-size: 60px;"
+                ></i>
+
+            </div>
+
+            <h4 class="mb-3">
+
+                Confirm Delete
+
+            </h4>
+
+            <p class="text-muted mb-2">
+
+                Are you sure you want to delete purchase
+
+                <strong class="text-dark">
+
+                    {{ purchase.purchase_number }}
+
+                </strong>?
+
+            </p>
+
+            <div class="mt-3">
+
+                <span class="badge badge-outline-primary me-2">
+
+                    {{ purchase.supplier.supplier_name }}
+
+                </span>
+
+                <span class="badge badge-outline-danger">
+
+                    {{ purchase.total_amount }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal-footer">
+
+        <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+        >
+
+            Cancel
+
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-danger"
+        >
+
+            <i class="fa-solid fa-trash-can me-1"></i>
+
+            Yes Delete
+
+        </button>
+
+    </div>
+
+</form>

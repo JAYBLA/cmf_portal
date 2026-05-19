@@ -1,0 +1,66 @@
+<!-- templates/suppliers/partials/supplier_row.html -->
+
+<tr id="supplier-{{ supplier.id }}">
+  <td>{{ supplier.supplier_name }}</td>
+
+  <td>{{ supplier.contact_person|default:'-' }}</td>
+
+  <!-- PHONE NUMBER -->
+
+  <td>
+    {% if supplier.phone_number %}
+      <a href="tel:{{ supplier.phone_number }}" class="d-inline-flex align-items-center text-primary fw-semibold text-decoration-none">
+        <i class="fa-solid fa-phone me-2"></i>
+
+        {{ supplier.phone_number }}
+      </a>
+    {% else %}
+      <span class="text-muted">-</span>
+    {% endif %}
+  </td>
+
+  <!-- EMAIL -->
+
+  <td>
+    {% if supplier.email %}
+      <a href="mailto:{{ supplier.email }}" class="d-inline-flex align-items-center text-primary fw-semibold text-decoration-none">
+        <i class="fa-solid fa-envelope me-2"></i>
+
+        {{ supplier.email }}
+      </a>
+    {% else %}
+      <span class="text-muted">-</span>
+    {% endif %}
+  </td>
+  <td>
+    {% if supplier.supplier_website %}
+      <a href="{{ supplier.supplier_website }}" target="_blank" class="d-inline-flex align-items-center text-primary fw-semibold text-decoration-none">
+        <i class="fa-solid fa-globe me-2"></i>
+
+        {{ supplier.supplier_website }}
+      </a>
+    {% else %}
+      <span class="text-muted">-</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if supplier.status == 'active' %}
+      <span class="badge badge-success">{{ supplier.get_status_display }}</span>
+    {% else %}
+      <span class="badge badge-danger">{{ supplier.get_status_display }}</span>
+    {% endif %}
+  </td>
+
+  <td>
+    <div class="d-flex justify-content-end">
+      <!-- EDIT -->
+
+      <a hx-get="{% url 'suppliers:supplier_update' supplier.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-warning shadow me-1"><i class="fa-solid fa-pen-to-square" style="font-size: 20px;"></i></a>
+
+      <!-- DELETE -->
+
+      <a hx-get="{% url 'suppliers:supplier_delete' supplier.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-danger shadow"><i class="fa-solid fa-trash-can-slash" style="font-size: 20px;"></i></a>
+    </div>
+  </td>
+</tr>

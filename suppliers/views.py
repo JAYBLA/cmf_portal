@@ -1,24 +1,24 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Product
-from .forms import ProductForm
+from .models import Supplier
+from .forms import SupplierForm
 
 
 # =========================================
 # LIST
 # =========================================
 
-def product_list(request):
+def supplier_list(request):
 
-    products = Product.objects.all()
+    suppliers = Supplier.objects.all()
 
     context = {
-        "products": products
+        "suppliers": suppliers
     }
 
     return render(
         request,
-        "products/product_list.html",
+        "suppliers/supplier_list.html",
         context
     )
 
@@ -27,27 +27,25 @@ def product_list(request):
 # CREATE
 # =========================================
 
-def product_create(request):
+def supplier_create(request):
 
-    form = ProductForm(request.POST or None)
+    form = SupplierForm(request.POST or None)
 
     if request.method == "POST":
 
         if form.is_valid():
 
-            product = form.save()
+            supplier = form.save()
 
             context = {
-                "product": product
+                "supplier": supplier
             }
 
             response = render(
                 request,
-                "products/partials/product_row.html",
+                "suppliers/partials/supplier_row.html",
                 context
             )
-
-            # CLOSE MODAL
 
             response["HX-Trigger"] = "closeModal"
 
@@ -59,7 +57,7 @@ def product_create(request):
 
     return render(
         request,
-        "products/partials/product_form.html",
+        "suppliers/partials/supplier_form.html",
         context
     )
 
@@ -68,35 +66,33 @@ def product_create(request):
 # UPDATE
 # =========================================
 
-def product_update(request, pk):
+def supplier_update(request, pk):
 
-    product = get_object_or_404(
-        Product,
+    supplier = get_object_or_404(
+        Supplier,
         pk=pk
     )
 
-    form = ProductForm(
+    form = SupplierForm(
         request.POST or None,
-        instance=product
+        instance=supplier
     )
 
     if request.method == "POST":
 
         if form.is_valid():
 
-            product = form.save()
+            supplier = form.save()
 
             context = {
-                "product": product
+                "supplier": supplier
             }
 
             response = render(
                 request,
-                "products/partials/product_row.html",
+                "suppliers/partials/supplier_row.html",
                 context
             )
-
-            # CLOSE MODAL
 
             response["HX-Trigger"] = "closeModal"
 
@@ -104,12 +100,12 @@ def product_update(request, pk):
 
     context = {
         "form": form,
-        "product": product
+        "supplier": supplier
     }
 
     return render(
         request,
-        "products/partials/product_form.html",
+        "suppliers/partials/supplier_form.html",
         context
     )
 
@@ -118,31 +114,29 @@ def product_update(request, pk):
 # DELETE
 # =========================================
 
-def product_delete(request, pk):
+def supplier_delete(request, pk):
 
-    product = get_object_or_404(
-        Product,
+    supplier = get_object_or_404(
+        Supplier,
         pk=pk
     )
 
     if request.method == "POST":
 
-        product.delete()
+        supplier.delete()
 
         response = HttpResponse("")
-
-        # CLOSE MODAL
 
         response["HX-Trigger"] = "closeModal"
 
         return response
 
     context = {
-        "product": product
+        "supplier": supplier
     }
 
     return render(
         request,
-        "products/partials/product_delete.html",
+        "suppliers/partials/supplier_delete.html",
         context
     )

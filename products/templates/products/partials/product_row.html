@@ -1,0 +1,26 @@
+<!-- templates/products/partials/product_row.html -->
+<tr id="product-{{ product.id }}">
+  <td>{{ product.sku_code }}</td>
+  <td>{{ product.product_name }}</td>
+  <td>{{ product.product_category }}</td>
+  <td>
+    <span class="badge badge-rounded badge-outline-primary">{{ product.product_unit }}</span>
+  </td>
+  <td>{{ product.get_product_type_display }}</td>
+  <td>
+    {% if product.status == 'active' %}
+      <span class="badge badge-success">{{ product.get_status_display }}</span>
+    {% else %}
+      <span class="badge badge-danger">{{ product.get_status_display }}</span>
+    {% endif %}
+  </td>
+  <td>
+    <div class="d-flex justify-content-end">
+      <!-- EDIT -->
+      <a hx-get="{% url 'products:product_update' product.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-warning shadow me-1"><i class="fa-solid fa-pen-to-square" style="font-size: 20px;"></i></a>
+
+      <!-- DELETE -->
+      <a hx-get="{% url 'products:product_delete' product.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-danger shadow"><i class="fa-solid fa-trash-can-slash" style="font-size: 20px;"></i></a>
+    </div>
+  </td>
+</tr>

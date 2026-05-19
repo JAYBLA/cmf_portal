@@ -1,0 +1,17 @@
+/* =========================================
+   TOMSELECT DROPDOWN FIXES
+========================================= */
+
+.ts-wrapper {
+    width: 100%;
+}
+
+.ts-dropdown {
+    z-index: 999999 !important;
+}
+
+.modal,
+.modal-body,
+.table-responsive {
+    overflow: visible !important;
+}

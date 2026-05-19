@@ -59,7 +59,7 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Nunito:400,600,700");
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap");
-@import url("./../icons/font-awesome/css/all.min.css");
+@import url("./../icons/font-awesome/css/fontawesome.min.css");
 @import url("./../icons/material-design-iconic-font/css/materialdesignicons.min.css");
 @import url("./../icons/themify-icons/css/themify-icons.css");
 @import url("./../icons/line-awesome/css/line-awesome.min.css");
@@ -67,26 +67,62 @@
 @import url(./../assets/metismenu/css/metisMenu.min.css);
 @use "sass:math";
 :root {
-  --primary: #5A45AA;
-  --secondary: #F84646;
-  --secondary-light: #fa7777;
-  --primary-light: #7663bf;
-  --primary-hover: #473686;
-  --primary-dark: #20193d;
-  --rgba-primary-1: rgba(90, 69, 170, 0.1);
-  --rgba-primary-2: rgba(90, 69, 170, 0.2);
-  --rgba-primary-3: rgba(90, 69, 170, 0.3);
-  --rgba-primary-4: rgba(90, 69, 170, 0.4);
-  --rgba-primary-5: rgba(90, 69, 170, 0.5);
-  --rgba-primary-6: rgba(90, 69, 170, 0.6);
-  --rgba-primary-7: rgba(90, 69, 170, 0.7);
-  --rgba-primary-8: rgba(90, 69, 170, 0.8);
-  --rgba-primary-9: rgba(90, 69, 170, 0.9);
+
+  /* =========================================
+     PRIMARY BRAND COLORS
+  ========================================= */
+
+  --primary: #036635;
+  --primary-light: #0a8a49;
+  --primary-hover: #02552c;
+  --primary-dark: #01361c;
+
+  /* =========================================
+     SECONDARY BRAND COLORS
+  ========================================= */
+
+  --secondary: #ed7723;
+  --secondary-light: #f59a57;
+
+  /* =========================================
+     PRIMARY RGBA VARIATIONS
+  ========================================= */
+
+  --rgba-primary-1: rgba(3, 102, 53, 0.1);
+  --rgba-primary-2: rgba(3, 102, 53, 0.2);
+  --rgba-primary-3: rgba(3, 102, 53, 0.3);
+  --rgba-primary-4: rgba(3, 102, 53, 0.4);
+  --rgba-primary-5: rgba(3, 102, 53, 0.5);
+  --rgba-primary-6: rgba(3, 102, 53, 0.6);
+  --rgba-primary-7: rgba(3, 102, 53, 0.7);
+  --rgba-primary-8: rgba(3, 102, 53, 0.8);
+  --rgba-primary-9: rgba(3, 102, 53, 0.9);
+
+  /* =========================================
+     TYPOGRAPHY
+  ========================================= */
+
   --font-family-base: Roboto, sans-serif;
   --font-family-title: Roboto, sans-serif;
+
   --title: #000;
-  --gradient-one: linear-gradient(180deg, #FFA26D 0%, #FFCF6D 100%);
-  --tryal-gradient:linear-gradient(212.43deg, #886CC0 19.43%, #AA6CC0 87.63%);
+
+  /* =========================================
+     GRADIENTS
+  ========================================= */
+
+  --gradient-one: linear-gradient(
+    180deg,
+    #ed7723 0%,
+    #ffb16f 100%
+  );
+
+  --tryal-gradient: linear-gradient(
+    212.43deg,
+    #036635 19.43%,
+    #0a8a49 87.63%
+  );
+
   --dz-sidebar-width: 16.875rem;
   --dz-header-height: 4.375rem;
   --dz-sidebar-pos: absolute;
