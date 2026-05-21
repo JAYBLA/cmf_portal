@@ -1,0 +1,133 @@
+{% load widget_tweaks %}
+
+<div class="modal-header">
+  <h5 class="modal-title">
+    {% if supplier %}
+      Edit Supplier
+    {% else %}
+      Add Supplier
+    {% endif %}
+  </h5>
+
+  <button type="button" class="btn border-0 shadow-none p-0" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<form method="POST"
+  hx-post="
+        {% if supplier %}
+    {% url 'suppliers:supplier_update' supplier.id %}
+  {% else %}
+    {% url 'suppliers:supplier_create' %}
+  {% endif %}
+    "
+  hx-target="
+        {% if supplier %}
+    
+    
+            #supplier-{{ supplier.id }}
+  {% else %}
+    
+    
+            #supplier-table-body
+
+
+  {% endif %}
+    "
+  hx-swap="
+        {% if supplier %}
+    
+    
+            outerHTML
+
+
+  {% else %}
+    
+    
+            beforeend
+
+
+  {% endif %}
+    ">
+  {% csrf_token %}
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- SUPPLIER NAME -->
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Supplier Name</label>
+
+        {% render_field form.supplier_name class='form-control' %}
+
+        <div class="text-danger small">{{ form.supplier_name.errors }}</div>
+      </div>
+
+      <!-- CONTACT PERSON -->
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Contact Person</label>
+
+        {% render_field form.contact_person class='form-control' %}
+
+        <div class="text-danger small">{{ form.contact_person.errors }}</div>
+      </div>
+      <!-- SUPPLIER WEBSITE -->
+        <div class="col-md-12 mb-3">
+            <label class="form-label">Supplier Website</label>
+            {% render_field form.supplier_website class='form-control' %}
+            <div class="text-danger small">{{ form.supplier_website.errors }}</div>
+        </div>
+
+      <!-- PHONE NUMBER -->
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Phone Number</label>
+
+        {% render_field form.phone_number class='form-control' %}
+
+        <div class="text-danger small">{{ form.phone_number.errors }}</div>
+      </div>
+
+      <!-- EMAIL -->
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Email Address</label>
+
+        {% render_field form.email class='form-control' %}
+
+        <div class="text-danger small">{{ form.email.errors }}</div>
+      </div>
+
+      <!-- ADDRESS -->
+
+      <div class="col-6 mb-3">
+        <label class="form-label">Address</label>
+
+        {% render_field form.address class='form-control' %}
+
+        <div class="text-danger small">{{ form.address.errors }}</div>
+      </div>
+      <!-- STATUS -->
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Status</label>
+
+        {% render_field form.status class='form-select tom-select' %}
+
+        <div class="text-danger small">{{ form.status.errors }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+    <button type="submit" class="btn btn-primary">
+      {% if supplier %}
+        Update Supplier
+      {% else %}
+        Save Supplier
+      {% endif %}
+    </button>
+  </div>
+</form>

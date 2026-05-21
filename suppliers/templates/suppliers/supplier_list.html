@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-12">
+
+    <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h4 class="card-title">
+                Suppliers
+            </h4>
+
+            <button
+                class="btn btn-primary"
+
+                hx-get="{% url 'suppliers:supplier_create' %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+            >
+                Add Supplier
+            </button>
+
+        </div>
+
+        <div class="card-body">
+
+            <table
+                id="responsiveTable"
+                class="table table-striped table-hover mb-0 align-middle dataTable"
+                style="width:100%;"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>Supplier Name</th>
+
+                        <th>Contact Person</th>
+
+                        <th>Phone Number</th>
+
+                        <th>Email Address</th>
+                        <th>Supplier Website</th>
+
+                        <th>Status</th>
+
+                        <th class="text-center">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="supplier-table-body">
+
+                    {% for supplier in suppliers %}
+
+                        {% include "suppliers/partials/supplier_row.html" %}
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock content %}

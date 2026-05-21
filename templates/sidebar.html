@@ -1,0 +1,27 @@
+<div class="deznav">
+  <div class="deznav-scroll">
+    <ul class="metismenu" id="menu">
+      <li class="menu-title border-top-0 pt-2">PRODUCTS</li>
+      <li>
+        <a href="{% url 'products:product_list' %}" class="ai-icon" aria-expanded="false">
+          <i class="fa-solid fa-list-check"></i>
+          <span class="nav-text">Products List</span>
+        </a>
+      </li>
+      <li class="menu-title border-top-0 pt-2">SUPPLIERS</li>
+      <li>
+        <a href="{% url 'suppliers:supplier_list' %}" class="ai-icon" aria-expanded="false">
+          <i class="fa-duotone fa-light fa-list-dropdown"></i>
+          <span class="nav-text">Suppliers List</span>
+        </a>
+      </li>
+       <li class="menu-title border-top-0 pt-2">PURCHASES</li>
+      <li>
+        <a href="{% url 'purchases:purchase_list' %}" class="ai-icon" aria-expanded="false">
+          <i class="fa-sharp fa-solid fa-cart-shopping"></i>
+          <span class="nav-text">Purchases List</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

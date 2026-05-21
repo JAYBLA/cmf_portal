@@ -1,0 +1,126 @@
+<tr id="purchase-{{ purchase.id }}">
+  <!-- PURCHASE NUMBER -->
+
+  <td class="fw-semibold">{{ purchase.purchase_number }}</td>
+
+  <!-- SUPPLIER -->
+
+  <td>{{ purchase.supplier }}</td>
+
+  <!-- SUPPLIER INVOICE -->
+
+  <td>
+    {% if purchase.supplier_invoice_number %}
+      {{ purchase.supplier_invoice_number }}
+    {% else %}
+      <span class="text-muted">N/A</span>
+    {% endif %}
+  </td>
+
+  <!-- PURCHASE DATE -->
+
+  <td>{{ purchase.purchase_date|date:'M d, Y' }}</td>
+
+  <!-- TOTAL -->
+
+  <td class="text-end fw-semibold">TZS {{ purchase.total_amount|floatformat:2 }}</td>
+
+  <!-- AMOUNT PAID -->
+
+  <td class="text-end">TZS {{ purchase.amount_paid|floatformat:2 }}</td>
+
+  <!-- BALANCE -->
+
+  <td class="text-end text-danger fw-bold">TZS {{ purchase.balance|floatformat:2 }}</td>
+
+  <!-- STATUS -->
+
+  <td>
+    {% if purchase.payment_status == 'paid' %}
+      <span class="badge badge-success light">Paid</span>
+    {% elif purchase.payment_status == 'partial' %}
+      <span class="badge badge-warning light">Partial</span>
+    {% else %}
+      <span class="badge badge-danger light">Pending</span>
+    {% endif %}
+  </td>
+
+  <!-- ACTIONS -->
+
+  <td>
+    <div class="d-flex justify-content-end">
+      <!-- EDIT -->
+
+<a
+
+    hx-get="{% url 'purchases:purchase_update' purchase.id %}"
+
+    hx-target="#modal-body"
+
+    hx-swap="innerHTML"
+
+    class="btn btn-warning btn-sm shadow me-1"
+
+    data-bs-toggle="tooltip"
+
+    data-bs-placement="top"
+
+    title="Edit Purchase"
+>
+
+    <i class="fa-solid fa-pen-to-square"></i>
+
+</a>
+
+
+
+<!-- DELETE -->
+
+<a
+
+    hx-get="{% url 'purchases:purchase_delete' purchase.id %}"
+
+    hx-target="#modal-body"
+
+    hx-swap="innerHTML"
+
+    class="btn btn-danger btn-sm shadow me-1"
+
+    data-bs-toggle="tooltip"
+
+    data-bs-placement="top"
+
+    title="Delete Purchase"
+>
+
+    <i class="fa-solid fa-trash-can"></i>
+
+</a>
+
+
+
+<!-- PAYMENT -->
+
+<a
+
+    hx-get="{% url 'purchases:purchase_payment_create' purchase.id %}"
+
+    hx-target="#modal-body"
+
+    hx-swap="innerHTML"
+
+    class="btn btn-success btn-sm shadow"
+
+    data-bs-toggle="tooltip"
+
+    data-bs-placement="top"
+
+    title="Make Purchase Payment"
+>
+
+    <i class="fa-solid fa-money-bill-wave"></i>
+
+</a>
+    </div>
+  </td>
+</tr>
