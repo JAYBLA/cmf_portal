@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/cybermec/cmf_portal/
+    - /bin/cp -R cmf_portal $DEPLOYPATH
