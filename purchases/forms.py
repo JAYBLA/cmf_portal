@@ -1,8 +1,5 @@
-# forms.py
-
 from django import forms
 from django.forms import inlineformset_factory
-
 from .models import *
 
 
@@ -159,6 +156,7 @@ class PurchasePaymentForm(forms.ModelForm):
 
         }
         
+
 # =========================================
 # PURCHASE ADDITIONAL COST FORM
 # =========================================
@@ -199,6 +197,10 @@ class PurchaseAdditionalCostForm(forms.ModelForm):
 
         }
 
+    # =====================================
+    # VALIDATION
+    # =====================================
+
     def clean(self):
 
         cleaned_data = super().clean()
@@ -211,8 +213,28 @@ class PurchaseAdditionalCostForm(forms.ModelForm):
             "exchange_rate"
         )
 
+        amount = cleaned_data.get(
+            "amount"
+        )
+
         # =====================================
-        # TZS COSTS
+        # AMOUNT VALIDATION
+        # =====================================
+
+        if amount is not None:
+
+            if amount <= 0:
+
+                self.add_error(
+
+                    "amount",
+
+                    "Amount must be greater than zero."
+
+                )
+
+        # =====================================
+        # TZS
         # =====================================
 
         if currency == "TZS":
@@ -220,7 +242,7 @@ class PurchaseAdditionalCostForm(forms.ModelForm):
             cleaned_data["exchange_rate"] = 1
 
         # =====================================
-        # USD COSTS
+        # USD
         # =====================================
 
         if currency == "USD":
@@ -236,3 +258,126 @@ class PurchaseAdditionalCostForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+
+
+# =========================================
+# ADDITIONAL COST DOCUMENT FORM
+# =========================================
+
+class AdditionalCostDocumentForm(forms.ModelForm):
+
+    class Meta:
+
+        model = AdditionalCostDocument
+
+        fields = [
+
+            "title",
+
+            "file"
+
+        ]
+
+        widgets = {
+
+            "title": forms.TextInput(
+                attrs={
+                    "placeholder":
+                        "Document title"
+                }
+            ),
+
+        }
+
+    # =====================================
+    # FILE VALIDATION
+    # =====================================
+
+    def clean_file(self):
+
+        file = self.cleaned_data.get(
+            "file"
+        )
+
+        if not file:
+
+            return file
+
+        # =====================================
+        # MAX FILE SIZE (10MB)
+        # =====================================
+
+        max_size = 10 * 1024 * 1024
+
+        if file.size > max_size:
+
+            raise forms.ValidationError(
+
+                "File size must not exceed 10MB."
+
+            )
+
+        # =====================================
+        # ALLOWED FILE TYPES
+        # =====================================
+
+        allowed_extensions = [
+
+            ".pdf",
+
+            ".jpg",
+
+            ".jpeg",
+
+            ".png",
+
+            ".doc",
+
+            ".docx",
+
+            ".xls",
+
+            ".xlsx",
+
+        ]
+
+        import os
+
+        extension = os.path.splitext(
+            file.name
+        )[1].lower()
+
+        if extension not in allowed_extensions:
+
+            raise forms.ValidationError(
+
+                (
+                    "Unsupported file type. "
+                    "Allowed types are: "
+                    "PDF, JPG, PNG, DOC, DOCX, XLS, XLSX."
+                )
+
+            )
+
+        return file
+
+
+
+# =========================================
+# DOCUMENT INLINE FORMSET
+# =========================================
+
+AdditionalCostDocumentFormSet = inlineformset_factory(
+
+    PurchaseAdditionalCost,
+
+    AdditionalCostDocument,
+
+    form=AdditionalCostDocumentForm,
+
+    extra=1,
+
+    can_delete=True
+
+)

@@ -1,33 +1,68 @@
 <div class="deznav">
   <div class="deznav-scroll">
     <ul class="metismenu" id="menu">
+      <!-- PRODUCTS -->
+
       <li class="menu-title border-top-0 pt-2">PRODUCTS</li>
-      <li>
+
+      <li class="{% if request.resolver_match.url_name == 'product_list' %}mm-active{% endif %}">
         <a href="{% url 'products:product_list' %}" class="ai-icon" aria-expanded="false">
           <i class="fa-solid fa-list-check"></i>
-          <span class="nav-text">Products List</span>
+
+          <span class="nav-text">Products</span>
         </a>
       </li>
+
+      <!-- SUPPLIERS -->
+
       <li class="menu-title border-top-0 pt-2">SUPPLIERS</li>
-      <li>
+
+      <li class="{% if request.resolver_match.url_name == 'supplier_list' %}mm-active{% endif %}">
         <a href="{% url 'suppliers:supplier_list' %}" class="ai-icon" aria-expanded="false">
-          <i class="fa-duotone fa-light fa-list-dropdown"></i>
-          <span class="nav-text">Suppliers List</span>
+          <i class="fa-solid fa-address-book"></i>
+
+          <span class="nav-text">Suppliers</span>
         </a>
       </li>
-       <li class="menu-title border-top-0 pt-2">PURCHASES</li>
-      <li>
+
+      <!-- PURCHASES -->
+
+      <li class="menu-title border-top-0 pt-2">PURCHASES</li>
+
+      <!-- PURCHASE LIST -->
+
+      <li class="{% if request.resolver_match.url_name == 'purchase_list' %}mm-active{% endif %}">
         <a href="{% url 'purchases:purchase_list' %}" class="ai-icon" aria-expanded="false">
-          <i class="fa-sharp fa-solid fa-cart-shopping"></i>
+          <i class="fa-solid fa-cart-shopping"></i>
+
           <span class="nav-text">Purchases List</span>
         </a>
+      </li>
+
+      <!-- CLEARING AGENTS -->
+
+      <li class="{% if request.resolver_match.url_name == 'clearing_agent_list' %}mm-active{% endif %}">
         <a href="{% url 'agents:clearing_agent_list' %}" class="ai-icon" aria-expanded="false">
-          <i class="fa-solid fa-truck-fast"></i>
+          <i class="fa-solid fa-file-contract"></i>
+
           <span class="nav-text">Clearing Agents</span>
         </a>
-                <a href="{# url 'agents:clearing_agent_list' #}" class="ai-icon" aria-expanded="false">
-          <i class="fa-solid fa-truck-fast"></i>
-          <span class="nav-text">Clearing & Other Costs</span>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'stock_movement_list' %}mm-active{% endif %}">
+        <a href="{% url 'products:stock_movement_list' %}" class="ai-icon" aria-expanded="false">
+          <i class="fa-solid fa-boxes-stacked"></i>
+
+          <span class="nav-text">Stock Ledger</span>
+        </a>
+      </li>
+      <!-- CUSTOMERS -->
+
+      <li class="menu-title border-top-0 pt-2">CUSTOMERS</li>
+      <li class="{% if request.resolver_match.url_name == 'customer_list' %}mm-active{% endif %}">
+        <a href="{% url 'customers:customer_list' %}" class="ai-icon" aria-expanded="false">
+          <i class="fa-solid fa-users"></i>
+
+          <span class="nav-text">Customers</span>
         </a>
       </li>
     </ul>

@@ -105,11 +105,37 @@ def purchase_create(request):
 
             for item in items:
 
+                # =====================================
+                # ASSIGN PURCHASE
+                # =====================================
+
                 item.purchase = purchase
 
                 item.save()
 
+                # =====================================
+                # SUBTOTAL
+                # =====================================
+
                 subtotal += item.subtotal
+
+                # =====================================
+                # STOCK IN
+                # =====================================
+
+                item.product.update_stock(
+
+                    quantity=item.quantity,
+
+                    movement_type="in",
+
+                    unit_cost=item.unit_cost,
+
+                    reference=purchase.purchase_number,
+
+                    notes="Purchase Stock In"
+
+                )
 
 
             # =========================================
@@ -848,6 +874,319 @@ def additional_cost_delete(request, pk):
             "purchaseChanged": True,
 
             "closeModal": True
+
+        })
+
+        return response
+
+    context = {
+        "additional_cost": additional_cost
+    }
+
+    return render(
+        request,
+        "purchases/additional_costs/delete.html",
+        context
+    )
+    
+# =========================================
+# ADDITIONAL COST LIST
+# =========================================
+
+def additional_cost_list(request, purchase_id):
+
+    purchase = get_object_or_404(
+        Purchase,
+        pk=purchase_id
+    )
+
+    additional_costs = (
+        purchase.additional_costs.all()
+    )
+
+    context = {
+
+        "purchase": purchase,
+
+        "additional_costs": additional_costs
+
+    }
+
+    return render(
+        request,
+        "purchases/additional_costs/list.html",
+        context
+    )
+
+
+
+# =========================================
+# ADDITIONAL COST TABLE
+# =========================================
+
+def additional_cost_table(request, purchase_id):
+
+    purchase = get_object_or_404(
+        Purchase,
+        pk=purchase_id
+    )
+
+    additional_costs = (
+        purchase.additional_costs.all()
+    )
+
+    context = {
+
+        "purchase": purchase,
+
+        "additional_costs": additional_costs
+
+    }
+
+    return render(
+        request,
+        "purchases/additional_costs/table.html",
+        context
+    )
+
+
+
+# =========================================
+# CREATE ADDITIONAL COST
+# =========================================
+
+def additional_cost_create(request, purchase_id):
+
+    purchase = get_object_or_404(
+        Purchase,
+        pk=purchase_id
+    )
+
+    form = PurchaseAdditionalCostForm(
+        request.POST or None
+    )
+
+    formset = AdditionalCostDocumentFormSet(
+
+        request.POST or None,
+
+        request.FILES or None,
+
+        prefix="documents"
+
+    )
+
+    if request.method == "POST":
+
+        if form.is_valid() and formset.is_valid():
+
+            # =====================================
+            # SAVE ADDITIONAL COST
+            # =====================================
+
+            additional_cost = form.save(
+                commit=False
+            )
+
+            additional_cost.purchase = purchase
+
+            additional_cost.save()
+
+            # =====================================
+            # SAVE DOCUMENTS
+            # =====================================
+
+            formset.instance = additional_cost
+
+            formset.save()
+
+            # =====================================
+            # RESPONSE
+            # =====================================
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps({
+
+                "additionalCostChanged": {
+
+                    "purchase_id": purchase.id
+
+                },
+
+                "closeModal": True,
+
+                "showMessage": {
+
+                    "type": "success",
+
+                    "message": (
+                        "Additional cost added successfully."
+                    )
+
+                }
+
+            })
+
+            return response
+
+    context = {
+
+        "form": form,
+
+        "formset": formset,
+
+        "purchase": purchase
+
+    }
+
+    return render(
+        request,
+        "purchases/additional_costs/form.html",
+        context
+    )
+
+
+
+# =========================================
+# UPDATE ADDITIONAL COST
+# =========================================
+
+def additional_cost_update(request, pk):
+
+    additional_cost = get_object_or_404(
+        PurchaseAdditionalCost,
+        pk=pk
+    )
+
+    form = PurchaseAdditionalCostForm(
+
+        request.POST or None,
+
+        instance=additional_cost
+
+    )
+
+    formset = AdditionalCostDocumentFormSet(
+
+        request.POST or None,
+
+        request.FILES or None,
+
+        instance=additional_cost,
+
+        prefix="documents"
+
+    )
+
+    if request.method == "POST":
+
+        if form.is_valid() and formset.is_valid():
+
+            # =====================================
+            # SAVE COST
+            # =====================================
+
+            additional_cost = form.save()
+
+            # =====================================
+            # SAVE DOCUMENTS
+            # =====================================
+
+            formset.instance = additional_cost
+
+            formset.save()
+
+            # =====================================
+            # RESPONSE
+            # =====================================
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps({
+
+                "additionalCostChanged": {
+
+                    "purchase_id": (
+                        additional_cost.purchase.id
+                    )
+
+                },
+
+                "closeModal": True,
+
+                "showMessage": {
+
+                    "type": "success",
+
+                    "message": (
+                        "Additional cost updated successfully."
+                    )
+
+                }
+
+            })
+
+            return response
+
+    context = {
+
+        "form": form,
+
+        "formset": formset,
+
+        "additional_cost": additional_cost
+
+    }
+
+    return render(
+        request,
+        "purchases/additional_costs/form.html",
+        context
+    )
+
+
+
+# =========================================
+# DELETE ADDITIONAL COST
+# =========================================
+
+def additional_cost_delete(request, pk):
+
+    additional_cost = get_object_or_404(
+        PurchaseAdditionalCost,
+        pk=pk
+    )
+
+    if request.method == "POST":
+
+        purchase_id = (
+            additional_cost.purchase.id
+        )
+
+        additional_cost.delete()
+
+        response = HttpResponse("")
+
+        response["HX-Trigger"] = json.dumps({
+
+            "additionalCostChanged": {
+
+                "purchase_id": purchase_id
+
+            },
+
+            "closeModal": True,
+
+            "showMessage": {
+
+                "type": "success",
+
+                "message": (
+                    "Additional cost deleted successfully."
+                )
+
+            }
 
         })
 

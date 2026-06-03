@@ -20,6 +20,11 @@ urlpatterns = [
     # PURCHASE ADDITIONAL COSTS
     # =====================================
     path(
+        "<int:purchase_id>/additional-costs/",
+        views.additional_cost_list,
+        name="additional_cost_list",
+    ),
+    path(
         "<int:purchase_id>/additional-costs/create/",
         views.additional_cost_create,
         name="additional_cost_create",
@@ -33,5 +38,10 @@ urlpatterns = [
         "additional-costs/<int:pk>/delete/",
         views.additional_cost_delete,
         name="additional_cost_delete",
+    ),
+    path(
+        "additional-costs/table/<int:purchase_id>/",
+        views.additional_cost_table,
+        name="additional_cost_table",
     ),
 ]

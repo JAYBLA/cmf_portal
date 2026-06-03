@@ -6,8 +6,8 @@ from django.shortcuts import render, get_object_or_404
 
 from django.http import HttpResponse
 
-from .models import Product
-from .forms import ProductForm
+from .models import *
+from .forms import *
 from django.db.models import ProtectedError
 
 # =========================================
@@ -162,3 +162,51 @@ def product_table(request):
     context = {"products": products}
 
     return render(request, "products/partials/product_table.html", context)
+
+# =========================================
+# STOCK MOVEMENT LIST
+# =========================================
+
+def stock_movement_list(request):
+
+    stock_movements = (
+        StockMovement.objects
+        .select_related("product")
+    )
+
+    context = {
+
+        "stock_movements": stock_movements
+
+    }
+
+    return render(
+        request,
+        "products/stock_movements/list.html",
+        context
+    )
+
+
+
+# =========================================
+# STOCK MOVEMENT TABLE
+# =========================================
+
+def stock_movement_table(request):
+
+    stock_movements = (
+        StockMovement.objects
+        .select_related("product")
+    )
+
+    context = {
+
+        "stock_movements": stock_movements
+
+    }
+
+    return render(
+        request,
+        "products/stock_movements/table.html",
+        context
+    )

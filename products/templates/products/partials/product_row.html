@@ -8,6 +8,17 @@
   </td>
   <td>{{ product.get_product_type_display }}</td>
   <td>
+    {% if product.stock_status == 'out' %}
+      <span class="badge badge-danger">Out of Stock</span>
+    {% elif product.stock_status == 'low' %}
+      <span class="badge badge-warning">Low Stock</span>
+    {% else %}
+      <span class="badge badge-success">In Stock</span>
+    {% endif %}
+
+    <div class="small fw-bold mt-1">{{ product.current_stock }}</div>
+  </td>
+  <td>
     {% if product.status == 'active' %}
       <span class="badge badge-success">{{ product.get_status_display }}</span>
     {% else %}

@@ -1,0 +1,24 @@
+<tbody id="additional-cost-table-body">
+
+    {% for additional_cost in additional_costs %}
+
+        {% include "purchases/additional_costs/row.html" %}
+
+    {% empty %}
+
+        <tr>
+
+            <td
+                colspan="7"
+                class="text-center text-muted py-5"
+            >
+
+                No additional costs found.
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+</tbody>

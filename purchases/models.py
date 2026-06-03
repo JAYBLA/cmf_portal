@@ -260,8 +260,6 @@ class PurchaseAdditionalCost(models.Model):
 
         ("port", "Port Charges"),
 
-        ("transport", "Local Transport"),
-
         ("insurance", "Insurance"),
 
         ("other", "Other"),
@@ -394,3 +392,38 @@ class PurchaseAdditionalCost(models.Model):
         return (
             f"{self.get_cost_type_display()}"
         )
+        
+    # =========================================
+# ADDITIONAL COST DOCUMENT
+# =========================================
+
+class AdditionalCostDocument(models.Model):
+
+    additional_cost = models.ForeignKey(
+
+        PurchaseAdditionalCost,
+
+        on_delete=models.CASCADE,
+
+        related_name="documents"
+
+    )
+
+    title = models.CharField(
+
+        max_length=255
+    )
+
+    file = models.FileField(
+
+        upload_to="additional_costs/documents/"
+    )
+
+    uploaded_at = models.DateTimeField(
+
+        auto_now_add=True
+    )
+
+    def __str__(self):
+
+        return self.title

@@ -1,0 +1,256 @@
+{% load widget_tweaks %}
+
+<div class="modal-header py-2">
+
+    <h5 class="modal-title mb-0">
+
+        {% if customer %}
+            Edit Customer
+        {% else %}
+            Add Customer
+        {% endif %}
+
+    </h5>
+
+    <button
+        type="button"
+        class="btn border-0 shadow-none p-0"
+        data-bs-dismiss="modal"
+    >
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+</div>
+
+
+
+<form
+
+    method="POST"
+
+    hx-post="
+        {% if customer %}
+            {% url 'customers:customer_update' customer.id %}
+        {% else %}
+            {% url 'customers:customer_create' %}
+        {% endif %}
+    "
+
+    hx-swap="none"
+
+>
+
+    {% csrf_token %}
+
+
+    <div class="modal-body py-2">
+
+        <div class="row g-2">
+
+
+            <!-- CUSTOMER NAME -->
+
+            <div class="col-md-6">
+
+                <label class="form-label small mb-1">
+
+                    Customer Name
+
+                </label>
+
+                {% render_field form.customer_name class="form-control form-control-sm" %}
+
+            </div>
+
+
+
+            <!-- COMPANY -->
+
+            <div class="col-md-6">
+
+                <label class="form-label small mb-1">
+
+                    Company
+
+                </label>
+
+                {% render_field form.company_name class="form-control form-control-sm" %}
+
+            </div>
+
+
+
+            <!-- PHONE -->
+
+            <div class="col-md-4">
+
+                <label class="form-label small mb-1">
+
+                    Phone
+
+                </label>
+
+                {% render_field form.phone_number class="form-control form-control-sm" %}
+
+            </div>
+
+
+
+            <!-- EMAIL -->
+
+            <div class="col-md-4">
+
+                <label class="form-label small mb-1">
+
+                    Email
+
+                </label>
+
+                {% render_field form.email class="form-control form-control-sm" %}
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div class="col-md-4">
+
+                <label class="form-label small mb-1">
+
+                    Status
+
+                </label>
+
+                {% render_field form.status class="form-select form-select-sm tom-select" %}
+
+            </div>
+
+
+
+            <!-- TIN -->
+
+            <div class="col-md-6">
+
+                <label class="form-label small mb-1">
+
+                    TIN Number
+
+                </label>
+
+                {% render_field form.tin_number class="form-control form-control-sm" %}
+
+            </div>
+
+
+
+            <!-- VRN -->
+
+            <div class="col-md-6">
+
+                <label class="form-label small mb-1">
+
+                    VRN Number
+
+                </label>
+
+                {% render_field form.vrn_number class="form-control form-control-sm" %}
+
+            </div>
+
+
+
+            <!-- CREDIT LIMIT -->
+
+            <div class="col-md-6">
+
+                <label class="form-label small mb-1">
+
+                    Credit Limit
+
+                </label>
+
+                {% render_field form.credit_limit class="form-control form-control-sm text-end" %}
+
+            </div>
+
+
+
+            <!-- OPENING BALANCE -->
+
+            <div class="col-md-6">
+
+                <label class="form-label small mb-1">
+
+                    Opening Balance
+
+                </label>
+
+                {% render_field form.opening_balance class="form-control form-control-sm text-end" %}
+
+            </div>
+
+
+
+            <!-- ADDRESS -->
+
+            <div class="col-6">
+
+                <label class="form-label small mb-1">
+
+                    Address
+
+                </label>
+
+                {% render_field form.address class="form-control form-control-sm" rows="2" %}
+
+            </div>
+
+
+
+            <!-- NOTES -->
+
+            <div class="col-6">
+
+                <label class="form-label small mb-1">
+
+                    Notes
+
+                </label>
+
+                {% render_field form.notes class="form-control form-control-sm" rows="2" %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="modal-footer py-2">
+
+        <button
+            type="button"
+            class="btn btn-light btn-sm"
+            data-bs-dismiss="modal"
+        >
+
+            Close
+
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-primary btn-sm"
+        >
+
+            <i class="fa-solid fa-floppy-disk me-1"></i>
+
+            Save Customer
+
+        </button>
+
+    </div>
+
+</form>

@@ -1,0 +1,204 @@
+{% load humanize %}
+
+<tr id="customer-{{ customer.id }}">
+
+
+    <!-- CUSTOMER DETAILS -->
+
+    <td style="min-width: 280px;">
+
+        <div class="fw-bold text-primary">
+
+            {{ customer.customer_name }}
+
+        </div>
+
+
+        {% if customer.company_name %}
+
+            <div class="small">
+
+                {{ customer.company_name }}
+
+            </div>
+
+        {% endif %}
+
+
+        {% if customer.address %}
+
+            <div class="small text-muted mt-1">
+
+                {{ customer.address|truncatechars:60 }}
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="small text-muted mt-1">
+
+            Added:
+            {{ customer.created_at|date:"M d, Y" }}
+
+        </div>
+
+    </td>
+
+
+
+    <!-- CONTACTS -->
+
+    <td style="min-width: 220px;">
+
+        <div>
+
+            <i class="fa-solid fa-phone me-1"></i>
+
+            {{ customer.phone_number }}
+
+        </div>
+
+
+        {% if customer.email %}
+
+            <div class="small mt-1">
+
+                <i class="fa-solid fa-envelope me-1"></i>
+
+                {{ customer.email }}
+
+            </div>
+
+        {% endif %}
+
+
+        {% if customer.tin_number %}
+
+            <div class="small text-muted mt-1">
+
+                TIN:
+                {{ customer.tin_number }}
+
+            </div>
+
+        {% endif %}
+
+    </td>
+
+
+
+    <!-- FINANCIALS -->
+
+    <td style="min-width: 220px;">
+
+        <div class="fw-bold text-primary">
+
+            TZS
+            {{ customer.credit_limit|floatformat:2|intcomma }}
+
+        </div>
+
+        <small class="text-muted d-block">
+
+            Credit Limit
+
+        </small>
+
+
+        <div class="fw-semibold mt-2">
+
+            TZS
+            {{ customer.opening_balance|floatformat:2|intcomma }}
+
+        </div>
+
+        <small class="text-muted d-block">
+
+            Opening Balance
+
+        </small>
+
+    </td>
+
+
+
+    <!-- STATUS -->
+
+    <td style="min-width: 120px;">
+
+        {% if customer.status == "active" %}
+
+            <span class="badge badge-success light">
+
+                Active
+
+            </span>
+
+        {% else %}
+
+            <span class="badge badge-danger light">
+
+                Inactive
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+
+
+    <!-- ACTIONS -->
+
+    <td style="min-width: 180px;">
+
+        <div class="d-flex justify-content-end">
+
+
+            <!-- EDIT -->
+
+            <a
+
+                hx-get="{% url 'customers:customer_update' customer.id %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+
+                class="btn btn-warning btn-sm shadow me-1"
+
+            >
+
+                <i class="fa-solid fa-pen-to-square me-1"></i>
+
+                Edit
+
+            </a>
+
+
+            <!-- DELETE -->
+
+            <a
+
+                hx-get="{% url 'customers:customer_delete' customer.id %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+
+                class="btn btn-danger btn-sm shadow"
+
+            >
+
+                <i class="fa-solid fa-trash-can me-1"></i>
+
+                Delete
+
+            </a>
+
+        </div>
+
+    </td>
+
+</tr>

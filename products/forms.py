@@ -16,6 +16,7 @@ class ProductForm(forms.ModelForm):
             "sku_code",
             "product_unit",
             "product_type",
+            'minimum_stock',
             "status",
         ]
 

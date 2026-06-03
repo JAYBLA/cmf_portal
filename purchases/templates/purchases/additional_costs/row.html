@@ -1,0 +1,212 @@
+{% load humanize %}
+
+<tr id="additional-cost-{{ additional_cost.id }}">
+
+
+    <!-- COST DETAILS -->
+
+    <td style="min-width: 280px;">
+
+        <!-- COST TYPE -->
+
+        <div class="fw-bold text-primary">
+
+            {{ additional_cost.get_cost_type_display }}
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        {% if additional_cost.description %}
+
+            <div class="small mt-1">
+
+                {{ additional_cost.description }}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- CLEARING AGENT -->
+
+        <div class="small text-muted mt-1">
+
+            <strong>Agent:</strong>
+
+            {% if additional_cost.clearing_agent %}
+
+                {{ additional_cost.clearing_agent }}
+
+            {% else %}
+
+                N/A
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- CREATED DATE -->
+
+        <div class="small text-muted">
+
+            <strong>Added:</strong>
+
+            {{ additional_cost.created_at|date:"M d, Y" }}
+
+        </div>
+
+
+        <!-- NOTES -->
+
+        {% if additional_cost.notes %}
+
+            <div class="small mt-2 text-muted">
+
+                {{ additional_cost.notes|truncatechars:80 }}
+
+            </div>
+
+        {% endif %}
+
+    </td>
+
+
+
+    <!-- FINANCIAL INFORMATION -->
+
+    <td
+        class="text-end"
+        style="min-width: 220px;"
+    >
+
+        <!-- ORIGINAL AMOUNT -->
+
+        <div class="fw-bold">
+
+            {{ additional_cost.currency }}
+
+            {{ additional_cost.amount|floatformat:2|intcomma }}
+
+        </div>
+
+
+        <!-- EXCHANGE RATE -->
+
+        {% if additional_cost.currency == "USD" %}
+
+            <small class="text-muted d-block">
+
+                Rate:
+                {{ additional_cost.exchange_rate|floatformat:2 }}
+
+            </small>
+
+        {% endif %}
+
+
+        <!-- TZS EQUIVALENT -->
+
+        <div class="small text-primary fw-semibold mt-1">
+
+            TZS
+            {{ additional_cost.amount_tzs|floatformat:2|intcomma }}
+
+        </div>
+
+    </td>
+
+
+
+    <!-- PAYMENT STATUS -->
+
+    <td style="min-width: 170px;">
+
+        {% if additional_cost.payment_status == "paid" %}
+
+            <span class="badge badge-success light border border-success">
+
+                <i class="fa-solid fa-circle-check me-1"></i>
+
+                Paid
+
+            </span>
+
+        {% else %}
+
+            <span class="badge badge-danger light border border-danger">
+
+                <i class="fa-solid fa-clock me-1"></i>
+
+                Pending
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+
+
+    <!-- ACTIONS -->
+
+    <td style="min-width: 140px;">
+
+        <div class="d-flex justify-content-end">
+
+
+            <!-- EDIT -->
+
+            <a
+
+                hx-get="{% url 'purchases:additional_cost_update' additional_cost.id %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+
+                class="btn btn-warning btn-sm shadow me-1"
+
+                data-bs-toggle="tooltip"
+
+                data-bs-placement="top"
+
+                title="Edit Additional Cost"
+            >
+
+                <i class="fa-solid fa-pen-to-square"></i>
+
+            </a>
+
+
+
+            <!-- DELETE -->
+
+            <a
+
+                hx-get="{% url 'purchases:additional_cost_delete' additional_cost.id %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+
+                class="btn btn-danger btn-sm shadow"
+
+                data-bs-toggle="tooltip"
+
+                data-bs-placement="top"
+
+                title="Delete Additional Cost"
+            >
+
+                <i class="fa-solid fa-trash-can"></i>
+
+            </a>
+
+        </div>
+
+    </td>
+
+</tr>

@@ -1,0 +1,159 @@
+{% load humanize %}
+
+<tr id="movement-{{ movement.id }}">
+
+
+    <!-- PRODUCT DETAILS -->
+
+    <td style="min-width: 250px;">
+
+        <div class="fw-bold text-primary">
+
+            {{ movement.product }}
+
+        </div>
+
+
+        <div class="small text-muted mt-1">
+
+            {{ movement.created_at|date:"M d, Y H:i" }}
+
+        </div>
+
+
+        {% if movement.notes %}
+
+            <div class="small mt-2">
+
+                {{ movement.notes }}
+
+            </div>
+
+        {% endif %}
+
+    </td>
+
+
+
+    <!-- MOVEMENT -->
+
+    <td style="min-width: 220px;">
+
+        <!-- TYPE -->
+
+        {% if movement.movement_type == "in" %}
+
+            <span class="badge badge-success light">
+
+                <i class="fa-solid fa-arrow-down me-1"></i>
+
+                Stock In
+
+            </span>
+
+        {% elif movement.movement_type == "out" %}
+
+            <span class="badge badge-danger light">
+
+                <i class="fa-solid fa-arrow-up me-1"></i>
+
+                Stock Out
+
+            </span>
+
+        {% else %}
+
+            <span class="badge badge-warning light">
+
+                <i class="fa-solid fa-rotate me-1"></i>
+
+                Adjustment
+
+            </span>
+
+        {% endif %}
+
+
+        <!-- QUANTITY -->
+
+        <div class="fw-bold mt-2">
+
+            Qty:
+            {{ movement.quantity|floatformat:2|intcomma }}
+
+        </div>
+
+
+        <!-- BALANCE -->
+
+        <small class="text-muted d-block">
+
+            Balance:
+            {{ movement.balance_after|floatformat:2|intcomma }}
+
+        </small>
+
+    </td>
+
+
+
+    <!-- COST -->
+
+    <td style="min-width: 220px;">
+
+        <div class="fw-bold">
+
+            TZS
+            {{ movement.unit_cost|floatformat:2|intcomma }}
+
+        </div>
+
+        <small class="text-muted d-block">
+
+            Unit Cost
+
+        </small>
+
+
+        <div class="fw-bold text-primary mt-2">
+
+            TZS
+            {{ movement.total_cost|floatformat:2|intcomma }}
+
+        </div>
+
+        <small class="text-muted d-block">
+
+            Total Cost
+
+        </small>
+
+    </td>
+
+
+
+    <!-- REFERENCE -->
+
+    <td style="min-width: 180px;">
+
+        {% if movement.reference %}
+
+            <div class="fw-semibold">
+
+                {{ movement.reference }}
+
+            </div>
+
+        {% else %}
+
+            <span class="text-muted">
+
+                N/A
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+</tr>

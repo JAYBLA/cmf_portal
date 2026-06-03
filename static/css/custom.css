@@ -128,3 +128,18 @@
     }
 
 }
+
+    .btn-xs {
+
+        font-size: 0.72rem;
+
+        line-height: 1.2;
+
+    }
+
+    
+    #document-formset-body input[type="file"] {
+
+        font-size: 0.78rem;
+
+    }
