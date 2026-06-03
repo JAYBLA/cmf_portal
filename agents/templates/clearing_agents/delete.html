@@ -1,0 +1,78 @@
+<div class="modal-header bg-danger">
+  <h5 class="modal-title text-white">Delete Clearing Agent</h5>
+
+  <button type="button" class="btn border-0 shadow-none p-0 text-white" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<form method="POST" hx-post="{% url 'agents:delete' agent.id %}" hx-swap="none">
+  {% csrf_token %}
+
+  <div class="modal-body text-center py-5">
+    <!-- ICON -->
+
+    <div class="mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger-subtle" style="
+                    width: 90px;
+                    height: 90px;
+                ">
+        <i class="fa-solid fa-user-xmark text-danger" style="font-size: 38px;"></i>
+      </div>
+    </div>
+
+    <!-- TITLE -->
+
+    <h4 class="fw-bold mb-3">Confirm Delete</h4>
+
+    <!-- MESSAGE -->
+
+    <p class="text-muted mb-1">Are you sure you want to delete</p>
+
+    <!-- AGENT NAME -->
+
+    <div class="fw-bold text-dark fs-5">{{ agent.agent_name }}</div>
+
+    <!-- CONTACT -->
+
+    {% if agent.phone_number or agent.email %}
+      <div class="small text-muted mt-2">
+        {% if agent.phone_number %}
+          <div>
+            <i class="fa-solid fa-phone me-1"></i>
+
+            {{ agent.phone_number }}
+          </div>
+        {% endif %}
+
+        {% if agent.email %}
+          <div>
+            <i class="fa-solid fa-envelope me-1"></i>
+
+            {{ agent.email }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- WARNING -->
+
+    <div class="alert alert-warning mt-4 mb-0 text-start">
+      <i class="fa-solid fa-triangle-exclamation me-2"></i>
+
+      This action cannot be undone.
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <!-- CANCEL -->
+
+    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cancel</button>
+
+    <!-- DELETE -->
+
+    <button type="submit" class="btn btn-danger">
+      <i class="fa-solid fa-trash-can me-1"></i>
+
+      Yes Delete
+    </button>
+  </div>
+</form>

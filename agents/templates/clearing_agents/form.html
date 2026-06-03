@@ -1,0 +1,139 @@
+{% load widget_tweaks %}
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        {% if agent %}
+            Edit Clearing Agent
+        {% else %}
+            Add Clearing Agent
+        {% endif %}
+    </h5>
+
+    <button
+        type="button"
+        class="btn border-0 shadow-none p-0"
+        data-bs-dismiss="modal"
+    >
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+
+<form
+    method="POST"
+    hx-post="{% if agent %}{% url 'agents:update' agent.id %}{% else %}{% url 'agents:create' %}{% endif %}"
+    hx-target="{% if agent %}#agent-{{ agent.id }}{% else %}#clearing-agent-table-body{% endif %}"
+    hx-swap="{% if agent %}outerHTML{% else %}beforeend{% endif %}"
+>
+    {% csrf_token %}
+
+    <div class="modal-body">
+        <div class="row">
+
+            <!-- AGENT NAME -->
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">
+                    Agent Name
+                </label>
+
+                {% render_field form.agent_name class="form-control" placeholder="Agent name" %}
+
+                <div class="text-danger small">
+                    {{ form.agent_name.errors }}
+                </div>
+            </div>
+
+            <!-- PHONE -->
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">
+                    Phone Number
+                </label>
+
+                {% render_field form.phone_number class="form-control" placeholder="Phone number" %}
+
+                <div class="text-danger small">
+                    {{ form.phone_number.errors }}
+                </div>
+            </div>
+
+            <!-- EMAIL -->
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">
+                    Email Address
+                </label>
+
+                {% render_field form.email class="form-control" placeholder="Email address" %}
+
+                <div class="text-danger small">
+                    {{ form.email.errors }}
+                </div>
+            </div>
+
+            <!-- STATUS -->
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">
+                    Status
+                </label>
+
+                {% render_field form.status class="form-select tom-select" data-placeholder="Select status" %}
+
+                <div class="text-danger small">
+                    {{ form.status.errors }}
+                </div>
+            </div>
+
+            <!-- ADDRESS -->
+
+            <div class="col-6 mb-3">
+                <label class="form-label">
+                    Address
+                </label>
+
+                {% render_field form.address class="form-control" rows="2" placeholder="Address" %}
+
+                <div class="text-danger small">
+                    {{ form.address.errors }}
+                </div>
+            </div>
+
+            <!-- NOTES -->
+
+            <div class="col-6 mb-3">
+                <label class="form-label">
+                    Notes
+                </label>
+
+                {% render_field form.notes class="form-control" rows="2" placeholder="Notes..." %}
+
+                <div class="text-danger small">
+                    {{ form.notes.errors }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+        >
+            Close
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            {% if agent %}
+                Update Agent
+            {% else %}
+                Save Agent
+            {% endif %}
+        </button>
+    </div>
+</form>

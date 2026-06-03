@@ -1,179 +1,282 @@
-<!-- payment_form.html -->
-
+<!-- templates/purchases/payments/payment_form.html -->
 {% load widget_tweaks %}
-
 <div class="modal-header">
-
-    <h5 class="modal-title">
-
-        Add Supplier Payment
-
-    </h5>
-
-    <button
-        type="button"
-        class="btn border-0 shadow-none p-0"
-        data-bs-dismiss="modal"
-    >
-        <i class="fa-solid fa-xmark"></i>
-    </button>
-
+  <h5 class="modal-title">Add Supplier Payment</h5>
+  <button type="button" class="btn border-0 shadow-none p-0" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
 </div>
-
-
-<form
-
-    method="POST"
-
-    hx-post="{% url 'purchases:purchase_payment_create' purchase.id %}"
-
-    hx-swap="none"
->
-
-    {% csrf_token %}
-
-
-    <div class="modal-body">
-
-        <!-- PURCHASE INFO -->
-
-        <div class="alert alert-light border">
-
-            <div class="row">
-
-                <div class="col-md-4">
-
-                    <strong>Purchase:</strong><br>
-
-                    {{ purchase.purchase_number }}
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <strong>Total:</strong><br>
-
-                    TZS {{ purchase.total_amount|floatformat:2 }}
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <strong>Balance:</strong><br>
-
-                    <span class="text-danger fw-bold">
-
-                        TZS {{ purchase.balance|floatformat:2 }}
-
-                    </span>
-
-                </div>
-
-            </div>
-
+<form method="POST" hx-post="{% url 'purchases:purchase_payment_create' purchase.id %}" hx-swap="none">
+  {% csrf_token %}
+  <div class="modal-body">
+    <!-- PURCHASE SUMMARY -->
+    <div class="alert alert-light border mb-4">
+      <div class="row g-3">
+        <!-- PURCHASE -->
+        <div class="col-md-3">
+          <small class="text-muted d-block">Purchase</small>
+          <span class="fw-semibold">{{ purchase.purchase_number }}</span>
         </div>
-
-
-        <div class="row">
-
-            <!-- PAYMENT DATE -->
-
-            <div class="col-md-6 mb-3">
-
-                <label class="form-label">
-
-                    Payment Date
-
-                </label>
-
-                {% render_field form.payment_date class="form-control" %}
-
-            </div>
-
-
-            <!-- AMOUNT -->
-
-            <div class="col-md-6 mb-3">
-
-                <label class="form-label">
-
-                    Amount Paid
-
-                </label>
-
-                {% render_field form.amount class="form-control" placeholder="Enter amount paid" %}
-
-            </div>
-
-
-            <!-- PAYMENT METHOD -->
-
-            <div class="col-md-6 mb-3">
-
-                <label class="form-label">
-
-                    Payment Method
-
-                </label>
-
-                {% render_field form.payment_method class="form-select tom-select" %}
-
-            </div>
-
-
-            <!-- REFERENCE -->
-
-            <div class="col-md-6 mb-3">
-
-                <label class="form-label">
-
-                    Reference Number
-
-                </label>
-
-                {% render_field form.reference_number class="form-control" placeholder="Optional reference number" %}
-
-            </div>
-
-
-            <!-- NOTES -->
-
-            <div class="col-12 mb-3">
-
-                <label class="form-label">
-
-                    Notes
-
-                </label>
-
-                {% render_field form.notes class="form-control" rows="3" placeholder="Optional notes..." %}
-
-            </div>
-
+        <!-- CATEGORY -->
+        <div class="col-md-3">
+          <small class="text-muted d-block">Category</small>
+          {% if purchase.purchase_category == 'international' %}
+            <span class="badge badge-info light">International</span>
+          {% else %}
+            <span class="badge badge-primary light">Local</span>
+          {% endif %}
         </div>
-
+        <!-- CURRENCY -->
+        <div class="col-md-3">
+          <small class="text-muted d-block">Currency</small>
+          <span class="fw-semibold">{{ purchase.currency }}</span>
+        </div>
+        <!-- EXCHANGE RATE -->
+        <div class="col-md-3">
+          <small class="text-muted d-block">Exchange Rate</small>
+          <span class="fw-semibold">{{ purchase.exchange_rate|floatformat:2 }}</span>
+        </div>
+      </div>
+      <hr />
+      <div class="row g-3">
+        <!-- TOTAL -->
+        <div class="col-md-4">
+          <small class="text-muted d-block">Total Amount</small>
+          <span class="fw-bold">
+            {{ purchase.currency }}
+            {{ purchase.total_amount|floatformat:2 }}
+          </span>
+        </div>
+        <!-- TZS EQUIVALENT -->
+        <div class="col-md-4">
+          <small class="text-muted d-block">TZS Equivalent</small>
+          <span class="fw-bold text-primary">
+            TZS
+            {{ purchase.total_amount_tzs|floatformat:2 }}
+          </span>
+        </div>
+        <!-- BALANCE -->
+        <div class="col-md-4">
+          <small class="text-muted d-block">Outstanding Balance</small>
+          <span class="fw-bold text-danger">
+            {{ purchase.currency }}
+            {{ purchase.balance|floatformat:2 }}
+          </span>
+        </div>
+      </div>
     </div>
-
-
-    <div class="modal-footer">
-
-        <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-        >
-            Close
-        </button>
-
-        <button
-            type="submit"
-            class="btn btn-success"
-        >
-
-            Save Payment
-
-        </button>
-
+    <!-- PAYMENT FORM -->
+    <div class="row">
+      <!-- PAYMENT DATE -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Payment Date</label>
+        {% render_field form.payment_date class='form-control' %}
+        <div class="text-danger small">{{ form.payment_date.errors }}</div>
+      </div>
+      <!-- PAYMENT AMOUNT -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Amount Paid</label>
+        <div class="input-group">
+          <span class="input-group-text">{{ purchase.currency }}</span>
+          {% render_field form.amount class='form-control text-end' placeholder='0.00' max=purchase.balance %}
+        </div>
+        <small class="text-muted">
+          Remaining balance:
+          {{ purchase.currency }}
+          {{ purchase.balance|floatformat:2 }}
+        </small>
+        <div class="text-danger small">{{ form.amount.errors }}</div>
+      </div>
+      <!-- PAYMENT METHOD -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Payment Method</label>
+        {% render_field form.payment_method class='form-select tom-select' %}
+        <div class="text-danger small">{{ form.payment_method.errors }}</div>
+      </div>
+      <!-- REFERENCE NUMBER -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Reference Number</label>
+        {% render_field form.reference_number class='form-control' placeholder='Optional reference number' %}
+        <div class="text-danger small">{{ form.reference_number.errors }}</div>
+      </div>
+      <!-- NOTES -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Notes</label>
+        {% render_field form.notes class='form-control' rows='3' placeholder='Optional notes...' %}
+        <div class="text-danger small">{{ form.notes.errors }}</div>
+      </div>
     </div>
+    <!-- LIVE PAYMENT PREVIEW -->
 
+    <div class="alert alert-info py-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>Balance After Payment (TZS)</span>
+
+        <strong id="payment-balance-preview" class="text-primary">
+          TZS
+
+          {{ purchase.total_amount_tzs|floatformat:2 }}
+        </strong>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-success">
+      <i class="fa fa-save me-1"></i>
+      Save Payment
+    </button>
+  </div>
 </form>
+<script>
+
+
+// =========================================
+// LIVE PAYMENT BALANCE PREVIEW
+// =========================================
+
+function updatePaymentPreview() {
+
+    const amountInput =
+        document.querySelector(
+            "[name='amount']"
+        )
+
+    const preview =
+        document.getElementById(
+            "payment-balance-preview"
+        )
+
+    if (!amountInput || !preview)
+        return
+
+
+    // =====================================
+    // ORIGINAL PURCHASE VALUES
+    // =====================================
+
+    const purchaseCurrency =
+        "{{ purchase.currency }}"
+
+    const exchangeRate =
+        parseFloat(
+            "{{ purchase.exchange_rate }}"
+        )
+
+    const currentBalance =
+        parseFloat(
+            "{{ purchase.balance }}"
+        )
+
+    const currentBalanceTZS =
+        parseFloat(
+            "{{ purchase.total_amount_tzs }}"
+        )
+
+
+    // =====================================
+    // PAYMENT INPUT
+    // =====================================
+
+    const paymentAmount =
+        parseFloat(
+            amountInput.value || 0
+        )
+
+
+    let remainingTZS = 0
+
+
+    // =====================================
+    // USD PURCHASES
+    // =====================================
+
+    if (purchaseCurrency === "USD") {
+
+        // CONVERT PAYMENT TO TZS
+
+        const paymentTZS =
+            paymentAmount * exchangeRate
+
+        remainingTZS =
+            currentBalanceTZS - paymentTZS
+
+    }
+
+
+    // =====================================
+    // TZS PURCHASES
+    // =====================================
+
+    else {
+
+        remainingTZS =
+            currentBalanceTZS - paymentAmount
+
+    }
+
+
+    // PREVENT NEGATIVE DISPLAY
+
+    if (remainingTZS < 0) {
+
+        remainingTZS = 0
+
+    }
+
+
+    // =====================================
+    // UPDATE UI
+    // =====================================
+
+    preview.innerText =
+
+        "TZS " +
+
+        remainingTZS.toLocaleString(
+            undefined,
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        )
+
+}
+
+
+// =========================================
+// LIVE INPUT LISTENER
+// =========================================
+
+document.body.addEventListener(
+    "input",
+    function(e) {
+
+        if (
+            e.target.name === "amount"
+        ) {
+
+            updatePaymentPreview()
+
+        }
+
+    }
+)
+
+
+// =========================================
+// INITIALIZE ON MODAL LOAD
+// =========================================
+
+document.addEventListener(
+    "htmx:afterSwap",
+    function(e) {
+
+        if (e.target.id === "modal-body") {
+
+            updatePaymentPreview()
+
+        }
+
+    }
+)
+
+</script>

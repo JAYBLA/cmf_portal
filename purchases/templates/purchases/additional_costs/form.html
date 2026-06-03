@@ -1,0 +1,133 @@
+{% load widget_tweaks %}
+
+<div class="modal-header">
+
+    <h5 class="modal-title">
+
+        {% if agent %}
+            Edit Clearing Agent
+        {% else %}
+            Add Clearing Agent
+        {% endif %}
+
+    </h5>
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+    ></button>
+
+</div>
+
+
+<form
+    method="POST"
+
+    hx-post="
+        {% if agent %}
+            {% url 'purchases:clearing_agent_update' agent.id %}
+        {% else %}
+            {% url 'purchases:clearing_agent_create' %}
+        {% endif %}
+    "
+
+    hx-swap="none"
+>
+
+    {% csrf_token %}
+
+    <div class="modal-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Agent Name
+                </label>
+
+                {% render_field form.agent_name class="form-control" %}
+
+            </div>
+
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Phone Number
+                </label>
+
+                {% render_field form.phone_number class="form-control" %}
+
+            </div>
+
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Email
+                </label>
+
+                {% render_field form.email class="form-control" %}
+
+            </div>
+
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Status
+                </label>
+
+                {% render_field form.status class="form-select tom-select" %}
+
+            </div>
+
+
+            <div class="col-12 mb-3">
+
+                <label class="form-label">
+                    Address
+                </label>
+
+                {% render_field form.address class="form-control" rows="2" %}
+
+            </div>
+
+
+            <div class="col-12 mb-3">
+
+                <label class="form-label">
+                    Notes
+                </label>
+
+                {% render_field form.notes class="form-control" rows="2" %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal-footer">
+
+        <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+        >
+            Close
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            Save Agent
+        </button>
+
+    </div>
+
+</form>

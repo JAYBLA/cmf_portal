@@ -1,0 +1,24 @@
+<tbody id="clearing-agent-table-body">
+
+    {% for agent in agents %}
+
+        {% include "clearing_agents/row.html" %}
+
+    {% empty %}
+
+        <tr>
+
+            <td
+                colspan="4"
+                class="text-center text-muted py-5"
+            >
+
+                No clearing agents found.
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+</tbody>

@@ -19,7 +19,12 @@ class PurchaseForm(forms.ModelForm):
         model = Purchase
 
         fields = [
-            "supplier",            
+            "supplier",
+            "purchase_category",
+            "currency",
+            "exchange_rate",
+            "international_shipping_cost",
+            "local_shipping_cost",
             "supplier_invoice_number",
             "purchase_date",
             "notes",
@@ -40,6 +45,25 @@ class PurchaseForm(forms.ModelForm):
             )
 
         }
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        # DEFAULTS FOR NEW PURCHASES
+
+        if not self.instance.pk:
+
+            self.fields[
+                "purchase_category"
+            ].initial = "international"
+
+            self.fields[
+                "currency"
+            ].initial = "USD"
+
+            self.fields[
+                "exchange_rate"
+            ].initial = 1
 
 
 # =========================================
@@ -134,3 +158,81 @@ class PurchasePaymentForm(forms.ModelForm):
             )
 
         }
+        
+# =========================================
+# PURCHASE ADDITIONAL COST FORM
+# =========================================
+
+class PurchaseAdditionalCostForm(forms.ModelForm):
+
+    class Meta:
+
+        model = PurchaseAdditionalCost
+
+        fields = [
+
+            "cost_type",
+
+            "clearing_agent",
+
+            "description",
+
+            "amount",
+
+            "currency",
+
+            "exchange_rate",
+
+            "payment_status",
+
+            "notes",
+
+        ]
+
+        widgets = {
+
+            "notes": forms.Textarea(
+                attrs={
+                    "rows": 2
+                }
+            ),
+
+        }
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        currency = cleaned_data.get(
+            "currency"
+        )
+
+        exchange_rate = cleaned_data.get(
+            "exchange_rate"
+        )
+
+        # =====================================
+        # TZS COSTS
+        # =====================================
+
+        if currency == "TZS":
+
+            cleaned_data["exchange_rate"] = 1
+
+        # =====================================
+        # USD COSTS
+        # =====================================
+
+        if currency == "USD":
+
+            if not exchange_rate or exchange_rate <= 0:
+
+                self.add_error(
+
+                    "exchange_rate",
+
+                    "Exchange rate must be greater than zero."
+
+                )
+
+        return cleaned_data

@@ -1,126 +1,154 @@
+{% load humanize %}
+
 <tr id="purchase-{{ purchase.id }}">
-  <!-- PURCHASE NUMBER -->
+  <!-- PURCHASE DETAILS -->
 
-  <td class="fw-semibold">{{ purchase.purchase_number }}</td>
+  <td style="min-width: 280px;">
+    <!-- PURCHASE NUMBER -->
 
-  <!-- SUPPLIER -->
+    <div class="fw-bold text-primary">{{ purchase.purchase_number }}</div>
 
-  <td>{{ purchase.supplier }}</td>
+    <!-- SUPPLIER -->
 
-  <!-- SUPPLIER INVOICE -->
+    <div>
+      <strong>Supplier:</strong>
 
-  <td>
-    {% if purchase.supplier_invoice_number %}
-      {{ purchase.supplier_invoice_number }}
+      {{ purchase.supplier }}
+    </div>
+
+    <!-- INVOICE -->
+
+    <div class="small">
+      <strong>Invoice:</strong>
+
+      {% if purchase.supplier_invoice_number %}
+        {{ purchase.supplier_invoice_number }}
+      {% else %}
+        <span class="text-muted">N/A</span>
+      {% endif %}
+    </div>
+
+    <!-- DATE -->
+
+    <div class="small text-muted">
+      <strong>Purchase Date:</strong>{{ purchase.purchase_date|date:'M d, Y' }}
+    </div>
+
+    <!-- CATEGORY + STATUS -->
+
+    <div class="small">
+      <strong>Purchase Category</strong>
+      <!-- CATEGORY -->
+
+      {% if purchase.purchase_category == 'international' %}
+        <span class="badge badge-info light">International</span>
+      {% else %}
+        <span class="badge badge-primary light">Local</span>
+      {% endif %}
+    </div>
+  </td>
+  <!-- TOTAL USD AMOUNT -->
+
+  <td class="text-end fw-semibold" style="min-width: 180px;">
+    {% if purchase.currency == 'USD' %}
+      <div class="fw-bold">USD {{ purchase.total_amount|floatformat:2|intcomma }}</div>
+
+      <small class="text-muted d-block">
+        Intl Shipping: USD
+        {{ purchase.international_shipping_cost|floatformat:2|intcomma }}
+      </small>
+
+      <small class="text-muted d-block">
+        Rate:
+        {{ purchase.exchange_rate|floatformat:2 }}
+      </small>
     {% else %}
-      <span class="text-muted">N/A</span>
+      <div class="fw-bold">TZS {{ purchase.total_amount|floatformat:2|intcomma }}</div>
     {% endif %}
   </td>
-
-  <!-- PURCHASE DATE -->
-
-  <td>{{ purchase.purchase_date|date:'M d, Y' }}</td>
-
-  <!-- TOTAL -->
-
-  <td class="text-end fw-semibold">TZS {{ purchase.total_amount|floatformat:2 }}</td>
 
   <!-- AMOUNT PAID -->
 
-  <td class="text-end">TZS {{ purchase.amount_paid|floatformat:2 }}</td>
-
-  <!-- BALANCE -->
-
-  <td class="text-end text-danger fw-bold">TZS {{ purchase.balance|floatformat:2 }}</td>
-
-  <!-- STATUS -->
-
-  <td>
-    {% if purchase.payment_status == 'paid' %}
-      <span class="badge badge-success light">Paid</span>
-    {% elif purchase.payment_status == 'partial' %}
-      <span class="badge badge-warning light">Partial</span>
+  <td class="text-end" style="min-width: 170px;">
+    {% if purchase.currency == 'USD' %}
+      <div class="fw-semibold text-success">USD {{ purchase.amount_paid|floatformat:2|intcomma }}</div>
     {% else %}
-      <span class="badge badge-danger light">Pending</span>
+      <div class="fw-semibold text-success">TZS {{ purchase.amount_paid|floatformat:2|intcomma }}</div>
     {% endif %}
   </td>
 
+  <!-- PURCHASE VALUE -->
+
+  <td class="text-end fw-bold text-primary" style="min-width: 220px;">
+    <div>TZS
+      {{ purchase.total_amount_tzs|floatformat:2|intcomma }}</div>
+
+    <small class="text-muted d-block">
+      Local Transport: TZS
+      {{ purchase.local_shipping_cost|floatformat:2|intcomma }}
+    </small>
+  </td>
+  <!-- BALANCE -->
+
+  <td class="text-end" style="min-width: 190px;">
+    <!-- BALANCE -->
+
+    <div class="text-danger fw-bold">
+      {% if purchase.currency == 'USD' %}
+        USD
+        {{ purchase.balance|floatformat:2|intcomma }}
+      {% else %}
+        TZS
+        {{ purchase.balance|floatformat:2|intcomma }}
+      {% endif %}
+    </div>
+
+    <!-- TZS EQUIVALENT -->
+
+    {% if purchase.currency == 'USD' %}
+      <small class="text-muted d-block mb-2">
+        TZS
+        {{ purchase.balance_tzs|floatformat:2|intcomma }}
+      </small>
+    {% endif %}
+
+    <!-- PAYMENT STATUS -->
+
+    {% if purchase.payment_status == 'paid' %}
+      <span class="badge badge-success light border border-success">
+        <i class="fa-solid fa-circle-check me-1"></i>
+
+        Paid
+      </span>
+    {% elif purchase.payment_status == 'partial' %}
+      <span class="badge badge-warning light border border-warning text-dark">
+        <i class="fa-solid fa-clock me-1"></i>
+
+        Partial
+      </span>
+    {% else %}
+      <span class="badge badge-danger light border border-danger">
+        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+
+        Pending
+      </span>
+    {% endif %}
+  </td>
   <!-- ACTIONS -->
 
-  <td>
+  <td style="min-width: 160px;">
     <div class="d-flex justify-content-end">
       <!-- EDIT -->
 
-<a
+      <a hx-get="{% url 'purchases:purchase_update' purchase.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-warning btn-sm shadow me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Purchase"><i class="fa-solid fa-pen-to-square"></i></a>
 
-    hx-get="{% url 'purchases:purchase_update' purchase.id %}"
+      <!-- DELETE -->
 
-    hx-target="#modal-body"
+      <a hx-get="{% url 'purchases:purchase_delete' purchase.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-danger btn-sm shadow me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Purchase"><i class="fa-solid fa-trash-can"></i></a>
 
-    hx-swap="innerHTML"
+      <!-- PAYMENT -->
 
-    class="btn btn-warning btn-sm shadow me-1"
-
-    data-bs-toggle="tooltip"
-
-    data-bs-placement="top"
-
-    title="Edit Purchase"
->
-
-    <i class="fa-solid fa-pen-to-square"></i>
-
-</a>
-
-
-
-<!-- DELETE -->
-
-<a
-
-    hx-get="{% url 'purchases:purchase_delete' purchase.id %}"
-
-    hx-target="#modal-body"
-
-    hx-swap="innerHTML"
-
-    class="btn btn-danger btn-sm shadow me-1"
-
-    data-bs-toggle="tooltip"
-
-    data-bs-placement="top"
-
-    title="Delete Purchase"
->
-
-    <i class="fa-solid fa-trash-can"></i>
-
-</a>
-
-
-
-<!-- PAYMENT -->
-
-<a
-
-    hx-get="{% url 'purchases:purchase_payment_create' purchase.id %}"
-
-    hx-target="#modal-body"
-
-    hx-swap="innerHTML"
-
-    class="btn btn-success btn-sm shadow"
-
-    data-bs-toggle="tooltip"
-
-    data-bs-placement="top"
-
-    title="Make Purchase Payment"
->
-
-    <i class="fa-solid fa-money-bill-wave"></i>
-
-</a>
+      <a hx-get="{% url 'purchases:purchase_payment_create' purchase.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-success btn-sm shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="Make Purchase Payment"><i class="fa-solid fa-money-bill-wave"></i></a>
     </div>
   </td>
 </tr>

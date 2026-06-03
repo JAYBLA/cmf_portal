@@ -10,18 +10,20 @@
         <table id="responsiveTable" class="table table-striped table-hover table-sm align-middle" style="width:100%">
           <thead>
             <tr>
-              <th>Purchase No</th>
-              <th>Supplier</th>
-              <th>Supplier Invoice</th>
-              <th>Purchase Date</th>
+              <th>Purchase Details</th>
+
               <th class="text-end">Total Amount</th>
+
               <th class="text-end">Amount Paid</th>
+
+              <th class="text-end">Purchase Value (TZS)</th>
+
               <th class="text-end">Balance</th>
-              <th>Status</th>
+
               <th class="text-center">Actions</th>
             </tr>
           </thead>
-          {% include "purchases/partials/purchase_table.html" %}
+          {% include 'purchases/partials/purchase_table.html' %}
         </table>
       </div>
     </div>
@@ -70,6 +72,210 @@
     
       if (e.target.closest('.remove-row')) {
         e.target.closest('tr').remove()
+      }
+    })
+  </script>
+  <script>
+    // =========================================
+    // PURCHASE CATEGORY / CURRENCY LOGIC
+    // =========================================
+    
+    function handlePurchaseCategoryUI() {
+      const categorySelect = document.getElementById('purchase-category')
+    
+      const currencySelect = document.getElementById('purchase-currency')
+    
+      const exchangeRateInput = document.getElementById('exchange-rate')
+    
+      const exchangeRateWrapper = document.getElementById('exchange-rate-wrapper')
+    
+      const internationalShippingWrapper = document.getElementById('international-shipping-wrapper')
+    
+      const localShippingWrapper = document.getElementById('local-shipping-wrapper')
+    
+      if (!categorySelect || !currencySelect) return
+    
+      const category = categorySelect.value
+    
+      // =====================================
+      // INTERNATIONAL PURCHASE
+      // =====================================
+    
+      if (category === 'international') {
+        // AUTO USD
+    
+        currencySelect.value = 'USD'
+    
+        if (currencySelect.tomselect) {
+          currencySelect.tomselect.setValue('USD', true)
+        }
+    
+        // SHOW BOTH SHIPPING FIELDS
+    
+        if (internationalShippingWrapper) {
+          internationalShippingWrapper.style.display = 'block'
+        }
+    
+        if (localShippingWrapper) {
+          localShippingWrapper.style.display = 'block'
+        }
+    
+        // SHOW EXCHANGE RATE
+    
+        if (exchangeRateWrapper) {
+          exchangeRateWrapper.style.display = 'block'
+        }
+    
+        if (exchangeRateInput) {
+          exchangeRateInput.required = true
+    
+          if (!exchangeRateInput.value || parseFloat(exchangeRateInput.value) <= 0) {
+            exchangeRateInput.value = 1
+          }
+        }
+      }
+    
+      // =====================================
+      // LOCAL PURCHASE
+      // =====================================
+      else {
+        // AUTO TZS
+    
+        currencySelect.value = 'TZS'
+    
+        if (currencySelect.tomselect) {
+          currencySelect.tomselect.setValue('TZS', true)
+        }
+    
+        // HIDE INTERNATIONAL SHIPPING
+    
+        if (internationalShippingWrapper) {
+          internationalShippingWrapper.style.display = 'none'
+        }
+    
+        // SHOW LOCAL SHIPPING
+    
+        if (localShippingWrapper) {
+          localShippingWrapper.style.display = 'block'
+        }
+    
+        // AUTO EXCHANGE RATE
+    
+        if (exchangeRateInput) {
+          exchangeRateInput.value = 1
+    
+          exchangeRateInput.required = false
+        }
+    
+        // HIDE EXCHANGE RATE
+    
+        if (exchangeRateWrapper) {
+          exchangeRateWrapper.style.display = 'none'
+        }
+      }
+    
+      updateTZSEquivalent()
+    }
+    
+    // =========================================
+    // UPDATE TOTAL TZS EQUIVALENT
+    // =========================================
+    
+    function updateTZSEquivalent() {
+      let subtotal = 0
+    
+      // =====================================
+      // ITEMS TOTAL
+      // =====================================
+    
+      document.querySelectorAll('.purchase-item-row').forEach(function (row) {
+        const qty = parseFloat(row.querySelector('.item-qty')?.value || 0)
+    
+        const cost = parseFloat(row.querySelector('.item-cost')?.value || 0)
+    
+        subtotal += qty * cost
+      })
+    
+      // =====================================
+      // SHIPPING
+      // =====================================
+    
+      const internationalShipping = parseFloat(document.querySelector('[name="international_shipping_cost"]')?.value || 0)
+    
+      const localShipping = parseFloat(document.querySelector('[name="local_shipping_cost"]')?.value || 0)
+    
+      // =====================================
+      // CURRENCY
+      // =====================================
+    
+      const currency = document.getElementById('purchase-currency')?.value
+    
+      const exchangeRate = parseFloat(document.getElementById('exchange-rate')?.value || 1)
+    
+      let tzsEquivalent = 0
+    
+      // =====================================
+      // USD PURCHASES
+      // =====================================
+    
+      if (currency === 'USD') {
+        // ONLY USD COMPONENTS CONVERTED
+    
+        const usdPart = subtotal + internationalShipping
+    
+        tzsEquivalent = usdPart * exchangeRate + localShipping
+      }
+    
+      // =====================================
+      // TZS PURCHASES
+      // =====================================
+      else {
+        tzsEquivalent = subtotal + localShipping
+      }
+    
+      // =====================================
+      // UPDATE UI
+      // =====================================
+    
+      const preview = document.getElementById('tzs-equivalent-preview')
+    
+      if (preview) {
+        preview.innerText = tzsEquivalent.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })
+      }
+    }
+    
+    // =========================================
+    // LIVE INPUT LISTENER
+    // =========================================
+    
+    document.body.addEventListener('input', function () {
+      updateTZSEquivalent()
+    })
+    
+    // =========================================
+    // CATEGORY CHANGE
+    // =========================================
+    
+    document.body.addEventListener('change', function (e) {
+      if (e.target.id === 'purchase-category') {
+        handlePurchaseCategoryUI()
+      }
+    
+      updateTZSEquivalent()
+    })
+    
+    // =========================================
+    // INITIALIZE AFTER MODAL LOAD
+    // =========================================
+    
+    document.addEventListener('htmx:afterSwap', function (e) {
+      if (e.target.id === 'modal-body') {
+        handlePurchaseCategoryUI()
+    
+        updateTZSEquivalent()
       }
     })
   </script>

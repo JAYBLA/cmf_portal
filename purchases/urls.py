@@ -16,4 +16,22 @@ urlpatterns = [
         views.purchase_payment_create,
         name="purchase_payment_create",
     ),
+    # =====================================
+    # PURCHASE ADDITIONAL COSTS
+    # =====================================
+    path(
+        "<int:purchase_id>/additional-costs/create/",
+        views.additional_cost_create,
+        name="additional_cost_create",
+    ),
+    path(
+        "additional-costs/<int:pk>/update/",
+        views.additional_cost_update,
+        name="additional_cost_update",
+    ),
+    path(
+        "additional-costs/<int:pk>/delete/",
+        views.additional_cost_delete,
+        name="additional_cost_delete",
+    ),
 ]

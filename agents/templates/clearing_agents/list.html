@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-12">
+
+    <div class="card">
+
+
+        <!-- HEADER -->
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h4 class="card-title mb-0">
+
+                Clearing Agents
+
+            </h4>
+
+
+            <button
+
+                class="btn btn-primary"
+
+                hx-get="{% url 'agents:create' %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+            >
+
+                <i class="fa-solid fa-plus me-1"></i>
+
+                Add Clearing Agent
+
+            </button>
+
+        </div>
+
+
+
+        <!-- BODY -->
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-striped table-hover align-middle"
+                >
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Agent Details
+
+                            </th>
+
+                            <th>
+
+                                Contact Information
+
+                            </th>
+
+                            <th>
+
+                                Status
+
+                            </th>
+
+                            <th class="text-center">
+
+                                Actions
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="clearing-agent-table-body">
+
+                        {% for agent in agents %}
+
+                            {% include "clearing_agents/row.html" %}
+
+                        {% empty %}
+
+                            <tr id="empty-row">
+
+                                <td
+                                    colspan="4"
+                                    class="text-center text-muted py-5"
+                                >
+
+                                    No clearing agents found.
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+
+    document.body.addEventListener(
+        "clearingAgentChanged",
+        function () {
+
+            htmx.ajax(
+                "GET",
+                "/agents/table/",
+                {
+                    target: "#clearing-agent-table-body",
+                    swap: "outerHTML"
+                }
+            )
+
+        }
+    )
+
+</script>
+{% endblock scripts %}
