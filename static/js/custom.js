@@ -907,3 +907,5 @@ jQuery(window).on('resize', function () {
 	}, 1000);
 });
 /*  Window Resize END */
+
+

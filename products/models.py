@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 
 
@@ -94,6 +95,18 @@ class Product(models.Model):
         default=0
 
     )
+    markup_percentage = models.DecimalField(
+
+        max_digits=5,
+
+        decimal_places=2,
+
+        default=30.00,
+
+        blank=True
+
+    )
+    
     # =========================================
     # STOCK STATUS
     # =========================================
@@ -111,8 +124,34 @@ class Product(models.Model):
 
         return "in"
 
+    @property
+    def selling_price(self):
 
+        markup = self.markup_percentage or Decimal("0.00")
 
+        cost = self.average_cost or Decimal("0.00")
+
+        return (
+
+            cost *
+
+            (
+
+                Decimal("1.00")
+
+                +
+
+                (
+
+                    markup /
+
+                    Decimal("100")
+
+                )
+
+            )
+
+        )
     # =========================================
     # UPDATE STOCK VALUE
     # =========================================

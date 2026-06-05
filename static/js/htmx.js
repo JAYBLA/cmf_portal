@@ -1,202 +1,203 @@
-document.addEventListener("DOMContentLoaded", function () {
-
-    // =========================================
-    // GLOBAL MODAL ELEMENT
-    // =========================================
-
-    const modalElement = document.getElementById("globalModal")
-
-
-
-    // =========================================
-    // OPEN MODAL AFTER HTMX SWAP
-    // =========================================
-
-    document.body.addEventListener("htmx:afterSwap", function (event) {
-
-        // ONLY HANDLE MODAL CONTENT
-
-        if (event.detail.target.id === "modal-body") {
-
-            let modal = bootstrap.Modal.getOrCreateInstance(
-                modalElement
-            )
-
-            modal.show()
-
-
-            // =========================================
-            // INITIALIZE TOMSELECT INSIDE MODAL
-            // =========================================
-
-            initializeTomSelect(modalElement)
-
-        }
-
-         initializeTooltips(document)
-
-    })
-
-
-
-    // =========================================
-    // CLOSE MODAL VIA HTMX EVENT
-    // =========================================
-
-    document.body.addEventListener("closeModal", function () {
-
-        let modal = bootstrap.Modal.getInstance(
-            modalElement
-        )
-
-        if (modal) {
-
-            modal.hide()
-
-        }
-
-    })
-
-
-
-    // =========================================
-    // CLEAN MODAL CONTENT AFTER CLOSE
-    // =========================================
-
-    modalElement.addEventListener("hidden.bs.modal", function () {
-
-        document.getElementById("modal-body").innerHTML = ""
-
-    })
-
-
-
-    // =========================================
-    // GLOBAL HTMX ERROR HANDLER
-    // =========================================
-
-    document.body.addEventListener("htmx:responseError", function (event) {
-
-        console.error(event)
-
-        alert("An error occurred. Please try again.")
-
-    })
-
-
-
-    // =========================================
-    // GLOBAL LOADING INDICATOR
-    // =========================================
-
-    document.body.addEventListener("htmx:beforeRequest", function () {
-
-        document.body.classList.add("loading")
-
-    })
-
-
-    document.body.addEventListener("htmx:afterRequest", function () {
-
-        document.body.classList.remove("loading")
-
-    })
-
-})
-
-
-
 /* =========================================
-   TOM SELECT INITIALIZER
+   MAIN APPLICATION
 ========================================= */
 
-function initializeTomSelect(parent = document) {
+document.addEventListener(
 
-    parent.querySelectorAll(".tom-select").forEach(function (select) {
+    "DOMContentLoaded",
 
-        // PREVENT DOUBLE INITIALIZATION
+    function () {
 
-        if (select.tomselect) {
+        const modalElement = document.getElementById(
+            "globalModal"
+        )
 
-            return
 
-        }
 
-        new TomSelect(select, {
+        // =====================================
+        // OPEN MODAL AFTER HTMX SWAP
+        // =====================================
 
-            create: false,
+        document.body.addEventListener(
 
-            maxOptions: 500,
+            "htmx:afterSwap",
 
-            allowEmptyOption: true,
+            function (event) {
 
-            preload: true,
+                if (
 
-            closeAfterSelect: true,
+                    event.detail.target.id ===
 
-            dropdownParent: "body",
+                    "modal-body"
 
-            placeholder:
-                select.dataset.placeholder ||
-                "Select an option",
+                ) {
 
-            sortField: {
+                    const modal =
 
-                field: "text",
+                        bootstrap.Modal.getOrCreateInstance(
 
-                direction: "asc"
+                            modalElement
 
-            },
+                        )
 
-            render: {
+                    modal.show()
 
-                no_results: function () {
-
-                    return `
-                        <div class="no-results p-2 text-muted">
-                            No results found
-                        </div>
-                    `
                 }
-
-            },
-
-            onInitialize: function () {
-
-                // FORCE HIGH Z-INDEX
-
-                this.dropdown.style.zIndex = 999999
 
             }
 
-        })
+        )
 
-    })
 
-}
 
-document.body.addEventListener("purchaseChanged", function () {
+        // =====================================
+        // HTMX AFTER SETTLE
+        // =====================================
 
-    htmx.ajax(
-        "GET",
-        "/purchases/table/",
-        {
-            target: "#purchase-table-body",
-            swap: "outerHTML"
+        document.body.addEventListener(
+
+            "htmx:afterSettle",
+
+            function (event) {
+
+                initializeTooltips(
+
+                    event.target
+
+                )
+
+            }
+
+        )
+
+
+
+        // =====================================
+        // CLOSE MODAL
+        // =====================================
+
+        document.body.addEventListener(
+
+            "closeModal",
+
+            function () {
+
+                const modal =
+
+                    bootstrap.Modal.getInstance(
+
+                        modalElement
+
+                    )
+
+                if (modal) {
+
+                    modal.hide()
+
+                }
+
+            }
+
+        )
+
+
+
+        // =====================================
+        // CLEAR MODAL CONTENT
+        // =====================================
+
+        if (modalElement) {
+
+            modalElement.addEventListener(
+
+                "hidden.bs.modal",
+
+                function () {
+
+                    document.getElementById(
+
+                        "modal-body"
+
+                    ).innerHTML = ""
+
+                }
+
+            )
+
         }
-    )
 
-})
 
-document.body.addEventListener("productChanged", function () {
 
-    htmx.ajax(
-        "GET",
-        "/products/table/",
-        {
-            target: "#product-table-body",
-            swap: "outerHTML"
-        }
-    )
+        // =====================================
+        // GLOBAL HTMX ERROR HANDLER
+        // =====================================
 
-})
+        document.body.addEventListener(
+
+            "htmx:responseError",
+
+            function (event) {
+
+                console.error(event)
+
+                alert(
+
+                    "An error occurred. Please try again."
+
+                )
+
+            }
+
+        )
+
+
+
+        // =====================================
+        // LOADING INDICATOR
+        // =====================================
+
+        document.body.addEventListener(
+
+            "htmx:beforeRequest",
+
+            function () {
+
+                document.body.classList.add(
+
+                    "loading"
+
+                )
+
+            }
+
+        )
+
+
+
+        document.body.addEventListener(
+
+            "htmx:afterRequest",
+
+            function () {
+
+                document.body.classList.remove(
+
+                    "loading"
+
+                )
+
+            }
+
+        )
+
+
+
+        // =====================================
+        // INITIAL PAGE LOAD
+        // =====================================
+
+        initializeTooltips(document)
+
+    }
+
+)

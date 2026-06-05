@@ -1,0 +1,126 @@
+{% load humanize %}
+
+<tr id="quotation-{{ quotation.id }}">
+  <!-- QUOTATION DETAILS -->
+  <td style="min-width:300px;">
+    <div class="fw-bold text-primary">{{ quotation.quotation_number }}</div>
+    <div>
+      {% if quotation.status == 'draft' %}
+        <span class="badge badge-outline-secondary light border">
+          <i class="fa-solid fa-file me-1"></i>
+
+          Draft
+        </span>
+      {% elif quotation.status == 'sent' %}
+        <span class="badge badge-outline-info light border">
+          <i class="fa-solid fa-paper-plane me-1"></i>
+
+          Sent
+        </span>
+      {% elif quotation.status == 'accepted' %}
+        <span class="badge badge-outline-success light border">
+          <i class="fa-solid fa-circle-check me-1"></i>
+
+          Accepted
+        </span>
+      {% elif quotation.status == 'rejected' %}
+        <span class="badge badge-outline-danger light border">
+          <i class="fa-solid fa-circle-xmark me-1"></i>
+
+          Rejected
+        </span>
+      {% elif quotation.status == 'expired' %}
+        <span class="badge badge-outline-warning light border">
+          <i class="fa-solid fa-clock me-1"></i>
+          Expired
+        </span>
+      {% else %}
+        <span class="badge badge-outline-primary light border">
+          <i class="fa-solid fa-file-invoice me-1"></i>
+
+          Converted
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="small text-muted">
+      <i class="fa-solid fa-calendar-days me-1"></i>
+
+      {{ quotation.quotation_date|date:'M d, Y' }}
+    </div>
+
+    <div class="small text-muted">
+      <i class="fa-solid fa-hourglass-end me-1"></i>
+
+      Valid Until:
+
+      {{ quotation.valid_until|date:'M d, Y' }}
+    </div>
+
+    <div class="small mt-1">
+      <strong>{{ quotation.items.count }}</strong>
+
+      Item{{ quotation.items.count|pluralize }}
+    </div>
+  </td>
+
+  <!-- CUSTOMER -->
+
+  <td style="min-width:240px;">
+    <div class="fw-semibold">{{ quotation.customer }}</div>
+
+    {% if quotation.notes %}
+      <div class="small text-muted mt-1">{{ quotation.notes|truncatechars:50 }}</div>
+    {% endif %}
+  </td>
+
+  <!-- VALUE -->
+
+  <td style="min-width:220px;">
+    <div class="fw-bold text-success">TZS
+
+      {{ quotation.total_amount|floatformat:2|intcomma }}</div>
+
+    <div class="small text-muted">Subtotal:
+
+      {{ quotation.subtotal|floatformat:2|intcomma }}</div>
+
+    {% if quotation.discount_amount > 0 %}
+      <div class="small text-danger">Discount:
+
+        {{ quotation.discount_amount|floatformat:2|intcomma }}</div>
+    {% endif %}
+  </td>
+
+  <!-- ACTIONS -->
+
+  <td style="min-width:250px;">
+    <div class="d-flex flex-wrap justify-content-end gap-1">
+      <!-- EDIT -->
+
+      <a hx-get="{% url 'quotations:quotation_update' quotation.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-warning btn-sm" title="Edit Quotation">
+        <i class="fa-solid fa-pen-to-square"></i>
+
+        Edit
+      </a>
+
+      <!-- DELETE -->
+
+      <a hx-get="{% url 'quotations:quotation_delete' quotation.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-danger btn-sm" title="Delete Quotation">
+        <i class="fa-solid fa-trash-can"></i>
+
+        Delete
+      </a>
+
+      <!-- FUTURE CONVERT TO INVOICE -->
+
+      {% if quotation.status != 'converted' %}
+        <a href="#" class="btn btn-success btn-sm" title="Convert To Invoice">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+
+          Invoice
+        </a>
+      {% endif %}
+    </div>
+  </td>
+</tr>

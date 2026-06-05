@@ -143,3 +143,16 @@
         font-size: 0.78rem;
 
     }
+
+.modal-content {
+
+    max-height: 95vh;
+
+}
+
+.choices__list--dropdown,
+.choices__list[aria-expanded] {
+
+    z-index: 999999 !important;
+
+}

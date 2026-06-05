@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4 class="card-title mb-0">Quotations</h4>
+      <button class="btn btn-primary" hx-get="{% url 'quotations:quotation_create' %}" hx-target="#modal-body" hx-swap="innerHTML">
+        <i class="fa-solid fa-plus me-1"></i>
+        New Quotation
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Quotation Details</th>
+              <th>Customer</th>
+              <th>Total Value</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          {% include 'quotations/table.html' %}
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script>
+    document.body.addEventListener(
+      'quotationChanged',
+    
+      function () {
+        htmx.ajax(
+          'GET',
+    
+          "{% url 'quotations:quotation_table' %}",
+    
+          {
+            target: '#quotation-table-body',
+    
+            swap: 'outerHTML'
+          }
+        )
+      }
+    )
+  </script>
+{% endblock %}

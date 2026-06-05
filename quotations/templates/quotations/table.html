@@ -1,0 +1,24 @@
+<tbody id="quotation-table-body">
+
+    {% for quotation in quotations %}
+
+        {% include "quotations/row.html" %}
+
+    {% empty %}
+
+        <tr>
+
+            <td
+                colspan="5"
+                class="text-center text-muted py-5"
+            >
+
+                No quotations found.
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+</tbody>

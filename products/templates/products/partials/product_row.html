@@ -1,37 +1,208 @@
-<!-- templates/products/partials/product_row.html -->
 <tr id="product-{{ product.id }}">
-  <td>{{ product.sku_code }}</td>
-  <td>{{ product.product_name }}</td>
-  <td>{{ product.product_category }}</td>
-  <td>
-    <span class="badge badge-rounded badge-outline-primary">{{ product.product_unit }}</span>
-  </td>
-  <td>{{ product.get_product_type_display }}</td>
-  <td>
-    {% if product.stock_status == 'out' %}
-      <span class="badge badge-danger">Out of Stock</span>
-    {% elif product.stock_status == 'low' %}
-      <span class="badge badge-warning">Low Stock</span>
-    {% else %}
-      <span class="badge badge-success">In Stock</span>
-    {% endif %}
 
-    <div class="small fw-bold mt-1">{{ product.current_stock }}</div>
-  </td>
-  <td>
-    {% if product.status == 'active' %}
-      <span class="badge badge-success">{{ product.get_status_display }}</span>
-    {% else %}
-      <span class="badge badge-danger">{{ product.get_status_display }}</span>
-    {% endif %}
-  </td>
-  <td>
-    <div class="d-flex justify-content-end">
-      <!-- EDIT -->
-      <a hx-get="{% url 'products:product_update' product.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-warning shadow me-1"><i class="fa-solid fa-pen-to-square" style="font-size: 20px;"></i></a>
+    <!-- PRODUCT DETAILS -->
 
-      <!-- DELETE -->
-      <a hx-get="{% url 'products:product_delete' product.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="btn btn-danger shadow"><i class="fa-solid fa-trash-can-slash" style="font-size: 20px;"></i></a>
-    </div>
-  </td>
+    <td style="min-width:260px;">
+
+        <div class="fw-bold text-primary">
+
+            {{ product.product_name }}
+
+        </div>
+
+        <div class="small text-muted">
+
+            SKU:
+            {{ product.sku_code }}
+
+        </div>
+
+        <div class="small">
+
+            {{ product.product_category }}
+
+        </div>
+
+        <div class="mt-1">
+
+            <span class="badge badge-outline-primary">
+
+                {{ product.product_unit }}
+
+            </span>
+
+            <span class="badge badge-outline-info">
+
+                {{ product.get_product_type_display }}
+
+            </span>
+
+        </div>
+
+    </td>
+
+
+
+    <!-- STOCK -->
+
+    <td style="min-width:180px;">
+
+        {% if product.stock_status == "out" %}
+
+            <span class="badge badge-danger">
+
+                Out of Stock
+
+            </span>
+
+        {% elif product.stock_status == "low" %}
+
+            <span class="badge badge-warning">
+
+                Low Stock
+
+            </span>
+
+        {% else %}
+
+            <span class="badge badge-success">
+
+                In Stock
+
+            </span>
+
+        {% endif %}
+
+        <div class="small mt-2">
+
+            <strong>Current:</strong>
+
+            {{ product.current_stock }}
+
+        </div>
+
+        <div class="small">
+
+            <strong>Minimum:</strong>
+
+            {{ product.minimum_stock }}
+
+        </div>
+
+    </td>
+
+
+
+    <!-- PRICING -->
+
+    <td style="min-width:200px;">
+
+        <div class="small">
+
+            <strong>Avg Cost:</strong>
+
+            {{ product.average_cost|floatformat:2 }}
+
+        </div>
+
+        <div class="fw-bold text-success">
+
+            Sell:
+
+            {{ product.selling_price|floatformat:2 }}
+
+        </div>
+
+        <div class="small text-muted">
+
+            Markup:
+
+            {{ product.markup_percentage }}%
+
+        </div>
+
+        <div class="small">
+
+            Stock Value:
+
+            {{ product.stock_value|floatformat:2 }}
+
+        </div>
+
+    </td>
+
+
+
+    <!-- STATUS -->
+
+    <td style="min-width:120px;">
+
+        {% if product.status == "active" %}
+
+            <span class="badge badge-success">
+
+                Active
+
+            </span>
+
+        {% else %}
+
+            <span class="badge badge-danger">
+
+                Inactive
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+
+
+    <!-- ACTIONS -->
+
+    <td style="min-width:140px;">
+
+        <div class="d-flex justify-content-end">
+
+            <a
+
+                hx-get="{% url 'products:product_update' product.id %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+
+                class="btn btn-warning btn-sm shadow me-1"
+
+                title="Edit Product"
+
+            >
+
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+
+            </a>
+
+            <a
+
+                hx-get="{% url 'products:product_delete' product.id %}"
+
+                hx-target="#modal-body"
+
+                hx-swap="innerHTML"
+
+                class="btn btn-danger btn-sm shadow"
+
+                title="Delete Product"
+
+            >
+
+                <i class="fa-solid fa-trash-can"></i>Delete
+
+            </a>
+
+        </div>
+
+    </td>
+
 </tr>

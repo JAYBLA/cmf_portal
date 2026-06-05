@@ -30,7 +30,7 @@
       <div class="col-md-12 mb-3">
         <label class="form-label">Supplier</label>
 
-        {% render_field form.supplier class='form-select tom-select' %}
+        {% render_field form.supplier class='form-select' %}
 
         <div class="text-danger small">{{ form.supplier.errors }}</div>
       </div>
@@ -40,7 +40,7 @@
       <div class="col-md-4 mb-3">
         <label class="form-label">Purchase Category</label>
 
-        {% render_field form.purchase_category class='form-select tom-select' id='purchase-category' %}
+        {% render_field form.purchase_category class='form-select' id='purchase-category' %}
 
         <div class="text-danger small">{{ form.purchase_category.errors }}</div>
       </div>
@@ -50,7 +50,7 @@
       <div class="col-md-4 mb-3">
         <label class="form-label">Currency</label>
 
-        {% render_field form.currency class='form-select tom-select' id='purchase-currency' %}
+        {% render_field form.currency class='form-select' id='purchase-currency' %}
 
         <div class="text-danger small">{{ form.currency.errors }}</div>
       </div>
@@ -164,7 +164,7 @@
                   <!-- PRODUCT -->
 
                   <td class="p-1">
-                    {% render_field item_form.product class='form-select form-select-sm tom-select' %}
+                    {% render_field item_form.product class='form-select form-select-sm' %}
                   </td>
 
                   <!-- QTY -->
@@ -204,7 +204,7 @@
               {% endfor %}
 
               <td class="p-1">
-                {% render_field item_form.product class='form-select form-select-sm tom-select' %}
+                {% render_field item_form.product class='form-select form-select-sm' %}
               </td>
 
               <td class="p-1">

@@ -65,6 +65,15 @@
           <span class="nav-text">Customers</span>
         </a>
       </li>
+      <!-- QUOTATIONS -->
+      <li class="menu-title border-top-0 pt-2">DOCUMENTS</li>
+      <li class="{% if request.resolver_match.url_name == 'quotation_list' %}mm-active{% endif %}">
+        <a href="{% url 'quotations:quotation_list' %}" class="ai-icon" aria-expanded="false">
+          <i class="fa-solid fa-file-invoice"></i>
+
+          <span class="nav-text">Quotations</span>
+        </a>
+      </li>
     </ul>
   </div>
 </div>
