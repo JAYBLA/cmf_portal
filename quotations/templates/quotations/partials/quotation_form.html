@@ -1,0 +1,145 @@
+<form hx-post="{% if quotation %}
+    {% url 'quotations:quotation_update' quotation.id %}
+  {% else %}
+    {% url 'quotations:quotation_create' %}
+  {% endif %}">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {% if quotation %}
+        Edit Quotation
+      {% else %}
+        New Quotation
+      {% endif %}
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body" style="
+        overflow-y:auto;
+        max-height:calc(95vh - 180px);
+     ">
+    <div class="card mb-4">
+      <div class="card-header">Quotation Details</div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Title</label>
+            {{ form.title }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Customer</label>
+            {{ form.customer }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Quote Date</label>
+            {{ form.quote_date }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Due Date</label>
+            {{ form.due_date }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Description</label>
+            {{ form.description }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Quotation Items</div>
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Item Name</th>
+              <th width="90">Qty</th>
+              <th width="120">Price</th>
+              <th width="60">Del</th>
+            </tr>
+          </thead>
+          <tbody id="items-container">
+            {% for form in formset %}
+              {% include 'quotations/partials/item_row.html' %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-success">Save Quotation</button>
+  </div>
+</form>
+<script>
+  ;(function () {
+    function initializeFlatpickr() {
+      if (typeof flatpickr !== 'undefined') {
+        flatpickr('.flatpickr', {
+          dateFormat: 'Y-m-d',
+          altInput: true,
+          altFormat: 'F j, Y',
+          allowInput: true
+        })
+      }
+    }
+  
+    function initializeAutoRows() {
+      const rows = document.querySelectorAll('#items-container tr')
+  
+      rows.forEach(function (row) {
+        const itemInput = row.querySelector('input[name$="item_name"]')
+  
+        if (!itemInput) return
+  
+        if (itemInput.dataset.bound) return
+  
+        itemInput.dataset.bound = '1'
+  
+        itemInput.addEventListener(
+          'input',
+          function () {
+            if (this.value.trim() === '') {
+              return
+            }
+  
+            const allRows = document.querySelectorAll('#items-container tr')
+  
+            const lastRow = allRows[allRows.length - 1]
+  
+            const lastInput = lastRow.querySelector('input[name$="item_name"]')
+  
+            if (this !== lastInput) {
+              return
+            }
+  
+            appendNewRow()
+          },
+          { once: true }
+        )
+      })
+    }
+  
+    function appendNewRow() {
+      const totalForms = document.getElementById('id_items-TOTAL_FORMS')
+  
+      const current = parseInt(totalForms.value)
+  
+      htmx.ajax('GET', "{% url 'quotations:quotation_item_empty_row' %}?total_forms=" + current, {
+        target: '#items-container',
+        swap: 'beforeend'
+      })
+  
+      totalForms.value = current + 1
+    }
+  
+    initializeFlatpickr()
+    initializeAutoRows()
+  
+    document.body.addEventListener('htmx:afterSwap', function () {
+      initializeFlatpickr()
+      initializeAutoRows()
+    })
+  })()
+</script>

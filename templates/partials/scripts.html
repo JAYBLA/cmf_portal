@@ -1,0 +1,127 @@
+{% load static %}
+<!-- jQuery library js -->
+<script src="{% static 'js/lib/jquery-3.7.1.min.js' %}"></script>
+<!-- Bootstrap js -->
+<script src="{% static 'js/lib/bootstrap.bundle.min.js' %}"></script>
+<!-- Apex Chart js -->
+<script src="{% static 'js/lib/apexcharts.min.js' %}"></script>
+<!-- Data Table js -->
+<script src="{% static 'js/lib/dataTables.min.js' %}"></script>
+<!-- Iconify Font js -->
+<script src="{% static 'js/lib/iconify-icon.min.js' %}"></script>
+<!-- jQuery UI js -->
+<script src="{% static 'js/lib/jquery-ui.min.js' %}"></script>
+<!-- Vector Map js -->
+<script src="{% static 'js/lib/jquery-jvectormap-2.0.5.min.js' %}"></script>
+<script src="{% static 'js/lib/jquery-jvectormap-world-mill-en.js' %}"></script>
+<!-- Popup js -->
+<script src="{% static 'js/lib/magnifc-popup.min.js' %}"></script>
+<!-- Slick Slider js -->
+<script src="{% static 'js/lib/slick.min.js' %}"></script>
+<!-- prism js -->
+<script src="{% static 'js/lib/prism.js' %}"></script>
+<!-- file upload js -->
+<script src="{% static 'js/lib/file-upload.js' %}"></script>
+<!-- audioplayer -->
+<script src="{% static 'js/lib/audioplayer.js' %}"></script>
+
+<!-- main js -->
+<script src="{% static 'js/app.js' %}"></script>
+<!-- HTMX -->
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<script src="{% static 'js/htmx.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  /* =========================================
+    BOOTSTRAP TOOLTIPS
+  ========================================= */
+
+  function initializeTooltips(parent = document) {
+    const tooltipTriggerList = parent.querySelectorAll(
+      '[data-bs-toggle="tooltip"]',
+    );
+
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      // PREVENT DUPLICATES
+
+      if (bootstrap.Tooltip.getInstance(tooltipTriggerEl)) {
+        return;
+      }
+
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  }
+</script>
+<script>
+  function initializeChoices() {
+    document.querySelectorAll(".choices").forEach(function (select) {
+      if (select.dataset.choicesInitialized) {
+        return;
+      }
+
+      select.dataset.choicesInitialized = "true";
+
+      new Choices(select, {
+        searchEnabled: true,
+
+        itemSelectText: "",
+
+        shouldSort: false,
+      });
+    });
+  }
+</script>
+<script>
+function initFlatpickr(container = document) {
+
+    container.querySelectorAll('.flatpickr-date').forEach(function(el) {
+
+        if (el._flatpickr) return;
+
+        flatpickr(el, {
+            dateFormat: "Y-m-d",
+            allowInput: true
+        });
+
+    });
+
+    container.querySelectorAll('.flatpickr-datetime').forEach(function(el) {
+
+        if (el._flatpickr) return;
+
+        flatpickr(el, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            allowInput: true
+        });
+
+    });
+
+    container.querySelectorAll('.flatpickr-time').forEach(function(el) {
+
+        if (el._flatpickr) return;
+
+        flatpickr(el, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            allowInput: true
+        });
+
+    });
+
+}
+
+// Initial page load
+document.addEventListener('DOMContentLoaded', function() {
+    initFlatpickr();
+});
+
+// HTMX content swaps
+document.body.addEventListener('htmx:afterSwap', function(event) {
+    initFlatpickr(event.target);
+});
+</script>

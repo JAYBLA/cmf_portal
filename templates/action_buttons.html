@@ -1,0 +1,87 @@
+<div class="global-actions-buttons">
+        {% if view_url %}
+    <div class="action-wrapper">
+
+        <span class="action-icon action-icon-view">
+            <i class="{{ view_icon|default:'ri-eye-line' }}"></i>
+        </span>
+
+        <a
+            hx-get="{{ view_url }}"
+            hx-target="#modal-body"
+            hx-swap="innerHTML"
+            class="action-btn action-view">
+
+            <span class="action-label">
+                {{ view_label|default:"View" }}
+            </span>
+
+        </a>
+
+    </div>
+    {% endif %}
+
+    {% if edit_url %}
+    <div class="action-wrapper">
+
+        <span class="action-icon action-icon-edit">
+            <i class="{{ edit_icon|default:'ri-file-edit-line' }}"></i>
+        </span>
+
+        <a
+            hx-get="{{ edit_url }}"
+            hx-target="#modal-body"
+            hx-swap="innerHTML"
+            class="action-btn action-edit">
+
+            <span class="action-label">
+                {{ edit_label|default:"Edit" }}
+            </span>
+
+        </a>
+
+    </div>
+    {% endif %}
+
+    {% if delete_url %}
+    <div class="action-wrapper">
+
+        <span class="action-icon action-icon-delete">
+            <i class="{{ delete_icon|default:'ri-delete-bin-line' }}"></i>
+        </span>
+
+        <a
+            hx-get="{{ delete_url }}"
+            hx-target="#modal-body"
+            hx-swap="innerHTML"
+            class="action-btn action-delete">
+
+            <span class="action-label">
+                {{ delete_label|default:"Delete" }}
+            </span>
+
+        </a>
+
+    </div>
+    {% endif %}
+{% if download_url %}
+<div class="action-wrapper">
+
+    <span class="action-icon action-icon-download">
+        <i class="{{ download_icon|default:'ri-download-line' }}"></i>
+    </span>
+
+    <a
+        href="{{ download_url }}"        
+        class="action-btn action-download">
+
+        <span class="action-label">
+            {{ download_label|default:"Download" }}
+        </span>
+
+    </a>
+
+</div>
+{% endif %}
+
+</div>

@@ -76,7 +76,7 @@ class CustomerForm(forms.ModelForm):
 
             "address": forms.Textarea(
                 attrs={
-                    "rows": 2,
+                    "rows": 3,
                     "placeholder":
                         "Enter customer address"
                 }
@@ -84,7 +84,7 @@ class CustomerForm(forms.ModelForm):
 
             "notes": forms.Textarea(
                 attrs={
-                    "rows": 2,
+                    "rows": 3,
                     "placeholder":
                         "Optional internal notes..."
                 }

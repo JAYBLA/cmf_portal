@@ -1,158 +1,191 @@
-/* =========================================
-   TOMSELECT DROPDOWN FIXES
-========================================= */
+/* ==========================================
+   ACTION BUTTONS
+========================================== */
 
-.ts-wrapper {
-    width: 100%;
+.global-actions-buttons{
+    display:flex;
+    justify-content:center;
+    gap:25px;
 }
 
-.ts-dropdown {
-    z-index: 999999 !important;
+/* Wrapper */
+
+.action-wrapper{
+    position:relative;
 }
 
-.modal,
-.modal-body,
-.table-responsive {
-    overflow: visible !important;
+/* Main Button */
+
+.action-btn{
+    position:relative;
+
+    min-width:100px;
+    width:auto;
+
+    min-height:50px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding-left:40px;
+    padding-right:25px;
+
+    border-radius:14px;
+    overflow:hidden;
+
+    text-decoration:none;
+    color:#fff;
+    cursor:pointer;
+
+    transition:.25s ease;
 }
 
-[data-bs-toggle="tooltip"] {
+.action-btn:hover{
+    transform:translateY(-2px);
+    color:#fff;
+}
+
+/* Diagonal Stripe */
+
+.action-btn::before{
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    bottom:0;
+    left:60%;
+
+    width:170px;
+
+    transform:skewX(-25deg);
+    transform-origin:left;
+
+    z-index:1;
+}
+
+/* Edit */
+
+.action-edit{
+    background:#f7941d;
+}
+
+.action-edit::before{
+    background:#e28212;
+}
+
+/* Delete */
+
+.action-delete{
+    background:#ed1c24;
+}
+
+.action-delete::before{
+    background:#d30f17;
+}
+
+/* View */
+.action-view{
+    background:#007bff;
+}
+
+.action-view::before{
+    background:#0069d9;
+}
+/* Download */
+.action-download{
+    background:#28a745;
+}
+
+.action-download::before{
+    background:#1e7e34;
+}
+
+/* Icon Box */
+
+.action-icon{
+    position:absolute;
+
+    left:-20px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    min-width:30px;
+    min-height:30px;
     cursor: pointer;
+
+    border:3px solid #fff;
+    border-radius:10px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:10;
 }
 
-/* =========================================
-   HTMX TOASTS
-========================================= */
+/* Icon Backgrounds */
 
-#toast-container {
-
-    position: fixed;
-
-    top: 20px;
-
-    right: 20px;
-
-    z-index: 999999;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 10px;
-
+.action-icon-edit{
+    background:#f7941d;
 }
 
-
-.custom-toast {
-
-    min-width: 280px;
-
-    max-width: 400px;
-
-    padding: 14px 18px;
-
-    border-radius: 10px;
-
-    color: white;
-
-    font-size: 14px;
-
-    font-weight: 500;
-
-    box-shadow: 0 10px 25px rgba(0,0,0,.15);
-
-    animation: toastSlide .3s ease;
-
-    transition: all .3s ease;
-
+.action-icon-delete{
+    background:#ed1c24;
 }
 
-
-.custom-toast.success {
-
-    background: #198754;
-
+.action-icon-view{
+    background:#007bff;
 }
 
-
-.custom-toast.error {
-
-    background: #dc3545;
-
+.action-icon-download{
+    background:#28a745;
 }
 
+/* Icons */
 
-.custom-toast.warning {
-
-    background: #ffc107;
-
-    color: #000;
-
+.action-icon i{
+    font-size:34px;
+    color:#fff;
+    line-height:1;
 }
 
+/* Label */
 
-.custom-toast.info {
+.action-label{
+    left:2px;
+    position:relative;
+    z-index:2;
 
-    background: #0dcaf0;
+    font-size:18px;
+    font-weight:700;
+    line-height:1;
 
-    color: #000;
-
+    color:#fff;
 }
 
+/* Mobile */
 
-.toast-hide {
+@media (max-width:768px){
 
-    opacity: 0;
-
-    transform: translateX(100%);
-
-}
-
-
-@keyframes toastSlide {
-
-    from {
-
-        opacity: 0;
-
-        transform: translateX(100%);
-
+    .action-btn{
+        width:160px;
+        height:70px;
+        padding-left:32px;
     }
 
-    to {
-
-        opacity: 1;
-
-        transform: translateX(0);
-
+    .action-icon{
+        width:50px;
+        height:50px;
     }
 
-}
-
-    .btn-xs {
-
-        font-size: 0.72rem;
-
-        line-height: 1.2;
-
+    .action-icon i{
+        font-size:26px;
     }
 
-    
-    #document-formset-body input[type="file"] {
-
-        font-size: 0.78rem;
-
+    .action-label{
+        font-size:24px;
     }
-
-.modal-content {
-
-    max-height: 95vh;
-
-}
-
-.choices__list--dropdown,
-.choices__list[aria-expanded] {
-
-    z-index: 999999 !important;
-
 }

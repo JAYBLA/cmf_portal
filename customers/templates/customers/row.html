@@ -1,204 +1,90 @@
 {% load humanize %}
 
 <tr id="customer-{{ customer.id }}">
+  <!-- CUSTOMER DETAILS -->
 
+  <td style="min-width: 280px;">
+    <div class="fw-bold text-primary">{{ customer.customer_name }}</div>
 
-    <!-- CUSTOMER DETAILS -->
+    {% if customer.company_name %}
+      <div class="small">{{ customer.company_name }}</div>
+    {% endif %}
 
-    <td style="min-width: 280px;">
+    {% if customer.address %}
+      <div class="small text-muted mt-1">{{ customer.address|truncatechars:60 }}</div>
+    {% endif %}
 
-        <div class="fw-bold text-primary">
+    <div class="small text-muted mt-1">Added:
+      {{ customer.created_at|date:'M d, Y' }}</div>
+  </td>
 
-            {{ customer.customer_name }}
+  <!-- CONTACTS -->
 
-        </div>
+  <td style="min-width: 220px;">
+    <div>
+      <i class="fa-solid fa-phone me-1"></i>
 
+      {{ customer.phone_number }}
+    </div>
 
-        {% if customer.company_name %}
+    {% if customer.email %}
+      <div class="small mt-1">
+        <i class="fa-solid fa-envelope me-1"></i>
 
-            <div class="small">
+        {{ customer.email }}
+      </div>
+    {% endif %}
 
-                {{ customer.company_name }}
+    {% if customer.tin_number %}
+      <div class="small text-muted mt-1">TIN:
+        {{ customer.tin_number }}</div>
+    {% endif %}
+  </td>
 
-            </div>
+  <!-- FINANCIALS -->
 
-        {% endif %}
+  <td style="min-width: 220px;">
+    <div class="fw-bold text-primary">TZS
+      {{ customer.credit_limit|floatformat:2|intcomma }}</div>
 
+    <small class="text-muted d-block">Credit Limit</small>
 
-        {% if customer.address %}
+    <div class="fw-semibold mt-2">TZS
+      {{ customer.opening_balance|floatformat:2|intcomma }}</div>
 
-            <div class="small text-muted mt-1">
+    <small class="text-muted d-block">Opening Balance</small>
+  </td>
 
-                {{ customer.address|truncatechars:60 }}
+  <!-- STATUS -->
 
-            </div>
+  <td style="min-width: 120px;">
+    {% if customer.status == 'active' %}
+      <span class="badge bg-success-subtle text-success border border-success-subtle">Active</span>
+    {% else %}
+      <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Inactive</span>
+    {% endif %}
+  </td>
 
-        {% endif %}
+  <!-- ACTIONS -->
 
+  <td style="min-width: 180px;">
+    <div class="global-actions-buttons">
+      <!-- EDIT -->
+      <div class="action-wrapper">
+        <span class="action-icon action-icon-edit"><i class="ri-file-edit-line"></i></span>
 
-        <div class="small text-muted mt-1">
+        <a hx-get="{% url 'customers:customer_update' customer.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="action-btn action-edit"><span class="action-label">Edit</span></a>
+      </div>
 
-            Added:
-            {{ customer.created_at|date:"M d, Y" }}
+      <!-- DELETE -->
+      <div class="action-wrapper">
+        <span class="action-icon action-icon-delete"><i class="ri-delete-bin-line"></i></span>
 
-        </div>
-
-    </td>
-
-
-
-    <!-- CONTACTS -->
-
-    <td style="min-width: 220px;">
-
-        <div>
-
-            <i class="fa-solid fa-phone me-1"></i>
-
-            {{ customer.phone_number }}
-
-        </div>
-
-
-        {% if customer.email %}
-
-            <div class="small mt-1">
-
-                <i class="fa-solid fa-envelope me-1"></i>
-
-                {{ customer.email }}
-
-            </div>
-
-        {% endif %}
-
-
-        {% if customer.tin_number %}
-
-            <div class="small text-muted mt-1">
-
-                TIN:
-                {{ customer.tin_number }}
-
-            </div>
-
-        {% endif %}
-
-    </td>
-
-
-
-    <!-- FINANCIALS -->
-
-    <td style="min-width: 220px;">
-
-        <div class="fw-bold text-primary">
-
-            TZS
-            {{ customer.credit_limit|floatformat:2|intcomma }}
-
-        </div>
-
-        <small class="text-muted d-block">
-
-            Credit Limit
-
-        </small>
-
-
-        <div class="fw-semibold mt-2">
-
-            TZS
-            {{ customer.opening_balance|floatformat:2|intcomma }}
-
-        </div>
-
-        <small class="text-muted d-block">
-
-            Opening Balance
-
-        </small>
-
-    </td>
-
-
-
-    <!-- STATUS -->
-
-    <td style="min-width: 120px;">
-
-        {% if customer.status == "active" %}
-
-            <span class="badge badge-success light">
-
-                Active
-
-            </span>
-
-        {% else %}
-
-            <span class="badge badge-danger light">
-
-                Inactive
-
-            </span>
-
-        {% endif %}
-
-    </td>
-
-
-
-    <!-- ACTIONS -->
-
-    <td style="min-width: 180px;">
-
-        <div class="d-flex justify-content-end">
-
-
-            <!-- EDIT -->
-
-            <a
-
-                hx-get="{% url 'customers:customer_update' customer.id %}"
-
-                hx-target="#modal-body"
-
-                hx-swap="innerHTML"
-
-                class="btn btn-warning btn-sm shadow me-1"
-
-            >
-
-                <i class="fa-solid fa-pen-to-square me-1"></i>
-
-                Edit
-
-            </a>
-
-
-            <!-- DELETE -->
-
-            <a
-
-                hx-get="{% url 'customers:customer_delete' customer.id %}"
-
-                hx-target="#modal-body"
-
-                hx-swap="innerHTML"
-
-                class="btn btn-danger btn-sm shadow"
-
-            >
-
-                <i class="fa-solid fa-trash-can me-1"></i>
-
-                Delete
-
-            </a>
-
-        </div>
-
-    </td>
-
+        <a hx-get="{% url 'customers:customer_delete' customer.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="action-btn action-delete"><span class="action-label">Delete</span></a>
+      </div>
+    </div>{% include "action_buttons.html" with
+    edit_url=customer.get_update_url
+    delete_url=customer.get_delete_url
+%}
+  </td>
 </tr>

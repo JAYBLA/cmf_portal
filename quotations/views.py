@@ -1,360 +1,157 @@
-import json
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
 
-from decimal import Decimal
-
-from django.shortcuts import (
-    render,
-    get_object_or_404
-)
-
-from django.http import HttpResponse, JsonResponse
+from .forms import QuotationForm, QuotationItemFormSet
 
 from .models import *
+from utils import render_to_pdf
+from django.templatetags.static import static
+from django.utils.text import slugify
+import json
 
-from .forms import *
-from products.models import *
-
-
-# =========================================
-# QUOTATION LIST
-# =========================================
 
 def quotation_list(request):
 
-    quotations = (
-        Quotation.objects
-        .select_related("customer")
-    )
+    quotations = Quotation.objects.select_related("customer").all()
 
-    context = {
-        "quotations": quotations
-    }
+    return render(request, "quotations/quotation_list.html", {"quotations": quotations})
 
-    return render(
-        request,
-        "quotations/list.html",
-        context
-    )
-
-
-# =========================================
-# QUOTATION TABLE
-# =========================================
-
-def quotation_table(request):
-
-    quotations = (
-        Quotation.objects
-        .select_related("customer")
-    )
-
-    context = {
-        "quotations": quotations
-    }
-
-    return render(
-        request,
-        "quotations/table.html",
-        context
-    )
-
-
-# =========================================
-# CREATE QUOTATION
-# =========================================
 
 def quotation_create(request):
 
-    form = QuotationForm(
-        request.POST or None
-    )
-
-    formset = QuotationItemFormSet(
-        request.POST or None,
-        prefix="items"
-    )
-
     if request.method == "POST":
 
-        if form.is_valid() and formset.is_valid():
+        form = QuotationForm(request.POST)
 
-            quotation = form.save(
-                commit=False
-            )
-
-            quotation.subtotal = Decimal("0.00")
-
-            quotation.total_amount = Decimal("0.00")
-
-            quotation.save()
-
-            formset.instance = quotation
-
-            items = formset.save(
-                commit=False
-            )
-
-            subtotal = Decimal("0.00")
-
-            for item in items:
-
-                item.quotation = quotation
-
-                item.save()
-
-                subtotal += item.subtotal
-
-            for obj in formset.deleted_objects:
-
-                obj.delete()
-
-            quotation.subtotal = subtotal
-
-            quotation.total_amount = max(
-
-                Decimal("0.00"),
-
-                subtotal -
-
-                quotation.discount_amount
-
-            )
-
-            quotation.save()
-
-            response = HttpResponse("")
-
-            response["HX-Trigger"] = json.dumps({
-
-                "quotationChanged": True,
-
-                "closeModal": True,
-
-                "showMessage": {
-
-                    "type": "success",
-
-                    "message": (
-                        "Quotation created successfully."
-                    )
-
-                }
-
-            })
-
-            return response
-
-    context = {
-
-        "form": form,
-
-        "formset": formset
-
-    }
-
-    return render(
-
-        request,
-
-        "quotations/form.html",
-
-        context
-
-    )
-
-
-# =========================================
-# UPDATE QUOTATION
-# =========================================
-
-def quotation_update(request, pk):
-
-    quotation = get_object_or_404(
-
-        Quotation,
-
-        pk=pk
-
-    )
-
-    form = QuotationForm(
-
-        request.POST or None,
-
-        instance=quotation
-
-    )
-
-    formset = QuotationItemFormSet(
-
-        request.POST or None,
-
-        instance=quotation,
-
-        prefix="items"
-
-    )
-
-    if request.method == "POST":
-
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
 
             quotation = form.save()
 
-            items = formset.save(
-                commit=False
+            formset = QuotationItemFormSet(
+                request.POST, instance=quotation, prefix="items"
             )
 
-            for item in items:
+            if formset.is_valid():
 
-                item.quotation = quotation
+                formset.save()
 
-                item.save()
+                response = HttpResponse()
 
-            for obj in formset.deleted_objects:
+                response["HX-Refresh"] = "true"
 
-                obj.delete()
+                return response
 
-            subtotal = Decimal("0.00")
+        else:
 
-            for item in quotation.items.all():
+            formset = QuotationItemFormSet(request.POST, prefix="items")
 
-                subtotal += item.subtotal
+    else:
 
-            quotation.subtotal = subtotal
+        form = QuotationForm()
 
-            quotation.total_amount = max(
+        formset = QuotationItemFormSet(prefix="items")
 
-                Decimal("0.00"),
+    return render(
+        request,
+        "quotations/partials/quotation_form.html",
+        {"form": form, "formset": formset},
+    )
 
-                subtotal -
 
-                quotation.discount_amount
+def quotation_update(request, pk):
 
-            )
+    quotation = get_object_or_404(Quotation, pk=pk)
 
-            quotation.save()
+    if request.method == "POST":
 
-            response = HttpResponse("")
+        form = QuotationForm(request.POST, instance=quotation)
 
-            response["HX-Trigger"] = json.dumps({
+        formset = QuotationItemFormSet(request.POST, instance=quotation, prefix="items")
 
-                "quotationChanged": True,
+        if form.is_valid() and formset.is_valid():
 
-                "closeModal": True,
+            form.save()
+            formset.save()
 
-                "showMessage": {
+            response = HttpResponse()
 
-                    "type": "success",
-
-                    "message": (
-                        "Quotation updated successfully."
-                    )
-
-                }
-
-            })
+            response["HX-Refresh"] = "true"
 
             return response
 
-    context = {
+    else:
 
-        "quotation": quotation,
+        form = QuotationForm(instance=quotation)
 
-        "form": form,
-
-        "formset": formset
-
-    }
+        formset = QuotationItemFormSet(instance=quotation, prefix="items")
 
     return render(
-
         request,
-
-        "quotations/form.html",
-
-        context
-
+        "quotations/partials/quotation_form.html",
+        {"form": form, "formset": formset, "quotation": quotation},
     )
 
-
-# =========================================
-# DELETE QUOTATION
-# =========================================
 
 def quotation_delete(request, pk):
 
-    quotation = get_object_or_404(
-        Quotation,
-        pk=pk
-    )
+    quotation = get_object_or_404(Quotation, pk=pk)
 
     if request.method == "POST":
 
         quotation.delete()
 
-        response = HttpResponse("")
+        response = HttpResponse()
 
-        response["HX-Trigger"] = json.dumps({
-
-            "quotationChanged": True,
-
-            "closeModal": True,
-
-            "showMessage": {
-
-                "type": "success",
-
-                "message": (
-                    "Quotation deleted successfully."
-                )
-
-            }
-
-        })
+        response["HX-Refresh"] = "true"
 
         return response
 
+    return render(
+        request, "quotations/partials/quotation_delete.html", {"quotation": quotation}
+    )
+
+
+def quotation_item_empty_row(request):
+
+    total_forms = int(request.GET.get("total_forms", 0))
+
+    formset = QuotationItemFormSet(prefix="items")
+
+    form = formset.empty_form
+
+    form.prefix = f"items-{total_forms}"
+
+    return render(request, "quotations/partials/item_row.html", {"form": form})
+
+# =====================================================
+# DOWNLOAD
+# =====================================================
+def download_quotation_pdf(request, pk):
+
+    quotation = get_object_or_404(Quotation, pk=pk)
+
+    bg_image = request.build_absolute_uri(static("images/quotation.png"))
+
     context = {
-        "quotation": quotation
+        "quotation": quotation,
+        "quotation_no": f"QT-{quotation.id}",
+        "bg_image": bg_image,
     }
 
-    return render(
-        request,
-        "quotations/delete.html",
-        context
-    )
-    
-# =========================================
-# PRODUCT DETAILS
-# =========================================
+    pdf = render_to_pdf("quotations/quotation_pdf.html", context)
 
-def quotation_product_details(request):
+    if pdf:
 
-    product_id = request.GET.get(
-        "product_id"
-    )
+        customer_name = slugify(quotation.customer.customer_name)
 
-    if not product_id:
+        quotation_title = slugify(quotation.title)
 
-        return JsonResponse({})
+        filename = f"QT-{quotation.id}-" f"{customer_name}-" f"{quotation_title}.pdf"
 
-    product = get_object_or_404(
+        response = HttpResponse(pdf, content_type="application/pdf")
 
-        Product,
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-        pk=product_id
+        return response
 
-    )
-
-    return JsonResponse({
-
-        "description":
-            product.product_name,
-
-        "unit_price":
-            float(
-                product.selling_price
-            )
-
-    })
+    return HttpResponse("Error generating PDF", status=400)

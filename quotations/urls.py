@@ -1,19 +1,16 @@
-# urls.py
-
 from django.urls import path
+
 from . import views
 
 app_name = "quotations"
 
 urlpatterns = [
     path("", views.quotation_list, name="quotation_list"),
-    path("table/", views.quotation_table, name="quotation_table"),
     path("create/", views.quotation_create, name="quotation_create"),
-    path("update/<int:pk>/", views.quotation_update, name="quotation_update"),
-    path("delete/<int:pk>/", views.quotation_delete, name="quotation_delete"),
+    path("<int:pk>/edit/", views.quotation_update, name="quotation_update"),
+    path("<int:pk>/delete/", views.quotation_delete, name="quotation_delete"),
+    path("item-row/", views.quotation_item_empty_row, name="quotation_item_empty_row"),
     path(
-        "product-details/",
-        views.quotation_product_details,
-        name="quotation_product_details",
+        "quotation/<int:pk>/pdf/", views.download_quotation_pdf, name="download_quotation_pdf"
     ),
 ]
