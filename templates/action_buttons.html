@@ -1,5 +1,6 @@
 <div class="global-actions-buttons">
-        {% if view_url %}
+
+    {% if view_url %}
     <div class="action-wrapper">
 
         <span class="action-icon action-icon-view">
@@ -10,10 +11,14 @@
             hx-get="{{ view_url }}"
             hx-target="#modal-body"
             hx-swap="innerHTML"
+
+            data-bs-toggle="modal"
+            data-bs-target="#globalModal"
+
             class="action-btn action-view">
 
             <span class="action-label">
-                {{ view_label|default:"View" }}
+                {{ view_label|default:'View' }}
             </span>
 
         </a>
@@ -32,10 +37,14 @@
             hx-get="{{ edit_url }}"
             hx-target="#modal-body"
             hx-swap="innerHTML"
+
+            data-bs-toggle="modal"
+            data-bs-target="#globalModal"
+
             class="action-btn action-edit">
 
             <span class="action-label">
-                {{ edit_label|default:"Edit" }}
+                {{ edit_label|default:'Edit' }}
             </span>
 
         </a>
@@ -54,34 +63,40 @@
             hx-get="{{ delete_url }}"
             hx-target="#modal-body"
             hx-swap="innerHTML"
+
+            data-bs-toggle="modal"
+            data-bs-target="#globalModal"
+
             class="action-btn action-delete">
 
             <span class="action-label">
-                {{ delete_label|default:"Delete" }}
+                {{ delete_label|default:'Delete' }}
             </span>
 
         </a>
 
     </div>
     {% endif %}
-{% if download_url %}
-<div class="action-wrapper">
 
-    <span class="action-icon action-icon-download">
-        <i class="{{ download_icon|default:'ri-download-line' }}"></i>
-    </span>
+    {% if download_url %}
+    <div class="action-wrapper">
 
-    <a
-        href="{{ download_url }}"        
-        class="action-btn action-download">
-
-        <span class="action-label">
-            {{ download_label|default:"Download" }}
+        <span class="action-icon action-icon-download">
+            <i class="{{ download_icon|default:'ri-download-line' }}"></i>
         </span>
 
-    </a>
+        <a
+            href="{{ download_url }}"
+            target="_blank"
+            class="action-btn action-download">
 
-</div>
-{% endif %}
+            <span class="action-label">
+                {{ download_label|default:'Download' }}
+            </span>
+
+        </a>
+
+    </div>
+    {% endif %}
 
 </div>

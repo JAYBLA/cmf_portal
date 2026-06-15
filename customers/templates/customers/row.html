@@ -67,24 +67,9 @@
 
   <!-- ACTIONS -->
 
-  <td style="min-width: 180px;">
-    <div class="global-actions-buttons">
-      <!-- EDIT -->
-      <div class="action-wrapper">
-        <span class="action-icon action-icon-edit"><i class="ri-file-edit-line"></i></span>
-
-        <a hx-get="{% url 'customers:customer_update' customer.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="action-btn action-edit"><span class="action-label">Edit</span></a>
-      </div>
-
-      <!-- DELETE -->
-      <div class="action-wrapper">
-        <span class="action-icon action-icon-delete"><i class="ri-delete-bin-line"></i></span>
-
-        <a hx-get="{% url 'customers:customer_delete' customer.id %}" hx-target="#modal-body" hx-swap="innerHTML" class="action-btn action-delete"><span class="action-label">Delete</span></a>
-      </div>
-    </div>{% include "action_buttons.html" with
-    edit_url=customer.get_update_url
-    delete_url=customer.get_delete_url
-%}
+  <td class="text-center">
+    {% url 'customers:customer_update' customer.id as edit_url %}
+    {% url 'customers:customer_delete' customer.id as delete_url %} 
+    {% include 'action_buttons.html' with edit_url=edit_url delete_url=delete_url %}
   </td>
 </tr>
