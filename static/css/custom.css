@@ -5,7 +5,7 @@
 .global-actions-buttons{
     display:flex;
     justify-content:center;
-    gap:25px;
+    gap:23px;
 }
 
 /* Wrapper */
@@ -19,7 +19,7 @@
 .action-btn{
     position:relative;
 
-    min-width:60px;
+    min-width:50px;
     width:auto;
 
     min-height:60px;
@@ -28,8 +28,8 @@
     align-items:center;
     justify-content:center;
 
-    padding-left:40px;
-    padding-right:25px;
+    padding-left:32px;
+    padding-right:20px;
 
     border-radius:14px;
     overflow:hidden;

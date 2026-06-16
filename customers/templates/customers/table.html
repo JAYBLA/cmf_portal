@@ -1,24 +1,12 @@
 <tbody id="customer-table-body">
-
-    {% for customer in customers %}
-
-        {% include "customers/row.html" %}
-
-    {% empty %}
-
-        <tr>
-
-            <td
-                colspan="5"
-                class="text-center text-muted py-5"
-            >
-
-                No customers found.
-
-            </td>
-
-        </tr>
-
-    {% endfor %}
-
+  {% for customer in customers %}
+    {% include "customers/row.html" %}
+  {% empty %}
+    <tr>
+      <td colspan="5" class="text-center text-muted py-4">
+        <i class="fa-solid fa-inbox fa-2x d-block mb-2"></i>
+        No customers found.
+      </td>
+    </tr>
+  {% endfor %}
 </tbody>
