@@ -8,242 +8,196 @@
       <img src="{% static 'images/logo-icon.png' %}" alt="site logo" class="logo-icon" />
     </a>
   </div>
-<div class="sidebar-menu-area">
-
+  <div class="sidebar-menu-area">
     <ul class="sidebar-menu" id="sidebar-menu">
+      <!-- CUSTOMER MANAGEMENT -->
+      <li class="sidebar-menu-group-title">Customer Management</li>
 
-        <!-- CUSTOMER MANAGEMENT -->
-        <li class="sidebar-menu-group-title">
-            Customer Management
-        </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'customer_list customer_create customer_update customer_delete customer_debtors recently_quoted_customers' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:group-line" class="menu-icon"></iconify-icon>
+          <span>Customers</span>
+        </a>
 
-        <li class="dropdown {% if request.resolver_match.url_name in 'customer_list customer_create customer_update customer_delete customer_debtors recently_quoted_customers' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:group-line" class="menu-icon"></iconify-icon>
-                <span>Customers</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{% url 'customers:customer_list' %}" class="{% if request.resolver_match.url_name == 'customer_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+              Customers List
             </a>
+          </li>
 
-            <ul class="sidebar-submenu">
-
-                <li>
-                    <a href="{% url 'customers:customer_list' %}"
-                       class="{% if request.resolver_match.url_name == 'customer_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
-                        Customers List
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'customer_debtors' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
-                        Customer Debtors
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'recently_quoted_customers' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
-                        Recently Quoted Customers
-                    </a>
-                </li>
-
-            </ul>
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'agent_list agent_create agent_update agent_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:user-star-line" class="menu-icon"></iconify-icon>
-                <span>Agents</span>
+          <li>
+            <a href="#" class="{% if request.resolver_match.url_name == 'customer_debtors' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
+              Customer Debtors
             </a>
+          </li>
 
-            <ul class="sidebar-submenu">
-
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'agent_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
-                        Agents List
-                    </a>
-                </li>
-
-            </ul>
-        </li>
-
-        <!-- PRODUCT CATALOG -->
-        <li class="sidebar-menu-group-title">
-            Product Catalog
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'product_list product_create product_update product_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:archive-stack-line" class="menu-icon"></iconify-icon>
-                <span>Products</span>
+          <li>
+            <a href="#" class="{% if request.resolver_match.url_name == 'recently_quoted_customers' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
+              Recently Quoted Customers
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <li class="dropdown {% if request.resolver_match.url_name in 'agent_list agent_create agent_update agent_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:user-star-line" class="menu-icon"></iconify-icon>
+          <span>Agents</span>
+        </a>
 
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'product_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-success-main w-auto"></i>
-                        Products List
-                    </a>
-                </li>
-
-            </ul>
-        </li>
-
-        <!-- PROCUREMENT -->
-        <li class="sidebar-menu-group-title">
-            Procurement
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'supplier_list supplier_create supplier_update supplier_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:truck-line" class="menu-icon"></iconify-icon>
-                <span>Suppliers</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{% url 'agents:clearing_agent_list' %}" class="{% if request.resolver_match.url_name == 'clearing_agent_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+              Agents List
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <!-- PRODUCT CATALOG -->
+      <li class="sidebar-menu-group-title">Product Catalog</li>
 
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'supplier_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
-                        Suppliers List
-                    </a>
-                </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'product_list product_create product_update product_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:archive-stack-line" class="menu-icon"></iconify-icon>
+          <span>Products</span>
+        </a>
 
-            </ul>
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'purchase_list purchase_create purchase_update purchase_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:shopping-cart-line" class="menu-icon"></iconify-icon>
-                <span>Purchases</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{% url 'products:product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i>
+              Products List
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <!-- PROCUREMENT -->
+      <li class="sidebar-menu-group-title">Procurement</li>
 
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'purchase_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
-                        Purchases List
-                    </a>
-                </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'supplier_list supplier_create supplier_update supplier_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:truck-line" class="menu-icon"></iconify-icon>
+          <span>Suppliers</span>
+        </a>
 
-            </ul>
-        </li>
-
-        <!-- SALES ORDERS -->
-        <li class="sidebar-menu-group-title">
-            Sales Orders
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'sale_list sale_create sale_update sale_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:shopping-bag-3-line" class="menu-icon"></iconify-icon>
-                <span>Sales</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{% url 'suppliers:supplier_list' %}" class="{% if request.resolver_match.url_name == 'supplier_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+              Suppliers List
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <li class="dropdown {% if request.resolver_match.url_name in 'purchase_list purchase_create purchase_update purchase_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:shopping-cart-line" class="menu-icon"></iconify-icon>
+          <span>Purchases</span>
+        </a>
 
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'sale_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-success-main w-auto"></i>
-                        Sales List
-                    </a>
-                </li>
-
-            </ul>
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'quotation_list quotation_create quotation_update quotation_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:draft-line" class="menu-icon"></iconify-icon>
-                <span>Quotations</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{% url 'purchases:purchase_list' %}" class="{% if request.resolver_match.url_name == 'purchase_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
+              Purchases List
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <!-- SALES ORDERS -->
+      <li class="sidebar-menu-group-title">Sales Orders</li>
 
-                <li>
-                    <a href="{% url 'quotations:quotation_list' %}"
-                       class="{% if request.resolver_match.url_name == 'quotation_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
-                        Quotations List
-                    </a>
-                </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'sale_list sale_create sale_update sale_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:shopping-bag-3-line" class="menu-icon"></iconify-icon>
+          <span>Sales</span>
+        </a>
 
-            </ul>
-        </li>
-
-        <!-- INVOICING & DELIVERY -->
-        <li class="sidebar-menu-group-title">
-            Invoicing & Delivery
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'invoice_list invoice_create invoice_update invoice_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:bill-line" class="menu-icon"></iconify-icon>
-                <span>Invoices</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="#" class="{% if request.resolver_match.url_name == 'sale_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i>
+              Sales List
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <li class="dropdown {% if request.resolver_match.url_name in 'quotation_list quotation_create quotation_update quotation_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:draft-line" class="menu-icon"></iconify-icon>
+          <span>Quotations</span>
+        </a>
 
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'invoice_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
-                        Invoices List
-                    </a>
-                </li>
-
-            </ul>
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'receipt_list receipt_create receipt_update receipt_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:receipt-line" class="menu-icon"></iconify-icon>
-                <span>Receipts</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{% url 'quotations:quotation_list' %}" class="{% if request.resolver_match.url_name == 'quotation_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
+              Quotations List
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <!-- INVOICING & DELIVERY -->
+      <li class="sidebar-menu-group-title">Invoicing & Delivery</li>
 
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'receipt_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-success-main w-auto"></i>
-                        Receipts List
-                    </a>
-                </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'invoice_list invoice_create invoice_update invoice_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:bill-line" class="menu-icon"></iconify-icon>
+          <span>Invoices</span>
+        </a>
 
-            </ul>
-        </li>
-
-        <li class="dropdown {% if request.resolver_match.url_name in 'delivery_note_list delivery_note_create delivery_note_update delivery_note_delete' %}open{% endif %}">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="ri:truck-line" class="menu-icon"></iconify-icon>
-                <span>Delivery Notes</span>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="#" class="{% if request.resolver_match.url_name == 'invoice_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+              Invoices List
             </a>
+          </li>
+        </ul>
+      </li>
 
-            <ul class="sidebar-submenu">
+      <li class="dropdown {% if request.resolver_match.url_name in 'receipt_list receipt_create receipt_update receipt_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:receipt-line" class="menu-icon"></iconify-icon>
+          <span>Receipts</span>
+        </a>
 
-                <li>
-                    <a href="#"
-                       class="{% if request.resolver_match.url_name == 'delivery_note_list' %}active-page{% endif %}">
-                        <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
-                        Delivery Notes List
-                    </a>
-                </li>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="#" class="{% if request.resolver_match.url_name == 'receipt_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i>
+              Receipts List
+            </a>
+          </li>
+        </ul>
+      </li>
 
-            </ul>
-        </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'delivery_note_list delivery_note_create delivery_note_update delivery_note_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:truck-line" class="menu-icon"></iconify-icon>
+          <span>Delivery Notes</span>
+        </a>
 
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="#" class="{% if request.resolver_match.url_name == 'delivery_note_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
+              Delivery Notes List
+            </a>
+          </li>
+        </ul>
+      </li>
     </ul>
-
-</div>
+  </div>
 </aside>

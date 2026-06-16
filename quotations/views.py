@@ -134,7 +134,7 @@ def download_quotation_pdf(request, pk):
 
     context = {
         "quotation": quotation,
-        "quotation_no": f"QT-{quotation.id}",
+        "quotation_no": f"CMFQ00{quotation.id}",
         "bg_image": bg_image,
     }
 
@@ -146,11 +146,13 @@ def download_quotation_pdf(request, pk):
 
         quotation_title = slugify(quotation.title)
 
-        filename = f"QT-{quotation.id}-" f"{customer_name}-" f"{quotation_title}.pdf"
+        filename = f"CMFQ00{quotation.id}-" f"{customer_name}-" f"{quotation_title}.pdf"
 
         response = HttpResponse(pdf, content_type="application/pdf")
-
+        #below code is for pdf download
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        #below code is for pdf browser preview
+        #response["Content-Disposition"] = f'inline; filename="{filename}"'
 
         return response
 

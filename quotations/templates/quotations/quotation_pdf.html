@@ -20,26 +20,26 @@
 
     @frame quotation_info_frame {
         -pdf-frame-content: quotation_info;
-        left: 415pt;
+        left: 485pt;
         width: 200pt;
-        top: 168pt;
+        top: 86pt;
         height: 70pt;
     }
 
     @frame customer_info_frame {
         -pdf-frame-content: customer_info;
-        left: 75pt;
+        left: 105pt;
         width: 250pt;
-        top: 176pt;
+        top: 178pt;
         height: 100pt;
     }
 
     @frame quotation_description_frame {
         -pdf-frame-content: quotation_description;
-        left: 114pt;
-        width: 450pt;
-        top: 233pt;
-        height: 100pt;
+        left: 320pt;
+        width: 270pt;
+        top: 174pt;
+        height: 200pt;
     }
 
     @frame total_due_frame {
@@ -51,10 +51,10 @@
     }
 
     @frame content_frame {
-        left: 40pt;
+        left: 55pt;
         width: 550pt;
-        top: 250pt;
-        height: 300pt;
+        top: 253pt;
+        height: 550pt;
     }
 }
 
@@ -70,9 +70,9 @@ table{
 }
 
 .table thead tr{
-    background:#ff0d33;
+    background:#ee7623;
     color:#ffffff;
-    text-align:left;
+    text-align:left;    
 }
 
 td,
@@ -102,14 +102,13 @@ h4{
 
 <!-- QUOTATION INFO -->
 
-<div id="quotation_info">
+<div id="quotation_info" style="color: #ffffff;">
 
     <strong>{{ quotation_no }}</strong><br>
 
-    {{ quotation.quote_date|date:"d/m/Y" }}<br>
-
-    Due:
-    {{ quotation.due_date|date:"d/m/Y" }}
+    <strong>{{ quotation.quote_date|date:"d/m/Y" }}</strong><br>
+    
+    <strong>{{ quotation.due_date|date:"d/m/Y" }}</strong>
 
 </div>
 
@@ -122,30 +121,22 @@ h4{
         {{ quotation.customer.customer_name }}
     </strong>
 
-    <br>
-
-    {% if quotation.customer.company_name %}
-        {{ quotation.customer.company_name }}<br>
-    {% endif %}
+    <br>   
+    {{ quotation.customer.company_name }}<br>    
 
     {{ quotation.customer.phone_number }}
 
-    <br>
-
-    {% if quotation.customer.email %}
-        {{ quotation.customer.email }}<br>
-    {% endif %}
-
-    {% if quotation.customer.address %}
-        {{ quotation.customer.address }}
-    {% endif %}
+    <br>    
+    {{ quotation.customer.tin_number }}<br>
+    
+    {{ quotation.customer.address }}   
 
 </div>
 
 
 <!-- QUOTATION DESCRIPTION -->
 
-<div id="quotation_description">
+<div id="quotation_description" style="text-align: center;">
 
     <strong>
         {{ quotation.title }}
@@ -170,23 +161,23 @@ h4{
 
             <tr>
 
-                <th style="width:40px;padding:4px;">
+                <th style="width:40px;padding:3px;">
                     No.
                 </th>
 
-                <th style="width:320px;padding:4px;">
+                <th style="width:320px;padding:3px;">
                     DESCRIPTION
                 </th>
 
-                <th style="width:60px;padding:4px;">
+                <th style="width:60px;padding:3px;">
                     QTY
                 </th>
 
-                <th style="width:110px;padding:4px;">
+                <th style="width:110px;padding:3px;">
                     UNIT PRICE
                 </th>
 
-                <th style="width:110px;padding:4px;">
+                <th style="width:110px;padding:3px;">
                     AMOUNT
                 </th>
 
@@ -200,24 +191,24 @@ h4{
 
             <tr>
 
-                <td style="padding:4px;">
+                <td style="padding:3px;">
                     {{ forloop.counter }}
                 </td>
 
-                <td style="padding:4px;">
+                <td style="padding:3px;">
                     {{ item.item_name }}
                 </td>
 
-                <td style="padding:4px;">
-                    {{ item.quantity }}
+                <td style="padding:3px;text-align: center;">
+                    {{ item.quantity|floatformat:0 }}
                 </td>
 
-                <td style="padding:4px;">
-                    {{ item.unit_price|floatformat:0|intcomma }}/=
+                <td style="padding:3px; text-align: center;">
+                    {{ item.unit_price|floatformat:0|intcomma }} /=
                 </td>
 
-                <td style="padding:4px;">
-                    {{ item.total|floatformat:0|intcomma }}/=
+                <td style="padding:3px; text-align: center;">
+                    {{ item.total|floatformat:0|intcomma }} /=
                 </td>
 
             </tr>
@@ -243,7 +234,7 @@ h4{
                 <td style="padding:4px;">
 
                     <strong>
-                        {{ quotation.total_amount|floatformat:0|intcomma }}/=
+                        {{ quotation.total_amount|floatformat:0|intcomma }} /=
                     </strong>
 
                 </td>
@@ -255,19 +246,5 @@ h4{
     </table>
 
 </div>
-
-
-<!-- TOTAL FRAME -->
-
-<div id="total_due">
-
-    <strong style="font-size:14px;">
-
-        {{ quotation.total_amount|floatformat:0|intcomma }}/=
-
-    </strong>
-
-</div>
-
 </body>
 </html>
