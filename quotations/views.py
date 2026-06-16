@@ -157,3 +157,22 @@ def download_quotation_pdf(request, pk):
         return response
 
     return HttpResponse("Error generating PDF", status=400)
+
+def quotation_detail(request, pk):
+    quotation = get_object_or_404(
+        Quotation.objects.select_related(
+            "customer",
+        ).prefetch_related(
+            "items",
+        ),
+        pk=pk,
+    )
+
+    return render(
+        request,
+        "quotations/partials/quotation_detail.html",
+        {
+            "quotation": quotation,
+        },
+    )
+

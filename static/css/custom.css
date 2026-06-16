@@ -190,3 +190,8 @@
     }
 }
 
+.choices.is-disabled .choices__item {
+  cursor: not-allowed;
+  color: var(--choices-item-disabled-color, #b8b8b8) !important;
+}
+

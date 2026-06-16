@@ -1,0 +1,319 @@
+<!doctype html>
+
+<html>
+{% load humanize %}
+
+<head>
+<meta charset="utf-8">
+
+<style>
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/static/fonts/Poppins-Regular.ttf');
+}
+
+@page {
+
+    size: A4 portrait;
+
+    background-image: url("{{ bg_image }}");
+
+    @frame invoice_info_frame {
+        -pdf-frame-content: invoice_info;
+        left: 485pt;
+        width: 200pt;
+        top: 86pt;
+        height: 70pt;
+    }
+
+    @frame customer_info_frame {
+        -pdf-frame-content: customer_info;
+        left: 105pt;
+        width: 250pt;
+        top: 178pt;
+        height: 100pt;
+    }
+
+    @frame invoice_notes_frame {
+        -pdf-frame-content: invoice_notes;
+        left: 320pt;
+        width: 270pt;
+        top: 174pt;
+        height: 200pt;
+    }
+
+    @frame totals_frame {
+        -pdf-frame-content: totals;
+        left: 400pt;
+        width: 180pt;
+        top: 620pt;
+        height: 120pt;
+    }
+
+    @frame content_frame {
+        left: 55pt;
+        width: 550pt;
+        top: 253pt;
+        height: 550pt;
+    }
+}
+
+body{
+    font-size:12px;
+    font-family:'Poppins';
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+}
+
+.table thead tr{
+    background:#ee7623;
+    color:#ffffff;
+    text-align:left;
+}
+
+td,
+th{
+    border:1px solid #dddddd;
+    text-align:left;
+}
+
+tr:nth-child(even){
+    background:#f5f5f5;
+}
+
+h1{
+    font-size:38px;
+}
+
+h4{
+    font-size:18px;
+    color:#333;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- INVOICE INFO -->
+
+<div id="invoice_info" style="color:#ffffff;">
+
+<strong>{{ invoice.invoice_number }}</strong><br>
+
+<strong>{{ invoice.invoice_date|date:"d/m/Y" }}</strong><br>
+
+{% if invoice.due_date %}
+    <strong>{{ invoice.due_date|date:"d/m/Y" }}</strong>
+{% endif %}
+
+
+</div>
+
+<!-- CUSTOMER INFO -->
+
+<div id="customer_info">
+
+<strong>
+    {{ invoice.customer.customer_name }}
+</strong>
+
+<br>
+
+{{ invoice.customer.company_name }}<br>
+
+{{ invoice.customer.phone_number }}<br>
+
+{{ invoice.customer.tin_number }}<br>
+
+{{ invoice.customer.address }}
+
+
+</div>
+
+<!-- NOTES -->
+
+<div id="invoice_notes" style="text-align:center;">
+
+
+<strong>INVOICE</strong>
+
+<br>
+
+{% if invoice.notes %}
+    {{ invoice.notes }}
+{% endif %}
+
+
+</div>
+
+<!-- ITEMS TABLE -->
+
+<div class="table" id="content_frame">
+
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th style="width:40px;padding:3px;">
+                No.
+            </th>
+
+            <th style="width:250px;padding:3px;">
+                PRODUCT
+            </th>
+
+            <th style="width:70px;padding:3px;">
+                QTY
+            </th>
+
+            <th style="width:110px;padding:3px;">
+                UNIT PRICE
+            </th>
+
+            <th style="width:110px;padding:3px;">
+                AMOUNT
+            </th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for item in invoice.items.all %}
+
+        <tr>
+
+            <td style="padding:3px;">
+                {{ forloop.counter }}
+            </td>
+
+            <td style="padding:3px;">
+                {% if item.product %}
+                    {{ item.product }}
+                {% else %}
+                    {{ item.description }}
+                {% endif %}
+            </td>
+
+            <td style="padding:3px;text-align:center;">
+                {{ item.quantity|floatformat:0 }}
+            </td>
+
+            <td style="padding:3px;text-align:center;">
+                {{ item.unit_price|floatformat:0|intcomma }} /=
+            </td>
+
+            <td style="padding:3px;text-align:center;">
+                {{ item.subtotal|floatformat:0|intcomma }} /=
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+    <tfoot>
+
+        <tr>
+
+            <td colspan="3" style="border:none;"></td>
+
+            <td style="padding:4px;">
+                <strong>SUBTOTAL</strong>
+            </td>
+
+            <td style="padding:4px;">
+                <strong>
+                    {{ invoice.subtotal|floatformat:0|intcomma }} /=
+                </strong>
+            </td>
+
+        </tr>
+
+        {% if invoice.discount_amount %}
+
+        <tr>
+
+            <td colspan="3" style="border:none;"></td>
+
+            <td style="padding:4px;">
+                <strong>DISCOUNT</strong>
+            </td>
+
+            <td style="padding:4px;">
+                <strong>
+                    {{ invoice.discount_amount|floatformat:0|intcomma }} /=
+                </strong>
+            </td>
+
+        </tr>
+
+        {% endif %}
+
+        <tr>
+
+            <td colspan="3" style="border:none;"></td>
+
+            <td style="padding:4px;">
+                <strong>TOTAL</strong>
+            </td>
+
+            <td style="padding:4px;">
+                <strong>
+                    {{ invoice.total_amount|floatformat:0|intcomma }} /=
+                </strong>
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td colspan="3" style="border:none;"></td>
+
+            <td style="padding:4px;">
+                <strong>PAID</strong>
+            </td>
+
+            <td style="padding:4px;">
+                <strong>
+                    {{ invoice.amount_paid|floatformat:0|intcomma }} /=
+                </strong>
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td colspan="3" style="border:none;"></td>
+
+            <td style="padding:4px;">
+                <strong>BALANCE</strong>
+            </td>
+
+            <td style="padding:4px;">
+                <strong>
+                    {{ invoice.balance|floatformat:0|intcomma }} /=
+                </strong>
+            </td>
+
+        </tr>
+
+    </tfoot>
+
+</table>
+</div>
+
+</body>
+</html>

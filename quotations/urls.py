@@ -11,6 +11,13 @@ urlpatterns = [
     path("<int:pk>/delete/", views.quotation_delete, name="quotation_delete"),
     path("item-row/", views.quotation_item_empty_row, name="quotation_item_empty_row"),
     path(
-        "quotation/<int:pk>/pdf/", views.download_quotation_pdf, name="download_quotation_pdf"
+        "quotation/<int:pk>/pdf/",
+        views.download_quotation_pdf,
+        name="download_quotation_pdf",
+    ),
+    path(
+        "<int:pk>/detail/",
+        views.quotation_detail,
+        name="quotation_detail",
     ),
 ]

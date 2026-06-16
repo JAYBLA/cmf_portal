@@ -1,0 +1,47 @@
+<tr>
+  {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
+
+  <td>{{ form.product }}</td>
+  <td>{{ form.description }}</td>
+  <td>{{ form.quantity }}</td>
+  <td>{{ form.unit_price }}</td>
+  <td class="text-center">
+    {% if form.DELETE %}
+      <div class="d-none">{{ form.DELETE }}</div>
+    {% endif %}
+
+    <button type="button" class="btn btn-sm btn-outline-danger delete-row">×</button>
+  </td>
+</tr>
+
+<script>
+  document.addEventListener('click', function (e) {
+    if (!e.target.classList.contains('delete-row')) {
+      return
+    }
+  
+    const row = e.target.closest('tr')
+  
+    const deleteCheckbox = row.querySelector('input[name$="-DELETE"]')
+  
+    if (deleteCheckbox) {
+      // Existing saved item
+  
+      deleteCheckbox.checked = true
+  
+      row.style.display = 'none'
+    } else {
+      // New unsaved item
+  
+      row.remove()
+  
+      const totalForms = document.getElementById('id_items-TOTAL_FORMS')
+  
+      if (totalForms) {
+        totalForms.value = parseInt(totalForms.value, 10) - 1
+      }
+    }
+  })
+</script>

@@ -1,0 +1,181 @@
+{% load humanize %}
+
+<div class="modal-header border-0 pb-0">
+    <div>
+        <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-text"></i>
+            Quotation Details
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fs-6 fw-semibold px-3 py-1">
+                {{ quotation.title }}
+            </span>
+        </h5>
+            <!-- Description (Notes) -->
+    {% if quotation.description %}
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-sticky text-primary"></i>
+                <span class="fw-semibold">Description</span>
+            </div>
+            <div class="card-body">
+                {{ quotation.description|linebreaks }}
+            </div>
+        </div>
+    {% endif %}
+        <p class="text-muted small mb-0 mt-1">
+            <i class="bi bi-calendar3 me-1"></i>
+            Created {{ quotation.created_at|timesince }} ago
+        </p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body pt-2">
+    <!-- Status / Date Bar -->
+    <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-3 border">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-tag text-muted"></i>
+            <span class="text-muted small fw-medium">Quote:</span>
+            <span class="badge bg-primary fs-6 fw-semibold px-3 py-2">
+                <i class="bi bi-file-earmark-check me-1"></i>
+                Active
+            </span>
+        </div>
+        <div class="vr"></div>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div>
+                <small class="text-muted d-block lh-1">Quote Date</small>
+                <strong class="small">{{ quotation.quote_date }}</strong>
+            </div>
+            <div>
+                <small class="text-muted d-block lh-1">Due Date</small>
+                <strong class="small {% if quotation.due_date and quotation.due_date < today %}text-danger{% endif %}">
+                    {{ quotation.due_date|default:'-' }}
+                    {% if quotation.due_date and quotation.due_date < today %}
+                        <i class="bi bi-exclamation-triangle-fill text-danger ms-1" title="Overdue"></i>
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two-column: Customer & Summary -->
+    <div class="row g-3 mb-4">
+        <!-- Customer Information -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+                    <i class="bi bi-person-badge text-primary"></i>
+                    <span class="fw-semibold">Customer</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-2">
+                        <div>
+                            <small class="text-muted d-block lh-1">Name</small>
+                            <strong>{{ quotation.customer.customer_name }}</strong>
+                        </div>
+                        {% if quotation.customer.company_name %}
+                            <div>
+                                <small class="text-muted d-block lh-1">Company</small>
+                                <span>{{ quotation.customer.company_name }}</span>
+                            </div>
+                        {% endif %}
+                        {% if quotation.customer.phone_number %}
+                            <div>
+                                <small class="text-muted d-block lh-1">Phone</small>
+                                <span><i class="bi bi-telephone me-1"></i>{{ quotation.customer.phone_number }}</span>
+                            </div>
+                        {% endif %}
+                        {% if quotation.customer.address %}
+                            <div>
+                                <small class="text-muted d-block lh-1">Address</small>
+                                <span class="small">{{ quotation.customer.address }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary (compact) -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+                    <i class="bi bi-calculator text-primary"></i>
+                    <span class="fw-semibold">Summary</span>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="row g-1">
+                        <div class="col-12">
+                            <small class="text-muted d-block lh-1">Total Amount</small>
+                            <span class="fw-bold fs-4 text-primary">{{ quotation.total_amount|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block lh-1">Items</small>
+                            <span class="fw-semibold">{{ quotation.items.count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quotation Items -->
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-list-ul text-primary"></i>
+                <span class="fw-semibold">Quotation Items</span>
+            </div>
+            <span class="badge bg-light text-dark border">{{ quotation.items.count }} items</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50" class="text-center">#</th>
+                            <th>Item</th>
+                            <th width="90" class="text-center">Qty</th>
+                            <th width="140" class="text-end">Unit Price</th>
+                            <th width="140" class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in quotation.items.all %}
+                            <tr>
+                                <td class="text-center text-muted small">{{ forloop.counter }}</td>
+                                <td>
+                                    <span class="fw-medium">{{ item.item_name }}</span>
+                                </td>
+                                <td class="text-center">{{ item.quantity|floatformat:0 }}</td>
+                                <td class="text-end font-monospace">{{ item.unit_price|floatformat:0|intcomma }}</td>
+                                <td class="text-end fw-semibold font-monospace">{{ item.total|floatformat:0|intcomma }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    No items found
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light fw-semibold">
+                        <tr>
+                            <td colspan="4" class="text-end">Total</td>
+                            <td class="text-end font-monospace">{{ quotation.total_amount|floatformat:0|intcomma }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer border-0 pt-0">
+    <div class="d-flex gap-2 w-100 justify-content-end">
+        <button type="button" class="btn btn-outline-warning" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg me-1"></i> Close
+        </button>
+    </div>
+</div>

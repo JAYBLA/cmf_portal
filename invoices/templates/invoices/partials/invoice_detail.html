@@ -1,0 +1,217 @@
+{% load humanize %}
+<div class="modal-header border-0 pb-0">
+    <div>
+        <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+            <i class="bi bi-receipt"></i>
+            Invoice Details
+        </h5>
+        <p class="text-muted small mb-0 mt-1">
+            <i class="bi bi-calendar3 me-1"></i>
+            Created {{ invoice.invoice_date|timesince }} ago
+        </p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body pt-2">
+    <!-- Status Bar -->
+    <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-3 border">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle text-muted"></i>
+            <span class="text-muted small fw-medium">Status:</span>
+            <span class="badge
+                    {% if invoice.status == 'paid' %}
+                        bg-success
+                    {% elif invoice.status == 'partial' %}
+                        bg-warning text-dark
+                    {% elif invoice.status == 'unpaid' %}
+                        bg-danger
+                    {% else %}
+                        bg-secondary
+                    {% endif %}
+                    fs-6 fw-semibold px-3 py-2
+                ">
+                {% if invoice.status == 'paid' %}
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                {% elif invoice.status == 'partial' %}
+                    <i class="bi bi-clock-fill me-1"></i>
+                {% elif invoice.status == 'unpaid' %}
+                    <i class="bi bi-exclamation-circle-fill me-1"></i>
+                {% endif %}
+                {{ invoice.get_status_display }}
+            </span>
+        </div>
+        <div class="vr"></div>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div>
+                <small class="text-muted d-block lh-1">Invoice Date</small>
+                <strong class="small">{{ invoice.invoice_date }}</strong>
+            </div>
+            <div>
+                <small class="text-muted d-block lh-1">Due Date</small>
+                <strong class="small {% if invoice.due_date and invoice.due_date < today %}text-danger{% endif %}">
+                    {{ invoice.due_date|default:'-' }}
+                    {% if invoice.due_date and invoice.due_date < today %}
+                        <i class="bi bi-exclamation-triangle-fill text-danger ms-1" title="Overdue"></i>
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two-column: Customer & Summary side by side -->
+    <div class="row g-3 mb-4">
+        <!-- Customer Information -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+                    <i class="bi bi-person-badge text-primary"></i>
+                    <span class="fw-semibold">Customer</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-2">
+                        <div>
+                            <small class="text-muted d-block lh-1">Name</small>
+                            <strong>{{ invoice.customer.customer_name }}</strong>
+                        </div>
+                        {% if invoice.customer.company_name %}
+                            <div>
+                                <small class="text-muted d-block lh-1">Company</small>
+                                <span>{{ invoice.customer.company_name }}</span>
+                            </div>
+                        {% endif %}
+                        {% if invoice.customer.phone_number %}
+                            <div>
+                                <small class="text-muted d-block lh-1">Phone</small>
+                                <span><i class="bi bi-telephone me-1"></i>{{ invoice.customer.phone_number }}</span>
+                            </div>
+                        {% endif %}
+                        {% if invoice.customer.address %}
+                            <div>
+                                <small class="text-muted d-block lh-1">Address</small>
+                                <span class="small">{{ invoice.customer.address }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary (compact) -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+                    <i class="bi bi-calculator text-primary"></i>
+                    <span class="fw-semibold">Summary</span>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="row g-1">
+                        <div class="col-6">
+                            <small class="text-muted d-block lh-1">Subtotal</small>
+                            <span class="fw-semibold">{{ invoice.subtotal |floatformat:0 |intcomma }}</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block lh-1">Discount</small>
+                            <span class="fw-semibold text-success">-{{ invoice.discount_amount |floatformat:0 |intcomma }}</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block lh-1">Total</small>
+                            <span class="fw-bold fs-5">{{ invoice.total_amount |floatformat:0 |intcomma }}</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block lh-1">Balance</small>
+                            <span class="fw-bold {% if invoice.balance > 0 %}text-danger{% else %}text-success{% endif %}">
+                                {{ invoice.balance |floatformat:0 |intcomma }}
+                            </span>
+                        </div>
+                    </div>
+                    {% if invoice.amount_paid %}
+                        <div class="mt-2 pt-2 border-top">
+                            <small class="text-muted d-block lh-1">Amount Paid</small>
+                            <span class="fw-semibold text-success">{{ invoice.amount_paid |floatformat:0 |intcomma }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Items -->
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-list-ul text-primary"></i>
+                <span class="fw-semibold">Invoice Items</span>
+            </div>
+            <span class="badge bg-light text-dark border">{{ invoice.items.count }} items</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50" class="text-center">#</th>
+                            <th>Item</th>
+                            <th width="90" class="text-center">Qty</th>
+                            <th width="140" class="text-end">Unit Price</th>
+                            <th width="140" class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in invoice.items.all %}
+                            <tr>
+                                <td class="text-center text-muted small">{{ forloop.counter }}</td>
+                                <td>
+                                    <span class="fw-medium">
+                                        {% if item.product %}
+                                            {{ item.product }}
+                                        {% else %}
+                                            {{ item.description }}
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end font-monospace">{{ item.unit_price |floatformat:0 |intcomma }}</td>
+                                <td class="text-end fw-semibold font-monospace">{{ item.subtotal |floatformat:0 |intcomma }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    No items found
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light fw-semibold">
+                        <tr>
+                            <td colspan="4" class="text-end">Total</td>
+                            <td class="text-end font-monospace">{{ invoice.total_amount |floatformat:0 |intcomma }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    {% if invoice.notes %}
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-sticky text-primary"></i>
+                <span class="fw-semibold">Notes</span>
+            </div>
+            <div class="card-body">
+                {{ invoice.notes|linebreaks }}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<div class="modal-footer border-0 pt-0">
+    <div class="d-flex gap-2 w-100 justify-content-end">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg me-1"></i> Close
+        </button>
+    </div>
+</div>

@@ -1,0 +1,150 @@
+<form hx-post="{% if invoice %} {% url 'invoices:invoice_update' invoice.id %} {% else %} {% url 'invoices:invoice_create' %} {% endif %}">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div class="modal-header">
+        <h5 class="modal-title">
+            {% if invoice %}
+                Edit Invoice
+            {% else %}
+                New Invoice
+            {% endif %}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body"
+         style="overflow-y:auto;
+                max-height:calc(95vh - 180px)">
+        <div class="card mb-4">
+            <div class="card-header">Invoice Details</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Customer</label>
+                        {{ form.customer_text }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Invoice Date</label>
+                        {{ form.invoice_date }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Due Date</label>
+                        {{ form.due_date }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Discount Amount</label>
+                        {{ form.discount_amount }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        {{ form.status }}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Notes</label>
+                        {{ form.notes }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Invoice Items</div>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th>Description</th>
+                            <th width="100">Qty</th>
+                            <th width="130">Unit Price</th>
+                            <th width="60">Del</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-container">
+                        {% for form in formset %}
+                            {% include 'invoices/partials/item_row.html' %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success">Save Invoice</button>
+    </div>
+</form>
+<script>
+  ;(function () {
+    function initializeFlatpickr() {
+      if (typeof flatpickr !== 'undefined') {
+        flatpickr('.flatpickr', {
+          dateFormat: 'Y-m-d',
+  
+          altInput: true,
+  
+          altFormat: 'F j, Y',
+  
+          allowInput: true
+        })
+      }
+    }
+  
+    function initializeAutoRows() {
+      const rows = document.querySelectorAll('#items-container tr')
+  
+      rows.forEach(function (row) {
+        const productInput = row.querySelector('select[name$="product"]')
+  
+        if (!productInput) return
+  
+        if (productInput.dataset.bound) return
+  
+        productInput.dataset.bound = '1'
+  
+        productInput.addEventListener(
+          'change',
+          function () {
+            if (!this.value) {
+              return
+            }
+  
+            const allRows = document.querySelectorAll('#items-container tr')
+  
+            const lastRow = allRows[allRows.length - 1]
+  
+            const lastInput = lastRow.querySelector('select[name$="product"]')
+  
+            if (this !== lastInput) {
+              return
+            }
+  
+            appendNewRow()
+          },
+          { once: true }
+        )
+      })
+    }
+  
+    function appendNewRow() {
+      const totalForms = document.getElementById('id_items-TOTAL_FORMS')
+  
+      const current = parseInt(totalForms.value)
+  
+      htmx.ajax('GET', "{% url 'invoices:invoice_item_empty_row' %}?total_forms=" + current, {
+        target: '#items-container',
+        swap: 'beforeend'
+      })
+  
+      totalForms.value = current + 1
+    }
+  
+    initializeFlatpickr()
+  
+    initializeAutoRows()
+  
+    document.body.addEventListener('htmx:afterSwap', function () {
+      initializeFlatpickr()
+  
+      initializeAutoRows()
+    })
+  })()
+</script>

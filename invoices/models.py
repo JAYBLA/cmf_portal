@@ -8,146 +8,42 @@ from quotations.models import *
 # =========================================
 # INVOICE
 # =========================================
-
 class Invoice(models.Model):
 
     STATUS = (
-
         ("draft", "Draft"),
-
         ("unpaid", "Unpaid"),
-
         ("partial", "Partial"),
-
         ("paid", "Paid"),
-
         ("cancelled", "Cancelled"),
-
     )
 
-    invoice_number = models.CharField(
-
-        max_length=30,
-
-        unique=True,
-
-        blank=True
-
-    )
+    invoice_number = models.CharField(max_length=30, unique=True, blank=True, null=True)
 
     customer = models.ForeignKey(
-
-        Customer,
-
-        on_delete=models.PROTECT,
-
-        related_name="invoices"
-
+        Customer, on_delete=models.PROTECT, related_name="invoices"
     )
-
-    quotation = models.OneToOneField(
-
-        Quotation,
-
-        on_delete=models.SET_NULL,
-
-        blank=True,
-
-        null=True,
-
-        related_name="invoice"
-
-    )
-
     invoice_date = models.DateField()
 
-    due_date = models.DateField(
+    due_date = models.DateField(blank=True, null=True)
 
-        blank=True,
+    subtotal = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-        null=True
+    discount_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-    )
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-    subtotal = models.DecimalField(
+    amount_paid = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-        max_digits=14,
+    balance = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-        decimal_places=2,
+    status = models.CharField(max_length=20, choices=STATUS, default="draft")
 
-        default=0
+    notes = models.TextField(blank=True, null=True)
 
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    discount_amount = models.DecimalField(
-
-        max_digits=14,
-
-        decimal_places=2,
-
-        default=0
-
-    )
-
-    total_amount = models.DecimalField(
-
-        max_digits=14,
-
-        decimal_places=2,
-
-        default=0
-
-    )
-
-    amount_paid = models.DecimalField(
-
-        max_digits=14,
-
-        decimal_places=2,
-
-        default=0
-
-    )
-
-    balance = models.DecimalField(
-
-        max_digits=14,
-
-        decimal_places=2,
-
-        default=0
-
-    )
-
-    status = models.CharField(
-
-        max_length=20,
-
-        choices=STATUS,
-
-        default="draft"
-
-    )
-
-    notes = models.TextField(
-
-        blank=True,
-
-        null=True
-
-    )
-
-    created_at = models.DateTimeField(
-
-        auto_now_add=True
-
-    )
-
-    updated_at = models.DateTimeField(
-
-        auto_now=True
-
-    )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
 
@@ -161,15 +57,11 @@ class Invoice(models.Model):
 
         if not self.invoice_number:
 
-            last_invoice = Invoice.objects.order_by(
-                "-id"
-            ).first()
+            last_invoice = Invoice.objects.order_by("-id").first()
 
             if last_invoice:
 
-                last_id = int(
-                    last_invoice.invoice_number.split("-")[-1]
-                )
+                last_id = int(last_invoice.invoice_number.split("-")[-1])
 
                 next_id = last_id + 1
 
@@ -177,86 +69,46 @@ class Invoice(models.Model):
 
                 next_id = 1
 
-            self.invoice_number = (
-                f"INV-{next_id:05d}"
-            )
+            self.invoice_number = f"INV-{next_id:05d}"
 
         super().save(*args, **kwargs)
 
     def __str__(self):
 
         return self.invoice_number
-    
+
+
 # =========================================
 # INVOICE ITEM
 # =========================================
 
+
 class InvoiceItem(models.Model):
 
-    invoice = models.ForeignKey(
-
-        Invoice,
-
-        on_delete=models.CASCADE,
-
-        related_name="items"
-
-    )
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="items")
 
     product = models.ForeignKey(
-
         Product,
-
         on_delete=models.PROTECT,
-
-        related_name="invoice_items"
-
+        related_name="invoice_items",
+        blank=True,
+        null=True,
     )
 
-    quantity = models.DecimalField(
-
-        max_digits=12,
-
-        decimal_places=2
-
+    description = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
     )
 
-    unit_price = models.DecimalField(
+    quantity = models.DecimalField(max_digits=12, decimal_places=2)
 
-        max_digits=14,
+    unit_price = models.DecimalField(max_digits=14, decimal_places=2)
 
-        decimal_places=2
-
-    )
-
-    subtotal = models.DecimalField(
-
-        max_digits=14,
-
-        decimal_places=2,
-
-        default=0
-
-    )
-
-    class Meta:
-
-        ordering = ["id"]
+    subtotal = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
     def save(self, *args, **kwargs):
 
-        self.subtotal = (
-
-            self.quantity *
-
-            self.unit_price
-
-        )
+        self.subtotal = self.quantity * self.unit_price
 
         super().save(*args, **kwargs)
-
-    def __str__(self):
-
-        return (
-            f"{self.product}"
-        )

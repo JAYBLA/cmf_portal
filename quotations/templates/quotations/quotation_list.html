@@ -50,8 +50,9 @@
                     {% url 'quotations:quotation_update' quotation.id as edit_url %}
                     {% url 'quotations:quotation_delete' quotation.id as delete_url %}
                     {% url 'quotations:download_quotation_pdf' quotation.id as download_url %}
+                    {% url 'quotations:quotation_detail' quotation.id as view_url %}
 
-                    {% include 'action_buttons.html' with edit_url=edit_url delete_url=delete_url download_url=download_url %}
+                    {% include 'action_buttons.html' with edit_url=edit_url delete_url=delete_url download_url=download_url view_url=view_url %}
                   </td>
                 </tr>
               {% empty %}

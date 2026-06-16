@@ -16,7 +16,7 @@ class Customer(models.Model):
 
     company_name = models.CharField(max_length=255, blank=True, null=True, unique=True)
 
-    phone_number = models.CharField(max_length=50, unique=True)
+    phone_number = models.CharField(blank=True, null=True, max_length=50, unique=True)
 
     email = models.EmailField(blank=True, null=True, unique=True)
 

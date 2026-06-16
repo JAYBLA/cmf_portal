@@ -56,21 +56,53 @@
 <script>
   function initializeChoices() {
     document.querySelectorAll(".choices").forEach(function (select) {
-      if (select.dataset.choicesInitialized) {
-        return;
-      }
 
-      select.dataset.choicesInitialized = "true";
+        if (select.dataset.choicesInitialized) {
+            return;
+        }
 
-      new Choices(select, {
-        searchEnabled: true,
+        select.dataset.choicesInitialized = "true";
 
-        itemSelectText: "",
-
-        shouldSort: false,
-      });
+        new Choices(select, {
+            searchEnabled: true,
+            itemSelectText: "",
+            shouldSort: false
+        });
     });
+}
+
+document.addEventListener("DOMContentLoaded", initializeChoices);
+
+document.body.addEventListener(
+    "htmx:afterSwap",
+    initializeChoices
+);
+</script>
+<script>
+  function initTagChoices() {
+    document.querySelectorAll('.choices-tags').forEach(function (el) {
+      if (el.dataset.choicesTagsInitialized === 'true') {
+        return
+      }
+  
+      const choices = new Choices(el, {
+        searchEnabled: true,
+        itemSelectText: '',
+        shouldSort: false,
+  
+        addItems: true,
+        addChoices: true,
+        duplicateItemsAllowed: false
+      })
+  
+      el.choicesInstance = choices
+      el.dataset.choicesTagsInitialized = 'true'
+    })
   }
+  
+  document.addEventListener('DOMContentLoaded', initTagChoices)
+  
+  document.body.addEventListener('htmx:afterSwap', initTagChoices)
 </script>
 <script>
 function initFlatpickr(container = document) {

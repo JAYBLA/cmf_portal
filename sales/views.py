@@ -15,3 +15,6 @@ def product_selling_price(request):
     product = get_object_or_404(Product, pk=product_id)
 
     return JsonResponse({"selling_price": float(product.selling_price)})
+
+
+
