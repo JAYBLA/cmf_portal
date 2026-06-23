@@ -1,9 +1,163 @@
-<tbody id="purchase-table-body">
+{% load humanize %}
+{% for purchase in purchases %}
+<tr id="purchase-{{ purchase.id }}" class="align-middle">
 
-    {% for purchase in purchases %}
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
 
-        {% include "purchases/partials/purchase_row.html" %}
+    <!-- PURCHASE DETAILS (two horizontal lines) -->
+    <td>
+        <!-- LINE 1: Purchase Number + Category + Status -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+            <span class="fw-bold text-primary">{{ purchase.purchase_number }}</span>
+            <span>
+                {% if purchase.purchase_category == 'international' %}
+                    <span class="badge bg-info">International</span>
+                {% else %}
+                    <span class="badge bg-primary">Local</span>
+                {% endif %}
+            </span>
+            <span>
+                {% if purchase.payment_status == 'paid' %}
+                    <span class="badge bg-success">Paid</span>
+                {% elif purchase.payment_status == 'partial' %}
+                    <span class="badge bg-warning text-dark">Partial</span>
+                {% else %}
+                    <span class="badge bg-danger">Pending</span>
+                {% endif %}
+            </span>
+        </div>
 
-    {% endfor %}
+        <!-- LINE 2: All other details (horizontal) -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+            <!-- Supplier -->
+            <span>
+                <span class="fw-light">Supplier:</span> {{ purchase.supplier }}
+            </span>
+            <span>|</span>
+            <!-- Invoice -->
+            <span>
+                <span class="fw-light">Invoice:</span>
+                {% if purchase.supplier_invoice_number %}
+                    {{ purchase.supplier_invoice_number }}
+                {% else %}
+                    <span class="text-muted">N/A</span>
+                {% endif %}
+            </span>
+            <span>|</span>
+            <!-- Date -->
+            <span>
+                <span class="fw-light">Date:</span> {{ purchase.purchase_date|date:'M d, Y' }}
+            </span>
+            <span>|</span>
+            <!-- Total -->
+            <span>
+                <span class="fw-light">Total:</span>
+                {% if purchase.currency == 'USD' %}
+                    <span class="fw-semibold">USD {{ purchase.total_amount|floatformat:2|intcomma }}</span>
+                    <span class="text-muted">|</span>
+                    <span class="fw-light">Shipping:</span> USD {{ purchase.international_shipping_cost|floatformat:2|intcomma }}
+                    <span class="text-muted">|</span>
+                    <span class="fw-light">Rate:</span> {{ purchase.exchange_rate|floatformat:2 }}
+                {% else %}
+                    <span class="fw-semibold">TZS {{ purchase.total_amount|floatformat:2|intcomma }}</span>
+                {% endif %}
+            </span>
+            <span>|</span>
+            <!-- Paid -->
+            <span>
+                <span class="fw-light">Paid:</span>
+                <span class="fw-semibold text-success">
+                    {% if purchase.currency == 'USD' %}
+                        USD {{ purchase.amount_paid|floatformat:2|intcomma }}
+                    {% else %}
+                        TZS {{ purchase.amount_paid|floatformat:2|intcomma }}
+                    {% endif %}
+                </span>
+            </span>
+            <span>|</span>
+            <!-- Value (TZS) + Local Transport -->
+            <span>
+                <span class="fw-light">Value (TZS):</span>
+                <span class="fw-bold text-primary">{{ purchase.total_amount_tzs|floatformat:2|intcomma }}</span>
+                <span class="text-muted">|</span>
+                <span class="fw-light">Local Tr:</span> TZS {{ purchase.local_shipping_cost|floatformat:2|intcomma }}
+            </span>
+            <span>|</span>
+            <!-- Balance -->
+            <span>
+                <span class="fw-light">Balance:</span>
+                <span class="text-danger fw-bold">
+                    {% if purchase.currency == 'USD' %}
+                        USD {{ purchase.balance|floatformat:2|intcomma }}
+                    {% else %}
+                        TZS {{ purchase.balance|floatformat:2|intcomma }}
+                    {% endif %}
+                </span>
+                {% if purchase.currency == 'USD' %}
+                    <span class="text-muted">(TZS {{ purchase.balance_tzs|floatformat:2|intcomma }})</span>
+                {% endif %}
+            </span>
+        </div>
+    </td>
 
-</tbody>
+<!-- ACTIONS -->
+  <td style="min-width: 260px;">
+    <div class="row g-1">
+      <!-- EDIT -->
+      <div class="col-6">
+        <a hx-get="{% url 'purchases:purchase_update' purchase.id %}"
+           hx-target="#modal-body"
+           hx-swap="innerHTML"
+           class="btn btn-warning btn-sm shadow w-100"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           title="Edit Purchase">
+          <i class="fa-solid fa-pen-to-square me-1"></i>
+          Edit
+        </a>
+      </div>
+      <!-- DELETE -->
+      <div class="col-6">
+        <a hx-get="{% url 'purchases:purchase_delete' purchase.id %}"
+           hx-target="#modal-body"
+           hx-swap="innerHTML"
+           class="btn btn-danger btn-sm shadow w-100"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           title="Delete Purchase">
+          <i class="fa-solid fa-trash-can me-1"></i>
+          Delete
+        </a>
+      </div>
+      <!-- PAYMENT -->
+      <div class="col-6">
+        <a hx-get="{% url 'purchases:purchase_payment_create' purchase.id %}"
+           hx-target="#modal-body"
+           hx-swap="innerHTML"
+           class="btn btn-success btn-sm shadow w-100"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           title="Make Purchase Payment">
+          <i class="fa-solid fa-money-bill-wave me-1"></i>
+          Payment
+        </a>
+      </div>
+      <!-- ADDITIONAL COSTS -->
+      <div class="col-6">
+        <a href="{% url 'purchases:additional_cost_list' purchase.id %}"
+           class="btn btn-info btn-sm shadow w-100"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           title="View Additional Costs">
+          <i class="fa-solid fa-file-invoice-dollar me-1"></i>
+          Costs
+        </a>
+      </div>
+    </div>
+  </td>
+
+</tr>
+{% endfor %}

@@ -124,6 +124,6 @@ QuotationItemFormSet = inlineformset_factory(
     Quotation,
     QuotationItem,
     form=QuotationItemForm,
-    extra=1,
+    extra=0,
     can_delete=True
 )

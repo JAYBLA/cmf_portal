@@ -1,5 +1,5 @@
+html
 <!doctype html>
-
 <html>
 {% load humanize %}
 
@@ -19,7 +19,7 @@
 
     background-image: url("{{ bg_image }}");
 
-    @frame invoice_info_frame {
+    @frame quotation_info_frame {
         -pdf-frame-content: invoice_info;
         left: 485pt;
         width: 200pt;
@@ -35,20 +35,20 @@
         height: 100pt;
     }
 
-    @frame invoice_notes_frame {
-        -pdf-frame-content: invoice_notes;
+    @frame quotation_description_frame {
+        -pdf-frame-content: invoice_description;
         left: 320pt;
         width: 270pt;
         top: 174pt;
         height: 200pt;
     }
 
-    @frame totals_frame {
-        -pdf-frame-content: totals;
-        left: 400pt;
-        width: 180pt;
-        top: 620pt;
-        height: 120pt;
+    @frame total_due_frame {
+        -pdf-frame-content: total_due;
+        left: 416pt;
+        width: 150pt;
+        top: 622pt;
+        height: 100pt;
     }
 
     @frame content_frame {
@@ -105,215 +105,165 @@ h4{
 
 <div id="invoice_info" style="color:#ffffff;">
 
-<strong>{{ invoice.invoice_number }}</strong><br>
+    <strong>{{ invoice.invoice_number }}</strong><br>
 
-<strong>{{ invoice.invoice_date|date:"d/m/Y" }}</strong><br>
+    <strong>{{ invoice.invoice_date|date:"d/m/Y" }}</strong><br>
 
-{% if invoice.due_date %}
     <strong>{{ invoice.due_date|date:"d/m/Y" }}</strong>
-{% endif %}
-
 
 </div>
+
 
 <!-- CUSTOMER INFO -->
 
 <div id="customer_info">
 
-<strong>
-    {{ invoice.customer.customer_name }}
-</strong>
+    <strong>
+        {{ invoice.customer.name|default:invoice.customer.customer_name }}
+    </strong>
 
-<br>
+    <br>
 
-{{ invoice.customer.company_name }}<br>
+    {% if invoice.customer.company_name %}
+        {{ invoice.customer.company_name }}<br>
+    {% endif %}
 
-{{ invoice.customer.phone_number }}<br>
+    {% if invoice.customer.phone %}
+        {{ invoice.customer.phone }}<br>
+    {% elif invoice.customer.phone_number %}
+        {{ invoice.customer.phone_number }}<br>
+    {% endif %}
 
-{{ invoice.customer.tin_number }}<br>
+    {% if invoice.customer.tin %}
+        {{ invoice.customer.tin }}<br>
+    {% elif invoice.customer.tin_number %}
+        {{ invoice.customer.tin_number }}<br>
+    {% endif %}
 
-{{ invoice.customer.address }}
+    {{ invoice.customer.address }}
 
+</div>
+
+
+<!-- INVOICE DESCRIPTION -->
+
+<div id="invoice_description" style="text-align:center;">
+
+    <strong>
+        INVOICE
+    </strong>
+
+    <br>
+
+    {% if invoice.notes %}
+        {{ invoice.notes }}
+    {% endif %}
 
 </div>
 
-<!-- NOTES -->
-
-<div id="invoice_notes" style="text-align:center;">
-
-
-<strong>INVOICE</strong>
-
-<br>
-
-{% if invoice.notes %}
-    {{ invoice.notes }}
-{% endif %}
-
-
-</div>
 
 <!-- ITEMS TABLE -->
 
 <div class="table" id="content_frame">
 
+    <table>
 
-<table>
+        <thead>
 
-    <thead>
+            <tr>
 
-        <tr>
+                <th style="width:40px;padding:3px;">
+                    No.
+                </th>
 
-            <th style="width:40px;padding:3px;">
-                No.
-            </th>
+                <th style="width:320px;padding:3px;">
+                    DESCRIPTION
+                </th>
 
-            <th style="width:250px;padding:3px;">
-                PRODUCT
-            </th>
+                <th style="width:60px;padding:3px;">
+                    QTY
+                </th>
 
-            <th style="width:70px;padding:3px;">
-                QTY
-            </th>
+                <th style="width:110px;padding:3px;">
+                    UNIT PRICE
+                </th>
 
-            <th style="width:110px;padding:3px;">
-                UNIT PRICE
-            </th>
+                <th style="width:110px;padding:3px;">
+                    AMOUNT
+                </th>
 
-            <th style="width:110px;padding:3px;">
-                AMOUNT
-            </th>
+            </tr>
 
-        </tr>
+        </thead>
 
-    </thead>
+        <tbody>
 
-    <tbody>
+            {% for item in invoice.items.all %}
 
-        {% for item in invoice.items.all %}
+            <tr>
 
-        <tr>
+                <td style="padding:3px;">
+                    {{ forloop.counter }}
+                </td>
 
-            <td style="padding:3px;">
-                {{ forloop.counter }}
-            </td>
+                <td style="padding:3px;">
 
-            <td style="padding:3px;">
-                {% if item.product %}
-                    {{ item.product }}
-                {% else %}
-                    {{ item.description }}
-                {% endif %}
-            </td>
+                    {% if item.description %}
+                        {{ item.description }}
+                    {% elif item.product %}
+                        {{ item.product.name }}
+                    {% endif %}
 
-            <td style="padding:3px;text-align:center;">
-                {{ item.quantity|floatformat:0 }}
-            </td>
+                </td>
 
-            <td style="padding:3px;text-align:center;">
-                {{ item.unit_price|floatformat:0|intcomma }} /=
-            </td>
+                <td style="padding:3px;text-align:center;">
+                    {{ item.quantity|floatformat:0 }}
+                </td>
 
-            <td style="padding:3px;text-align:center;">
-                {{ item.subtotal|floatformat:0|intcomma }} /=
-            </td>
+                <td style="padding:3px;text-align:center;">
+                    {{ item.unit_price|floatformat:0|intcomma }} /=
+                </td>
 
-        </tr>
+                <td style="padding:3px;text-align:center;">
+                    {{ item.subtotal|floatformat:0|intcomma }} /=
+                </td>
 
-        {% endfor %}
+            </tr>
 
-    </tbody>
+            {% endfor %}
 
-    <tfoot>
+        </tbody>
 
-        <tr>
+        <tfoot>
 
-            <td colspan="3" style="border:none;"></td>
+            <tr>
 
-            <td style="padding:4px;">
-                <strong>SUBTOTAL</strong>
-            </td>
+                <td style="border:none;"></td>
 
-            <td style="padding:4px;">
-                <strong>
-                    {{ invoice.subtotal|floatformat:0|intcomma }} /=
-                </strong>
-            </td>
+                <td style="border:none;"></td>
 
-        </tr>
+                <td style="border:none;"></td>
 
-        {% if invoice.discount_amount %}
+                <td style="padding:4px;">
+                    <strong>TOTAL</strong>
+                </td>
 
-        <tr>
+                <td style="padding:4px;">
 
-            <td colspan="3" style="border:none;"></td>
+                    <strong>
+                        {{ invoice.total_amount|floatformat:0|intcomma }} /=
+                    </strong>
 
-            <td style="padding:4px;">
-                <strong>DISCOUNT</strong>
-            </td>
+                </td>
 
-            <td style="padding:4px;">
-                <strong>
-                    {{ invoice.discount_amount|floatformat:0|intcomma }} /=
-                </strong>
-            </td>
+            </tr>
 
-        </tr>
+        </tfoot>
 
-        {% endif %}
+    </table>
 
-        <tr>
-
-            <td colspan="3" style="border:none;"></td>
-
-            <td style="padding:4px;">
-                <strong>TOTAL</strong>
-            </td>
-
-            <td style="padding:4px;">
-                <strong>
-                    {{ invoice.total_amount|floatformat:0|intcomma }} /=
-                </strong>
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td colspan="3" style="border:none;"></td>
-
-            <td style="padding:4px;">
-                <strong>PAID</strong>
-            </td>
-
-            <td style="padding:4px;">
-                <strong>
-                    {{ invoice.amount_paid|floatformat:0|intcomma }} /=
-                </strong>
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td colspan="3" style="border:none;"></td>
-
-            <td style="padding:4px;">
-                <strong>BALANCE</strong>
-            </td>
-
-            <td style="padding:4px;">
-                <strong>
-                    {{ invoice.balance|floatformat:0|intcomma }} /=
-                </strong>
-            </td>
-
-        </tr>
-
-    </tfoot>
-
-</table>
 </div>
 
 </body>
 </html>
+

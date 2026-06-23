@@ -3,18 +3,34 @@ from django.db import models
 
 
 class ProductCategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
 
     class Meta:
         verbose_name_plural = "Product Categories"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
 
 
 class ProductUnit(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    abbreviation = models.CharField(max_length=20, blank=True)
+
+    name = models.CharField(
+        max_length=50,
+        unique=True
+    )
+
+    abbreviation = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return self.abbreviation or self.name
@@ -34,145 +50,126 @@ class Product(models.Model):
         ("inactive", "Inactive"),
     )
 
-    product_name = models.CharField(max_length=255)
+    product_name = models.CharField(
+        max_length=255
+    )
 
-    short_description = models.TextField(blank=True, null=True)
+    short_description = models.TextField(
+        blank=True,
+        null=True
+    )
 
     product_category = models.ForeignKey(
-        ProductCategory, on_delete=models.PROTECT, related_name="products"
+        ProductCategory,
+        on_delete=models.PROTECT,
+        related_name="products"
     )
 
-    sku_code = models.CharField(max_length=100, unique=True)
+    sku_code = models.CharField(
+        max_length=100,
+        unique=True
+    )
 
     product_unit = models.ForeignKey(
-        ProductUnit, on_delete=models.PROTECT, related_name="products"
+        ProductUnit,
+        on_delete=models.PROTECT,
+        related_name="products"
     )
 
-    product_type = models.CharField(max_length=20, choices=PRODUCT_TYPE_CHOICES)
-
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="active")
-
-    # =========================================
-    # STOCK MANAGEMENT
-    # =========================================
-
-    current_stock = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-
-    minimum_stock = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-
-    average_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-
-    stock_value = models.DecimalField(max_digits=14, decimal_places=2, default=0)
-    markup_percentage = models.DecimalField(
-        max_digits=5, decimal_places=2, default=30.00, blank=True
+    product_type = models.CharField(
+        max_length=20,
+        choices=PRODUCT_TYPE_CHOICES,
+        default="stock"
     )
 
-    # =========================================
-    # STOCK STATUS
-    # =========================================
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="active"
+    )
+
+    # =====================================
+    # INVENTORY
+    # =====================================
+
+    current_stock = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+    minimum_stock = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        ordering = ["product_name"]
 
     @property
     def stock_status(self):
 
         if self.current_stock <= 0:
-
             return "out"
 
-        elif self.current_stock <= self.minimum_stock:
-
+        if self.current_stock <= self.minimum_stock:
             return "low"
 
         return "in"
 
-    @property
-    def selling_price(self):
-
-        markup = self.markup_percentage or Decimal("0.00")
-
-        cost = self.average_cost or Decimal("0.00")
-
-        return cost * (Decimal("1.00") + (markup / Decimal("100")))
-
-    # =========================================
-    # UPDATE STOCK VALUE
-    # =========================================
-
-    def update_stock_value(self):
-
-        self.stock_value = self.current_stock * self.average_cost
-
-        self.save(update_fields=["stock_value"])
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["product_name"]
-
     def __str__(self):
         return f"{self.product_name} ({self.sku_code})"
 
-    # =========================================
-    # UPDATE STOCK
-    # =========================================
+    # =====================================
+    # STOCK MOVEMENTS
+    # =====================================
 
     def update_stock(
-        self, quantity, movement_type="in", unit_cost=0, reference=None, notes=None
+        self,
+        quantity,
+        movement_type="in",
+        reference=None,
+        notes=None,
     ):
 
-        # =====================================
-        # STOCK IN
-        # =====================================
+        quantity = Decimal(str(quantity))
 
         if movement_type == "in":
 
             self.current_stock += quantity
 
-        # =====================================
-        # STOCK OUT
-        # =====================================
-
         elif movement_type == "out":
 
             self.current_stock -= quantity
 
-        # =====================================
-        # ADJUSTMENT
-        # =====================================
-
-        else:
+        elif movement_type == "adjustment":
 
             self.current_stock += quantity
 
-        # =====================================
-        # UPDATE STOCK VALUE
-        # =====================================
-
-        self.stock_value = self.current_stock * self.average_cost
-
-        self.save()
-
-        # =====================================
-        # CREATE MOVEMENT
-        # =====================================
+        self.save(
+            update_fields=[
+                "current_stock",
+                "updated_at",
+            ]
+        )
 
         StockMovement.objects.create(
             product=self,
             movement_type=movement_type,
             quantity=quantity,
             balance_after=self.current_stock,
-            unit_cost=unit_cost,
-            total_cost=(quantity * unit_cost),
             reference=reference,
             notes=notes,
         )
-
-
-# =========================================
-# STOCK MOVEMENT
-# =========================================
-
 
 class StockMovement(models.Model):
 
@@ -183,29 +180,48 @@ class StockMovement(models.Model):
     )
 
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="stock_movements"
+        Product,
+        on_delete=models.CASCADE,
+        related_name="stock_movements"
     )
 
-    movement_type = models.CharField(max_length=20, choices=MOVEMENT_TYPES)
+    movement_type = models.CharField(
+        max_length=20,
+        choices=MOVEMENT_TYPES
+    )
 
-    quantity = models.DecimalField(max_digits=12, decimal_places=2)
+    quantity = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
 
-    balance_after = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    balance_after = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
 
-    unit_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    reference = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
 
-    total_cost = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    notes = models.TextField(
+        blank=True,
+        null=True
+    )
 
-    reference = models.CharField(max_length=100, blank=True, null=True)
-
-    notes = models.TextField(blank=True, null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     class Meta:
-
         ordering = ["-id"]
 
     def __str__(self):
 
-        return f"{self.product} - " f"{self.get_movement_type_display()}"
+        return (
+            f"{self.product.product_name} - "
+            f"{self.get_movement_type_display()}"
+        )

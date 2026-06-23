@@ -1,11 +1,10 @@
 import json
 
 from django.shortcuts import render, get_object_or_404
-
 from django.http import HttpResponse
+from django.db.models import ProtectedError
 
 from .models import Customer
-
 from .forms import CustomerForm
 
 # =========================================
@@ -55,11 +54,11 @@ def customer_create(request):
 
             response["HX-Trigger"] = json.dumps(
                 {
-                    "customerChanged": True,
-                    "closeModal": True,
+                    "recordSaved": True,
+                    "refreshTable": True,
                     "showMessage": {
                         "type": "success",
-                        "message": ("Customer created successfully."),
+                        "message": "Customer created successfully.",
                     },
                 }
             )
@@ -92,11 +91,11 @@ def customer_update(request, pk):
 
             response["HX-Trigger"] = json.dumps(
                 {
-                    "customerChanged": True,
-                    "closeModal": True,
+                    "recordSaved": True,
+                    "refreshTable": True,
                     "showMessage": {
                         "type": "success",
-                        "message": ("Customer updated successfully."),
+                        "message": "Customer updated successfully.",
                     },
                 }
             )
@@ -119,22 +118,43 @@ def customer_delete(request, pk):
 
     if request.method == "POST":
 
-        customer.delete()
+        try:
 
-        response = HttpResponse("")
+            customer.delete()
 
-        response["HX-Trigger"] = json.dumps(
-            {
-                "customerChanged": True,
-                "closeModal": True,
-                "showMessage": {
-                    "type": "success",
-                    "message": ("Customer deleted successfully."),
-                },
-            }
-        )
+            response = HttpResponse("")
 
-        return response
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": "Customer deleted successfully.",
+                    },
+                }
+            )
+
+            return response
+
+        except ProtectedError:
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "showMessage": {
+                        "type": "error",
+                        "message": (
+                            "This customer is already "
+                            "used in invoices and "
+                            "cannot be deleted."
+                        ),
+                    }
+                }
+            )
+
+            return response
 
     context = {"customer": customer}
 

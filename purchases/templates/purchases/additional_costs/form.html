@@ -1,356 +1,167 @@
 {% load widget_tweaks %}
 <div class="modal-header">
-    <h5 class="modal-title">
-        {% if additional_cost %}
-            Edit Additional Cost
-        {% else %}
-            Add Additional Cost
-        {% endif %}
-    </h5>
-    <button type="button"
-            class="btn border-0 shadow-none p-0"
-            data-bs-dismiss="modal">
-        <i class="fa-solid fa-xmark"></i>
-    </button>
+  <h5 class="modal-title">
+    {% if additional_cost %}
+      Edit Additional Cost
+    {% else %}
+      Add Additional Cost
+    {% endif %}
+  </h5>
+    <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="modal"
+    aria-label="Close">
+</button>
 </div>
+
 <form method="POST"
-      enctype="multipart/form-data"
-      hx-post=" {% if additional_cost %} {% url 'purchases:additional_cost_update' additional_cost.id %} {% else %} {% url 'purchases:additional_cost_create' purchase.id %} {% endif %} "
-      hx-swap="none">
-    {% csrf_token %}
-    <div class="modal-body">
-        <div class="row">
-            <!-- COST TYPE -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Cost Type</label>
-                {% render_field form.cost_type class="form-select" %}
-                <div class="text-danger small">{{ form.cost_type.errors }}</div>
-            </div>
-            <!-- CLEARING AGENT -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Clearing Agent</label>
-                {% render_field form.clearing_agent class="form-select" %}
-                <div class="text-danger small">{{ form.clearing_agent.errors }}</div>
-            </div>
-            <!-- CURRENCY -->
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Currency</label>
-                {% render_field form.currency class="form-select" id="cost-currency" %}
-                <div class="text-danger small">{{ form.currency.errors }}</div>
-            </div>
-            <!-- EXCHANGE RATE -->
-            <div class="col-md-4 mb-3" id="exchange-rate-wrapper">
-                <label class="form-label">Exchange Rate</label>
-                {% render_field form.exchange_rate class="form-control text-end" id="exchange-rate-input" %}
-                <div class="text-danger small">{{ form.exchange_rate.errors }}</div>
-            </div>
-            <!-- AMOUNT -->
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Amount</label>
-                {% render_field form.amount class="form-control text-end" %}
-                <div class="text-danger small">{{ form.amount.errors }}</div>
-            </div>
-            <!-- DESCRIPTION -->
-            <div class="col-12 mb-3">
-                <label class="form-label">Description</label>
-                {% render_field form.description class="form-control" placeholder="Optional description" %}
-                <div class="text-danger small">{{ form.description.errors }}</div>
-            </div>
-            <!-- PAYMENT STATUS -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Payment Status</label>
-                {% render_field form.payment_status class="form-select" %}
-                <div class="text-danger small">{{ form.payment_status.errors }}</div>
-            </div>
-            <!-- NOTES -->
-            <div class="col-12 mb-3">
-                <label class="form-label">Notes</label>
-                {% render_field form.notes class="form-control" rows="2" placeholder="Optional notes..." %}
-                <div class="text-danger small">{{ form.notes.errors }}</div>
-            </div>
-        </div>
-        <!-- ===================================== -->
-        <!-- DOCUMENTS -->
-        <!-- ===================================== -->
-        <div class="card border mt-3">
-            <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 fs-6">Supporting Documents</h6>
-                <button type="button"
-                        class="btn btn-success btn-xs py-1 px-2"
-                        id="add-document-row">
-                    <i class="fa-solid fa-plus me-1"></i>
-                    Add
-                </button>
-            </div>
-            <div class="card-body p-2">
-                {{ formset.management_form }}
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th width="35%">Title</th>
-                                <th>File</th>
-                                <th width="70">Del</th>
-                            </tr>
-                        </thead>
-                        <tbody id="document-formset-body">
-                            {% for document_form in formset %}
-                                <tr class="document-form-row">
-                                    {{ document_form.id }}
-                                    <!-- TITLE -->
-                                    <td class="p-1">
-                                        {% render_field document_form.title class="form-control form-control-sm" placeholder="Document title" %}
-                                        <div class="text-danger small">{{ document_form.title.errors }}</div>
-                                    </td>
-                                    <!-- FILE -->
-                                    <td class="p-1">
-                                        {% if document_form.instance.file %}
-                                            <div class="mb-1">
-                                                <a href="{{ document_form.instance.file.url }}"
-                                                   target="_blank"
-                                                   class="small text-primary">
-                                                    <i class="fa-solid fa-paperclip me-1"></i>
-                                                    Current File
-                                                </a>
-                                            </div>
-                                        {% endif %}
-                                        {% render_field document_form.file class="form-control form-control-sm" %}
-                                        <div class="text-danger small">{{ document_form.file.errors }}</div>
-                                    </td>
-                                    <!-- DELETE -->
-                                    <td class="text-center p-1">
-                                        {% if document_form.instance.pk %}
-                                            <div class="form-check d-flex justify-content-center">{{ document_form.DELETE }}</div>
-                                        {% else %}
-                                            <button type="button"
-                                                    class="btn btn-danger btn-xs py-1 px-2 remove-document-row">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+  enctype="multipart/form-data"
+  hx-post=" {% if additional_cost %}
+    {% url 'purchases:additional_cost_update' additional_cost.id %}
+  {% else %}
+    {% url 'purchases:additional_cost_create' purchase.id %}
+  {% endif %} "
+  hx-swap="none">
+  {% csrf_token %}
+  <div class="modal-body">
+    <div class="row">
+      <!-- COST TYPE -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Cost Type</label>
+        {% render_field form.cost_type class='form-select' %}
+        <div class="text-danger small">{{ form.cost_type.errors }}</div>
+      </div>
+      <!-- CLEARING AGENT -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Clearing Agent</label>
+        {% render_field form.clearing_agent class='form-select' %}
+        <div class="text-danger small">{{ form.clearing_agent.errors }}</div>
+      </div>
+      <!-- CURRENCY -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Currency</label>
+        {% render_field form.currency class='form-select' id='cost-currency' %}
+        <div class="text-danger small">{{ form.currency.errors }}</div>
+      </div>
+      <!-- EXCHANGE RATE -->
+      <div class="col-md-4 mb-3" id="exchange-rate-wrapper">
+        <label class="form-label">Exchange Rate</label>
+        {% render_field form.exchange_rate class='form-control text-end' id='exchange-rate-input' %}
+        <div class="text-danger small">{{ form.exchange_rate.errors }}</div>
+      </div>
+      <!-- AMOUNT -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Amount</label>
+        {% render_field form.amount class='form-control text-end' %}
+        <div class="text-danger small">{{ form.amount.errors }}</div>
+      </div>
+      <!-- DESCRIPTION -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Description</label>
+        {% render_field form.description class='form-control' placeholder='Optional description' %}
+        <div class="text-danger small">{{ form.description.errors }}</div>
+      </div>
+      <!-- PAYMENT STATUS -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Payment Status</label>
+        {% render_field form.payment_status class='form-select' %}
+        <div class="text-danger small">{{ form.payment_status.errors }}</div>
+      </div>
+      <!-- NOTES -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Notes</label>
+        {% render_field form.notes class='form-control' rows='2' placeholder='Optional notes...' %}
+        <div class="text-danger small">{{ form.notes.errors }}</div>
+      </div>
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">
-            {% if additional_cost %}
-                Update Cost
-            {% else %}
-                Save Cost
-            {% endif %}
+    <!-- ===================================== -->
+    <!-- DOCUMENTS -->
+    <!-- ===================================== -->
+    <div class="card border mt-3">
+      <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fs-6">Supporting Documents</h6>
+
+        <button type="button" class="btn btn-success btn-sm" id="add-item-row">
+          <i class="fa-solid fa-plus me-1"></i>
+
+          Add
         </button>
+      </div>
+
+      <div class="card-body p-2">
+        {{ formset.management_form }}
+
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th width="35%">Title</th>
+
+                <th>File</th>
+
+                <th width="70">Del</th>
+              </tr>
+            </thead>
+
+            <tbody id="document-formset-body">
+              {% for document_form in formset %}
+                <tr class="document-form-row">
+                  {% for hidden in document_form.hidden_fields %}
+                    {{ hidden }}
+                  {% endfor %}
+
+                  <td class="p-1">{{ document_form.title }}</td>
+
+                  <td class="p-1">
+                    {% if document_form.instance.file %}
+                      <div class="mb-1">
+                        <a href="{{ document_form.instance.file.url }}" target="_blank" class="small">Current File</a>
+                      </div>
+                    {% endif %}
+
+                    {{ document_form.file }}
+                  </td>
+
+                  <td class="text-center p-1">
+                    {% if document_form.instance.pk %}
+                      <div class="form-check d-flex justify-content-center">{{ document_form.DELETE }}</div>
+                    {% else %}
+                      <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary">
+      {% if additional_cost %}
+        Update Cost
+      {% else %}
+        Save Cost
+      {% endif %}
+    </button>
+  </div>
 </form>
 <!-- EMPTY DOCUMENT TEMPLATE -->
-<template id="empty-document-form">
+<template id="empty-form-template">
+  <tr class="document-form-row">
+    <td class="p-1">
+      <input type="text" name="documents-__prefix__-title" class="form-control form-control-sm" placeholder="Document title" />
+    </td>
 
-    <tr class="document-form-row">
+    <td class="p-1">
+      <input type="file" name="documents-__prefix__-file" class="form-control form-control-sm" />
+    </td>
 
-        <td class="p-1">
-
-            <input
-                type="text"
-
-                name="documents-__prefix__-title"
-
-                class="form-control form-control-sm"
-
-                placeholder="Document title"
-            >
-
-        </td>
-
-
-        <td class="p-1">
-
-            <input
-                type="file"
-
-                name="documents-__prefix__-file"
-
-                class="form-control form-control-sm"
-            >
-
-        </td>
-
-
-        <td class="text-center p-1">
-
-            <button
-                type="button"
-                class="btn btn-danger btn-xs py-1 px-2 remove-document-row"
-            >
-
-                <i class="fa-solid fa-trash"></i>
-
-            </button>
-
-        </td>
-
-    </tr>
-
+    <td class="text-center p-1">
+      <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button>
+    </td>
+  </tr>
 </template>
-<script>
-
-    // =========================================
-    // CURRENCY LOGIC
-    // =========================================
-
-    function handleAdditionalCostCurrency() {
-
-        const currencyInput = document.getElementById(
-            "cost-currency"
-        )
-
-        const exchangeRateWrapper = document.getElementById(
-            "exchange-rate-wrapper"
-        )
-
-        const exchangeRateInput = document.getElementById(
-            "exchange-rate-input"
-        )
-
-        if (!currencyInput) return
-
-        // USD
-
-        if (currencyInput.value === "USD") {
-
-            exchangeRateWrapper.style.display =
-                "block"
-
-            exchangeRateInput.required = true
-
-        }
-
-        // TZS
-
-        else {
-
-            exchangeRateWrapper.style.display =
-                "none"
-
-            exchangeRateInput.value = 1
-
-            exchangeRateInput.required = false
-
-        }
-
-    }
-
-
-
-    // =========================================
-    // INIT AFTER HTMX LOAD
-    // =========================================
-
-    document.addEventListener(
-        "htmx:afterSwap",
-        function (e) {
-
-            if (
-                e.target.id === "modal-body"
-            ) {
-
-                handleAdditionalCostCurrency()
-
-            }
-
-        }
-    )
-
-
-
-    // =========================================
-    // CURRENCY CHANGE
-    // =========================================
-
-    document.body.addEventListener(
-        "change",
-        function (e) {
-
-            if (
-                e.target.id === "cost-currency"
-            ) {
-
-                handleAdditionalCostCurrency()
-
-            }
-
-        }
-    )
-
-
-
-    // =========================================
-    // DOCUMENT FORMSET
-    // =========================================
-
-    document.body.addEventListener(
-        "click",
-        function (e) {
-
-            // ADD ROW
-
-            if (
-                e.target.closest(
-                    "#add-document-row"
-                )
-            ) {
-
-                const totalForms =
-                    document.getElementById(
-                        "id_documents-TOTAL_FORMS"
-                    )
-
-                const currentForms =
-                    parseInt(
-                        totalForms.value
-                    )
-
-                const template =
-                    document.getElementById(
-                        "empty-document-form"
-                    ).innerHTML
-
-                const html =
-                    template.replace(
-                        /__prefix__/g,
-                        currentForms
-                    )
-
-                document.getElementById(
-                    "document-formset-body"
-                ).insertAdjacentHTML(
-                    "beforeend",
-                    html
-                )
-
-                totalForms.value =
-                    currentForms + 1
-
-            }
-
-
-            // REMOVE ROW
-
-            if (
-                e.target.closest(
-                    ".remove-document-row"
-                )
-            ) {
-
-                e.target.closest("tr").remove()
-
-            }
-
-        }
-    )
-
-</script>

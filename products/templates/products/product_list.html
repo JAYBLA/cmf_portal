@@ -8,61 +8,36 @@
 
         <div class="card-header d-flex justify-content-between align-items-center">
 
-            <h4 class="card-title">
+            <h4 class="card-title mb-0">
                 Products
             </h4>
 
-<button
-    class="btn btn-primary"
+            <button
+                class="btn btn-primary"
+                hx-get="{% url 'products:product_create' %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML">
 
-    hx-get="{% url 'products:product_create' %}"
+                Add Product
 
-    hx-target="#modal-body"
-
-    hx-swap="innerHTML"
->
-    Add Product
-</button>
+            </button>
 
         </div>
 
         <div class="card-body">
 
-            <table
-                id="responsiveTable"
-                class="table table-striped table-hover mb-0 align-middle dataTable"
-                style="width:100%;"
-            >
-
-                <thead>
-
-<thead>
-
-    <tr>
-
-        <th>Product Details</th>
-
-        <th>Stock</th>
-
-        <th>Pricing</th>
-
-        <th>Status</th>
-
-        <th class="text-end">Actions</th>
-
-    </tr>
-
-</thead>
-
-                </thead>
+            <div
+                id="table-container"
+                data-refresh-url="{% url 'products:product_table' %}">
 
                 {% include "products/partials/product_table.html" %}
 
-            </table>
+            </div>
 
         </div>
 
     </div>
 
 </div>
-{% endblock content %}
+
+{% endblock %}

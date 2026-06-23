@@ -1,12 +1,124 @@
-<tbody id="customer-table-body">
-  {% for customer in customers %}
-    {% include "customers/row.html" %}
-  {% empty %}
-    <tr>
-      <td colspan="5" class="text-center text-muted py-4">
-        <i class="fa-solid fa-inbox fa-2x d-block mb-2"></i>
-        No customers found.
-      </td>
-    </tr>
-  {% endfor %}
-</tbody>
+{% load humanize %}
+{% for customer in customers %}
+<tr id="customer-{{ customer.id }}" class="align-middle">
+
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
+
+    <!-- CUSTOMER DETAILS (two horizontal lines) -->
+    <td>
+
+        <!-- LINE 1: Name + Status + Company (if any) -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+            <span class="fw-bold text-primary">{{ customer.customer_name }}</span>
+            {% if customer.company_name %}
+                <span class="text-muted">|</span>
+                <span>
+                    <span class="fw-light">Company:</span> {{ customer.company_name }}
+                </span>
+            {% endif %}
+                        <span>
+                {% if customer.status == "active" %}
+                    <span class="badge bg-success">Active</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                {% endif %}
+            </span>
+        </div>
+
+        <!-- LINE 2: All other details (phone, email, TIN, VRN, credit, opening, address, notes) -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+
+            {% if customer.phone_number %}
+                <span>
+                    <span class="fw-light">Phone:</span> {{ customer.phone_number }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if customer.email %}
+                <span>
+                    <span class="fw-light">Email:</span> {{ customer.email }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if customer.tin_number %}
+                <span>
+                    <span class="fw-light">TIN:</span> {{ customer.tin_number }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if customer.vrn_number %}
+                <span>
+                    <span class="fw-light">VRN:</span> {{ customer.vrn_number }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if customer.credit_limit %}
+                <span>
+                    <span class="fw-light">Credit Limit:</span>
+                    <span class="fw-semibold text-primary">{{ customer.credit_limit|floatformat:2|intcomma }}</span>
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if customer.opening_balance %}
+                <span>
+                    <span class="fw-light">Opening Balance:</span>
+                    <span class="fw-semibold">{{ customer.opening_balance|floatformat:2|intcomma }}</span>
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if customer.address %}
+                <span>
+                    <span class="fw-light">Address:</span> {{ customer.address|truncatechars:30 }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if customer.notes %}
+                <span>
+                    <span class="fw-light">Notes:</span> {{ customer.notes|truncatechars:20 }}
+                </span>
+            {% endif %}
+
+            <!-- Always show created_at as a fallback -->
+            <span class="text-muted">
+                <span class="fw-light">Since:</span> {{ customer.created_at|date:"Y-m-d" }}
+            </span>
+
+        </div>
+    </td>
+
+    <!-- ACTIONS (icon buttons) -->
+    <td class="text-end">
+        <div class="d-flex flex-wrap justify-content-end gap-1">
+            <!-- Edit -->
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    hx-get="{% url 'customers:customer_update' customer.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Edit Customer">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <!-- Delete -->
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    hx-get="{% url 'customers:customer_delete' customer.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Delete Customer">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+    </td>
+
+</tr>
+{% endfor %}

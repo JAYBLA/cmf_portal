@@ -1,0 +1,73 @@
+{% load humanize %}
+{% for quotation in quotations %}
+<tr id="quotation-{{ quotation.id }}" class="align-middle">
+
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
+
+    <!-- QUOTATION DETAILS (two horizontal lines) -->
+    <td>
+
+        <!-- LINE 1: Title + Customer + Total -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+            <span class="fw-bold text-primary">{{ quotation.title }}</span>
+            <span class="text-muted">|</span>
+            <span>
+                <span class="fw-light">Customer:</span> {{ quotation.customer.customer_name }}
+            </span>
+            <span class="text-muted">|</span>
+            <span>
+                <span class="fw-light">Total:</span>
+                <span class="fw-semibold text-success">{{ quotation.total_amount|floatformat:2|intcomma }}</span>
+            </span>
+        </div>
+
+        <!-- LINE 2: Quote Date, Due Date, Description (truncated), Created -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+            <span>
+                <span class="fw-light">Quote Date:</span> {{ quotation.quote_date|date:"Y-m-d" }}
+            </span>
+            <span>|</span>
+            <span>
+                <span class="fw-light">Due Date:</span> {{ quotation.due_date|date:"Y-m-d" }}
+            </span>
+            <span>|</span>
+            <span>
+                <span class="fw-light">Description:</span>
+                {{ quotation.description|default:"—"|truncatechars:30 }}
+            </span>
+            <span>|</span>
+            <span>
+                <span class="fw-light">Created:</span> {{ quotation.created_at|date:"Y-m-d H:i" }}
+            </span>
+        </div>
+    </td>
+
+    <!-- ACTIONS (icon buttons) -->
+    <td class="text-end">
+        <div class="d-flex flex-wrap justify-content-end gap-1">
+            <!-- Edit -->
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    hx-get="{% url 'quotations:quotation_update' quotation.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Edit Quotation">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <!-- Delete -->
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    hx-get="{% url 'quotations:quotation_delete' quotation.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Delete Quotation">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>            
+        </div>
+    </td>
+
+</tr>
+{% endfor %}

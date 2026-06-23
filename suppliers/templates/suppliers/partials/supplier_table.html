@@ -1,0 +1,96 @@
+{% for supplier in suppliers %}
+<tr id="supplier-{{ supplier.id }}" class="align-middle">
+
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
+
+    <!-- SUPPLIER DETAILS (two horizontal lines) -->
+    <td>
+
+        <!-- LINE 1: Supplier Name + Contact Person + Status -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+            <span class="fw-bold text-primary">{{ supplier.supplier_name }}</span>
+            <span>
+                {% if supplier.status == "active" %}
+                    <span class="badge bg-success">Active</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                {% endif %}
+            </span>
+            {% if supplier.contact_person %}
+                <span class="text-muted">|</span>
+                <span>
+                    <span class="fw-light">Contact:</span> {{ supplier.contact_person }}
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- LINE 2: Phone, Email, Website, Address, Created -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+
+            {% if supplier.phone_number %}
+                <span>
+                    <span class="fw-light">Phone:</span> {{ supplier.phone_number }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if supplier.email %}
+                <span>
+                    <span class="fw-light">Email:</span> {{ supplier.email }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if supplier.supplier_website %}
+                <span>
+                    <span class="fw-light">Web:</span> 
+                    <a href="{{ supplier.supplier_website }}" target="_blank" class="text-decoration-none">
+                        {{ supplier.supplier_website|truncatechars:20 }}
+                    </a>
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            {% if supplier.address %}
+                <span>
+                    <span class="fw-light">Address:</span> {{ supplier.address|truncatechars:25 }}
+                </span>
+                <span>|</span>
+            {% endif %}
+
+            <span>
+                <span class="fw-light">Since:</span> {{ supplier.created_at|date:"Y-m-d" }}
+            </span>
+
+        </div>
+    </td>
+
+    <!-- ACTIONS (icon buttons) -->
+    <td class="text-end">
+        <div class="d-flex flex-wrap justify-content-end gap-1">
+            <!-- Edit -->
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    hx-get="{% url 'suppliers:supplier_update' supplier.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Edit Supplier">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <!-- Delete -->
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    hx-get="{% url 'suppliers:supplier_delete' supplier.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Delete Supplier">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+    </td>
+
+</tr>
+{% endfor %}

@@ -8,62 +8,42 @@
 
         <div class="card-header d-flex justify-content-between align-items-center">
 
-            <h4 class="card-title">
+            <h4 class="card-title mb-0">
                 Suppliers
             </h4>
 
             <button
                 class="btn btn-primary"
-
                 hx-get="{% url 'suppliers:supplier_create' %}"
-
                 hx-target="#modal-body"
+                hx-swap="innerHTML">
 
-                hx-swap="innerHTML"
-            >
                 Add Supplier
+
             </button>
 
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-1">
 
             <table
                 id="responsiveTable"
-                class="table table-striped table-hover mb-0 align-middle dataTable"
-                style="width:100%;"
-            >
+                class="table table-sm table-hover align-middle"
+                style="width:100%;">
 
-                <thead>
-
+                <thead class="table-light">
                     <tr>
-
-                        <th>Supplier Name</th>
-
-                        <th>Contact Person</th>
-
-                        <th>Phone Number</th>
-
-                        <th>Email Address</th>
-                        <th>Supplier Website</th>
-
-                        <th>Status</th>
-
-                        <th class="text-center">
-                            Actions
-                        </th>
-
+                        <th scope="col" style="width:50px;" class="text-center">#</th>
+                        <th scope="col">Supplier Details</th>
+                        <th scope="col" style="width:140px;" class="text-end">Actions</th>
                     </tr>
-
                 </thead>
 
-                <tbody id="supplier-table-body">
+                <tbody
+                    id="table-container"
+                    data-refresh-url="{% url 'suppliers:supplier_table' %}">
 
-                    {% for supplier in suppliers %}
-
-                        {% include "suppliers/partials/supplier_row.html" %}
-
-                    {% endfor %}
+                    {% include "suppliers/partials/supplier_table.html" %}
 
                 </tbody>
 
@@ -75,4 +55,4 @@
 
 </div>
 
-{% endblock content %}
+{% endblock %}

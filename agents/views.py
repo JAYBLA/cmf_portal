@@ -7,10 +7,11 @@ from django.shortcuts import (
 
 from django.http import HttpResponse
 
+from django.db.models import ProtectedError
+
 from .models import ClearingAgent
 
 from .forms import ClearingAgentForm
-
 
 
 # =========================================
@@ -19,7 +20,9 @@ from .forms import ClearingAgentForm
 
 def clearing_agent_list(request):
 
-    agents = ClearingAgent.objects.order_by("-created_at")
+    agents = ClearingAgent.objects.order_by(
+        "-created_at"
+    )
 
     context = {
         "agents": agents
@@ -32,14 +35,15 @@ def clearing_agent_list(request):
     )
 
 
-
 # =========================================
 # CLEARING AGENT TABLE
 # =========================================
 
 def clearing_agent_table(request):
 
-    agents = ClearingAgent.objects.all()
+    agents = ClearingAgent.objects.order_by(
+        "-created_at"
+    )
 
     context = {
         "agents": agents
@@ -50,7 +54,6 @@ def clearing_agent_table(request):
         "clearing_agents/table.html",
         context
     )
-
 
 
 # =========================================
@@ -73,17 +76,16 @@ def clearing_agent_create(request):
 
             response["HX-Trigger"] = json.dumps({
 
-                "clearingAgentChanged": True,
+                "recordSaved": True,
 
-                "closeModal": True,
+                "refreshTable": True,
 
                 "showMessage": {
 
                     "type": "success",
 
-                    "message": (
+                    "message":
                         "Clearing agent created successfully."
-                    )
 
                 }
 
@@ -100,7 +102,6 @@ def clearing_agent_create(request):
         "clearing_agents/form.html",
         context
     )
-
 
 
 # =========================================
@@ -129,17 +130,16 @@ def clearing_agent_update(request, pk):
 
             response["HX-Trigger"] = json.dumps({
 
-                "clearingAgentChanged": True,
+                "recordSaved": True,
 
-                "closeModal": True,
+                "refreshTable": True,
 
                 "showMessage": {
 
                     "type": "success",
 
-                    "message": (
+                    "message":
                         "Clearing agent updated successfully."
-                    )
 
                 }
 
@@ -162,7 +162,6 @@ def clearing_agent_update(request, pk):
     )
 
 
-
 # =========================================
 # DELETE CLEARING AGENT
 # =========================================
@@ -176,29 +175,53 @@ def clearing_agent_delete(request, pk):
 
     if request.method == "POST":
 
-        agent.delete()
+        try:
 
-        response = HttpResponse("")
+            agent.delete()
 
-        response["HX-Trigger"] = json.dumps({
+            response = HttpResponse("")
 
-            "clearingAgentChanged": True,
+            response["HX-Trigger"] = json.dumps({
 
-            "closeModal": True,
+                "recordSaved": True,
 
-            "showMessage": {
+                "refreshTable": True,
 
-                "type": "success",
+                "showMessage": {
 
-                "message": (
-                    "Clearing agent deleted successfully."
-                )
+                    "type": "success",
 
-            }
+                    "message":
+                        "Clearing agent deleted successfully."
 
-        })
+                }
 
-        return response
+            })
+
+            return response
+
+        except ProtectedError:
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps({
+
+                "showMessage": {
+
+                    "type": "error",
+
+                    "message":
+                        (
+                            "This clearing agent is already "
+                            "used in transactions and "
+                            "cannot be deleted."
+                        )
+
+                }
+
+            })
+
+            return response
 
     context = {
         "agent": agent

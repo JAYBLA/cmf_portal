@@ -1,6 +1,16 @@
-from django.shortcuts import render, get_object_or_404
+import json
+
+from django.shortcuts import (
+    render,
+    get_object_or_404
+)
+
 from django.http import HttpResponse
+
+from django.db.models import ProtectedError
+
 from .models import Supplier
+
 from .forms import SupplierForm
 
 
@@ -24,30 +34,58 @@ def supplier_list(request):
 
 
 # =========================================
+# TABLE
+# =========================================
+
+def supplier_table(request):
+
+    suppliers = Supplier.objects.all()
+
+    context = {
+        "suppliers": suppliers
+    }
+
+    return render(
+        request,
+        "suppliers/table.html",
+        context
+    )
+
+
+# =========================================
 # CREATE
 # =========================================
 
 def supplier_create(request):
 
-    form = SupplierForm(request.POST or None)
+    form = SupplierForm(
+        request.POST or None
+    )
 
     if request.method == "POST":
 
         if form.is_valid():
 
-            supplier = form.save()
+            form.save()
 
-            context = {
-                "supplier": supplier
-            }
+            response = HttpResponse("")
 
-            response = render(
-                request,
-                "suppliers/partials/supplier_row.html",
-                context
-            )
+            response["HX-Trigger"] = json.dumps({
 
-            response["HX-Trigger"] = "closeModal"
+                "recordSaved": True,
+
+                "refreshTable": True,
+
+                "showMessage": {
+
+                    "type": "success",
+
+                    "message":
+                        "Supplier created successfully."
+
+                }
+
+            })
 
             return response
 
@@ -82,25 +120,35 @@ def supplier_update(request, pk):
 
         if form.is_valid():
 
-            supplier = form.save()
+            form.save()
 
-            context = {
-                "supplier": supplier
-            }
+            response = HttpResponse("")
 
-            response = render(
-                request,
-                "suppliers/partials/supplier_row.html",
-                context
-            )
+            response["HX-Trigger"] = json.dumps({
 
-            response["HX-Trigger"] = "closeModal"
+                "recordSaved": True,
+
+                "refreshTable": True,
+
+                "showMessage": {
+
+                    "type": "success",
+
+                    "message":
+                        "Supplier updated successfully."
+
+                }
+
+            })
 
             return response
 
     context = {
+
         "form": form,
+
         "supplier": supplier
+
     }
 
     return render(
@@ -123,13 +171,53 @@ def supplier_delete(request, pk):
 
     if request.method == "POST":
 
-        supplier.delete()
+        try:
 
-        response = HttpResponse("")
+            supplier.delete()
 
-        response["HX-Trigger"] = "closeModal"
+            response = HttpResponse("")
 
-        return response
+            response["HX-Trigger"] = json.dumps({
+
+                "recordSaved": True,
+
+                "refreshTable": True,
+
+                "showMessage": {
+
+                    "type": "success",
+
+                    "message":
+                        "Supplier deleted successfully."
+
+                }
+
+            })
+
+            return response
+
+        except ProtectedError:
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps({
+
+                "showMessage": {
+
+                    "type": "error",
+
+                    "message":
+                        (
+                            "This supplier is already "
+                            "used in transactions and "
+                            "cannot be deleted."
+                        )
+
+                }
+
+            })
+
+            return response
 
     context = {
         "supplier": supplier
@@ -138,5 +226,28 @@ def supplier_delete(request, pk):
     return render(
         request,
         "suppliers/partials/supplier_delete.html",
+        context
+    )
+    
+# =========================================
+# SUPPLIER TABLE
+# =========================================
+
+def supplier_table(request):
+
+    suppliers = Supplier.objects.all()
+
+    context = {
+
+        "suppliers": suppliers
+
+    }
+
+    return render(
+
+        request,
+
+        "suppliers/partials/supplier_table.html",
+
         context
     )

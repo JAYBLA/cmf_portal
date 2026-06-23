@@ -25,21 +25,7 @@
               <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
               Customers List
             </a>
-          </li>
-
-          <li>
-            <a href="#" class="{% if request.resolver_match.url_name == 'customer_debtors' %}active-page{% endif %}">
-              <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
-              Customer Debtors
-            </a>
-          </li>
-
-          <li>
-            <a href="#" class="{% if request.resolver_match.url_name == 'recently_quoted_customers' %}active-page{% endif %}">
-              <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
-              Recently Quoted Customers
-            </a>
-          </li>
+          </li>          
         </ul>
       </li>
 
@@ -97,7 +83,7 @@
         </ul>
       </li>
 
-      <li class="dropdown {% if request.resolver_match.url_name in 'purchase_list purchase_create purchase_update purchase_delete' %}open{% endif %}">
+      <li class="dropdown {% if request.resolver_match.url_name in 'purchase_list purchase_create purchase_update purchase_delete purchase_payment_list purchase_payment_create purchase_payment_update purchase_payment_delete purchase_additional_cost_list purchase_additional_cost_create purchase_additional_cost_update purchase_additional_cost_delete purchase_report' %}open{% endif %}">
         <a href="javascript:void(0)">
           <iconify-icon icon="ri:shopping-cart-line" class="menu-icon"></iconify-icon>
           <span>Purchases</span>
@@ -105,9 +91,24 @@
 
         <ul class="sidebar-submenu">
           <li>
-            <a href="{% url 'purchases:purchase_list' %}" class="{% if request.resolver_match.url_name == 'purchase_list' %}active-page{% endif %}">
+            <a href="{% url 'purchases:purchase_list' %}" class="{% if request.resolver_match.url_name in 'purchase_list purchase_create purchase_update purchase_delete' %}active-page{% endif %}">
               <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
-              Purchases List
+              Purchases
+            </a>
+          </li>          
+        </ul>
+      </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'quotation_list quotation_create quotation_update quotation_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:draft-line" class="menu-icon"></iconify-icon>
+          <span>Quotations</span>
+        </a>
+
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{% url 'quotations:quotation_list' %}" class="{% if request.resolver_match.url_name == 'quotation_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
+              Quotations List
             </a>
           </li>
         </ul>

@@ -1,4 +1,3 @@
-{% load widget_tweaks %}
 <div class="modal-header">
     <h5 class="modal-title">
         {% if product %}
@@ -7,81 +6,169 @@
             Add Product
         {% endif %}
     </h5>
-    <button type="button"
-            class="btn border-0 shadow-none p-0"
-            data-bs-dismiss="modal">
-        <i class="fa-solid fa-xmark"></i>
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close">
     </button>
 </div>
-<form method="POST"
-      hx-post=" {% if product %} {% url 'products:product_update' product.id %} {% else %} {% url 'products:product_create' %} {% endif %} "
-      hx-swap="none">
+
+<form
+    method="POST"
+    hx-post="{% if product %}{% url 'products:product_update' product.id %}{% else %}{% url 'products:product_create' %}{% endif %}"
+    hx-swap="none">
+
     {% csrf_token %}
+
     <div class="modal-body">
+
         <div class="row">
+
             <!-- PRODUCT NAME -->
+
             <div class="col-md-6 mb-3">
-                <label class="form-label">Product Name</label>
-                {% render_field form.product_name class="form-control" placeholder="Enter product name" %}
-                <div class="text-danger small">{{ form.product_name.errors }}</div>
+                <label class="form-label">
+                    Product Name
+                </label>
+
+                {{ form.product_name }}
+
+                <div class="text-danger small">
+                    {{ form.product_name.errors }}
+                </div>
             </div>
-            <!-- CATEGORY -->
+
+            <!-- PRODUCT CATEGORY -->
+
             <div class="col-md-6 mb-3">
-                <label class="form-label">Product Category</label>
-                {% render_field form.product_category class="form-select" data-placeholder="Select category" %}
-                <div class="text-danger small">{{ form.product_category.errors }}</div>
+                <label class="form-label">
+                    Product Category
+                </label>
+
+                {{ form.product_category }}
+
+                <div class="text-danger small">
+                    {{ form.product_category.errors }}
+                </div>
             </div>
-            <!-- SKU -->
+
+            <!-- SKU CODE -->
+
             <div class="col-md-6 mb-3">
-                <label class="form-label">SKU Code</label>
-                {% render_field form.sku_code class="form-control" placeholder="Enter SKU code" %}
-                <div class="text-danger small">{{ form.sku_code.errors }}</div>
+                <label class="form-label">
+                    SKU Code
+                </label>
+
+                {{ form.sku_code }}
+
+                <div class="text-danger small">
+                    {{ form.sku_code.errors }}
+                </div>
             </div>
-            <!-- UNIT -->
+
+            <!-- PRODUCT UNIT -->
+
             <div class="col-md-6 mb-3">
-                <label class="form-label">Product Unit</label>
-                {% render_field form.product_unit class="form-select" data-placeholder="Select unit" %}
-                <div class="text-danger small">{{ form.product_unit.errors }}</div>
+                <label class="form-label">
+                    Product Unit
+                </label>
+
+                {{ form.product_unit }}
+
+                <div class="text-danger small">
+                    {{ form.product_unit.errors }}
+                </div>
             </div>
+
             <!-- PRODUCT TYPE -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Product Type</label>
-                {% render_field form.product_type class="form-select" data-placeholder="Select product type" %}
-                <div class="text-danger small">{{ form.product_type.errors }}</div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">
+                    Product Type
+                </label>
+
+                {{ form.product_type }}
+
+                <div class="text-danger small">
+                    {{ form.product_type.errors }}
+                </div>
             </div>
-            <div class="col-md-4 mb-2">
-                <label class="form-label">Markup %</label>
-                {% render_field form.markup_percentage class="form-control text-end" %}
-                <small class="text-muted">Profit percentage added on cost</small>
+
+            <!-- MINIMUM STOCK -->
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">
+                    Minimum Stock
+                </label>
+
+                {{ form.minimum_stock }}
+
+                <div class="text-danger small">
+                    {{ form.minimum_stock.errors }}
+                </div>
+
+                <small class="text-muted">
+                    Minimum stock level before low-stock warning.
+                </small>
             </div>
-                        <div class="col-md-4 mb-2">
-                <label class="form-label">Minimum Stock</label>
-                {% render_field form.minimum_stock class="form-control text-end" %}
-                <small class="text-muted">Minimum stock level</small>
-            </div>
+
             <!-- STATUS -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Status</label>
-                {% render_field form.status class="form-select" data-placeholder="Select status" %}
-                <div class="text-danger small">{{ form.status.errors }}</div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">
+                    Status
+                </label>
+
+                {{ form.status }}
+
+                <div class="text-danger small">
+                    {{ form.status.errors }}
+                </div>
             </div>
+
             <!-- DESCRIPTION -->
+
             <div class="col-12 mb-3">
-                <label class="form-label">Short Description</label>
-                {% render_field form.short_description class="form-control" rows="3" placeholder="Optional description..." %}
-                <div class="text-danger small">{{ form.short_description.errors }}</div>
+                <label class="form-label">
+                    Short Description
+                </label>
+
+                {{ form.short_description }}
+
+                <div class="text-danger small">
+                    {{ form.short_description.errors }}
+                </div>
             </div>
+
         </div>
+
     </div>
+
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        {{ form.errors }}
-        <button type="submit" class="btn btn-primary">
+
+        <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">
+
+            Close
+
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-primary">
+
             {% if product %}
                 Update Product
             {% else %}
                 Save Product
             {% endif %}
+
         </button>
+
     </div>
+
 </form>

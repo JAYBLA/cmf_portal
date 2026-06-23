@@ -1,69 +1,58 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-  <div class="col-12">
+
+<div class="col-12">
+
     <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center mb-3">
-        <h4>Quotations</h4>
 
-        <button class="btn btn-primary" hx-get="{% url 'quotations:quotation_create' %}" hx-target="#modal-body" hx-swap="innerHTML">New Quotation</button>
-      </div>
+        <div class="card-header d-flex justify-content-between align-items-center">
 
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead class="table-light">
-              <tr>
-                <th width="60">S/N</th>
-                <th>Quotation Details</th>
-                <th class="text-center" width="380">Actions</th>
-              </tr>
-            </thead>
+            <h4 class="card-title mb-0">
+                Quotations
+            </h4>
 
-            <tbody>
-              {% for quotation in quotations %}
-                <tr>
-                  <td>{{ forloop.counter }}</td>
+            <button
+                class="btn btn-primary"
+                hx-get="{% url 'quotations:quotation_create' %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML">
 
-                  <td>
-                    <div>
-                      <h6 class="mb-1 fw-bold">{{ quotation.title }}</h6>
+                Add Quotation
 
-                      <div class="text-muted small">
-                        <strong>Customer:</strong>
-                        {{ quotation.customer.customer_name }}
+            </button>
 
-                        <span class="mx-2">•</span>
-
-                        <strong>Quote Date:</strong>
-                        {{ quotation.quote_date|date:'d M Y' }}
-
-                        <span class="mx-2">•</span>
-
-                        <strong>Due Date:</strong>
-                        {{ quotation.due_date|date:'d M Y' }}
-                      </div>
-                    </div>
-                  </td>
-
-                  <td class="text-center">
-                    {% url 'quotations:quotation_update' quotation.id as edit_url %}
-                    {% url 'quotations:quotation_delete' quotation.id as delete_url %}
-                    {% url 'quotations:download_quotation_pdf' quotation.id as download_url %}
-                    {% url 'quotations:quotation_detail' quotation.id as view_url %}
-
-                    {% include 'action_buttons.html' with edit_url=edit_url delete_url=delete_url download_url=download_url view_url=view_url %}
-                  </td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="3" class="text-center py-5">No quotations found</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
         </div>
-      </div>
+
+        <div class="card-body p-1">
+
+            <table
+                id="responsiveTable"
+                class="table table-sm table-hover align-middle"
+                style="width:100%;">
+
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width:50px;" class="text-center">#</th>
+                        <th scope="col">Quotation Details</th>
+                        <th scope="col" style="width:140px;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody
+                    id="table-container"
+                    data-refresh-url="{% url 'quotations:quotation_table' %}">
+
+                    {% include "quotations/partials/quotation_table.html" %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
-  </div>
+
+</div>
+
 {% endblock %}

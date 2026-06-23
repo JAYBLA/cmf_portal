@@ -17,111 +17,215 @@ def quotation_list(request):
     return render(request, "quotations/quotation_list.html", {"quotations": quotations})
 
 
+# =========================================
+# CREATE
+# =========================================
+
 def quotation_create(request):
 
     if request.method == "POST":
 
-        form = QuotationForm(request.POST)
+        form = QuotationForm(
+            request.POST
+        )
 
         if form.is_valid():
 
             quotation = form.save()
 
             formset = QuotationItemFormSet(
-                request.POST, instance=quotation, prefix="items"
+                request.POST,
+                instance=quotation,
+                prefix="items"
             )
 
             if formset.is_valid():
 
                 formset.save()
 
-                response = HttpResponse()
+                response = HttpResponse("")
 
-                response["HX-Refresh"] = "true"
+                response["HX-Trigger"] = json.dumps({
+
+                    "recordSaved": True,
+
+                    "refreshTable": True,
+
+                    "showMessage": {
+
+                        "type": "success",
+
+                        "message":
+                            "Quotation created successfully."
+
+                    }
+
+                })
 
                 return response
 
         else:
 
-            formset = QuotationItemFormSet(request.POST, prefix="items")
+            formset = QuotationItemFormSet(
+                request.POST,
+                prefix="items"
+            )
 
     else:
 
         form = QuotationForm()
 
-        formset = QuotationItemFormSet(prefix="items")
+        formset = QuotationItemFormSet(
+            prefix="items"
+        )
 
     return render(
         request,
         "quotations/partials/quotation_form.html",
-        {"form": form, "formset": formset},
+        {
+            "form": form,
+            "formset": formset,
+        },
     )
 
+# =========================================
+# UPDATE
+# =========================================
 
 def quotation_update(request, pk):
 
-    quotation = get_object_or_404(Quotation, pk=pk)
+    quotation = get_object_or_404(
+        Quotation,
+        pk=pk
+    )
 
     if request.method == "POST":
 
-        form = QuotationForm(request.POST, instance=quotation)
+        form = QuotationForm(
+            request.POST,
+            instance=quotation
+        )
 
-        formset = QuotationItemFormSet(request.POST, instance=quotation, prefix="items")
+        formset = QuotationItemFormSet(
+            request.POST,
+            instance=quotation,
+            prefix="items"
+        )
 
         if form.is_valid() and formset.is_valid():
 
             form.save()
+
             formset.save()
 
-            response = HttpResponse()
+            response = HttpResponse("")
 
-            response["HX-Refresh"] = "true"
+            response["HX-Trigger"] = json.dumps({
+
+                "recordSaved": True,
+
+                "refreshTable": True,
+
+                "showMessage": {
+
+                    "type": "success",
+
+                    "message":
+                        "Quotation updated successfully."
+
+                }
+
+            })
 
             return response
 
     else:
 
-        form = QuotationForm(instance=quotation)
+        form = QuotationForm(
+            instance=quotation
+        )
 
-        formset = QuotationItemFormSet(instance=quotation, prefix="items")
+        formset = QuotationItemFormSet(
+            instance=quotation,
+            prefix="items"
+        )
 
     return render(
         request,
         "quotations/partials/quotation_form.html",
-        {"form": form, "formset": formset, "quotation": quotation},
+        {
+            "form": form,
+            "formset": formset,
+            "quotation": quotation,
+        },
     )
 
+# =========================================
+# DELETE
+# =========================================
 
 def quotation_delete(request, pk):
 
-    quotation = get_object_or_404(Quotation, pk=pk)
+    quotation = get_object_or_404(
+        Quotation,
+        pk=pk
+    )
 
     if request.method == "POST":
 
         quotation.delete()
 
-        response = HttpResponse()
+        response = HttpResponse("")
 
-        response["HX-Refresh"] = "true"
+        response["HX-Trigger"] = json.dumps({
+
+            "recordSaved": True,
+
+            "refreshTable": True,
+
+            "showMessage": {
+
+                "type": "success",
+
+                "message":
+                    "Quotation deleted successfully."
+
+            }
+
+        })
 
         return response
 
     return render(
-        request, "quotations/partials/quotation_delete.html", {"quotation": quotation}
+        request,
+        "quotations/partials/quotation_delete.html",
+        {
+            "quotation": quotation
+        }
     )
 
 
-def quotation_item_empty_row(request):
+# =========================================
+# QUOTATION TABLE
+# =========================================
 
-    total_forms = int(request.GET.get("total_forms", 0))
+def quotation_table(request):
 
-    formset = QuotationItemFormSet(prefix="items")
+    quotations = (
+        Quotation.objects
+        .select_related("customer")
+        .all()
+    )
 
-    form = formset.empty_form
+    context = {
+        "quotations": quotations
+    }
 
-    form.prefix = f"items-{total_forms}"
-
-    return render(request, "quotations/partials/item_row.html", {"form": form})
+    return render(
+        request,
+        "quotations/partials/quotation_table.html",
+        context
+    )
 
 # =====================================================
 # DOWNLOAD

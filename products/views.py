@@ -56,7 +56,10 @@ def product_create(request):
             response = HttpResponse("")
 
             response["HX-Trigger"] = json.dumps(
-                {"productChanged": True, "closeModal": True}
+                {
+                    "recordSaved": True,
+                    "refreshTable": True
+                }
             )
 
             return response
@@ -86,7 +89,10 @@ def product_update(request, pk):
             response = HttpResponse("")
 
             response["HX-Trigger"] = json.dumps(
-                {"productChanged": True, "closeModal": True}
+                {
+                    "recordSaved": True,
+                    "refreshTable": True
+                }
             )
 
             return response
@@ -115,8 +121,8 @@ def product_delete(request, pk):
 
             response["HX-Trigger"] = json.dumps(
                 {
-                    "productChanged": True,
-                    "closeModal": True,
+                    "recordSaved": True,
+                    "refreshTable": True,
                     "showMessage": {
                         "type": "success",
                         "message": "Product deleted successfully.",
@@ -210,3 +216,5 @@ def stock_movement_table(request):
         "products/stock_movements/table.html",
         context
     )
+    
+

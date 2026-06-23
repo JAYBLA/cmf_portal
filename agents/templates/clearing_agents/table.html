@@ -1,24 +1,87 @@
-<tbody id="clearing-agent-table-body">
+{% for agent in agents %}
+<tr id="agent-{{ agent.id }}" class="align-middle">
 
-    {% for agent in agents %}
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
 
-        {% include "clearing_agents/row.html" %}
+    <!-- AGENT DETAILS (two horizontal lines) -->
+    <td>
 
-    {% empty %}
+        <!-- LINE 1: Agent Name + Status -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+            <span class="fw-bold text-primary">{{ agent.agent_name }}</span>
+            <span>
+                {% if agent.status == "active" %}
+                    <span class="badge bg-success">Active</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                {% endif %}
+            </span>
+        </div>
 
-        <tr>
+        <!-- LINE 2: Phone, Email, Address, Notes -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
 
-            <td
-                colspan="4"
-                class="text-center text-muted py-5"
-            >
+            {% if agent.phone_number %}
+                <span>
+                    <span class="fw-light">Phone:</span> {{ agent.phone_number }}
+                </span>
+                <span>|</span>
+            {% endif %}
 
-                No clearing agents found.
+            {% if agent.email %}
+                <span>
+                    <span class="fw-light">Email:</span> {{ agent.email }}
+                </span>
+                <span>|</span>
+            {% endif %}
 
-            </td>
+            {% if agent.address %}
+                <span>
+                    <span class="fw-light">Address:</span> {{ agent.address|truncatechars:30 }}
+                </span>
+                <span>|</span>
+            {% endif %}
 
-        </tr>
+            {% if agent.notes %}
+                <span>
+                    <span class="fw-light">Notes:</span> {{ agent.notes|truncatechars:20 }}
+                </span>
+            {% endif %}
 
-    {% endfor %}
+            <!-- Always show created date -->
+            <span class="text-muted">
+                <span class="fw-light">Since:</span> {{ agent.created_at|date:"Y-m-d" }}
+            </span>
 
-</tbody>
+        </div>
+    </td>
+
+    <!-- ACTIONS (icon buttons) -->
+    <td class="text-end">
+        <div class="d-flex flex-wrap justify-content-end gap-1">
+            <!-- Edit -->
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    hx-get="{% url 'agents:update' agent.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Edit Agent">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <!-- Delete -->
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    hx-get="{% url 'agents:delete' agent.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Delete Agent">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+    </td>
+
+</tr>
+{% endfor %}
