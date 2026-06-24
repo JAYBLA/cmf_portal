@@ -49,4 +49,5 @@ urlpatterns = [
         views.product_price,
         name="product_price",
     ),
+    path("sale/<int:pk>/detail/", views.sale_detail, name="sales_detail"),
 ]

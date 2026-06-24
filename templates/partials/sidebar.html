@@ -25,7 +25,7 @@
               <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
               Customers List
             </a>
-          </li>          
+          </li>
         </ul>
       </li>
 
@@ -95,7 +95,7 @@
               <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
               Purchases
             </a>
-          </li>          
+          </li>
         </ul>
       </li>
       <li class="dropdown {% if request.resolver_match.url_name in 'quotation_list quotation_create quotation_update quotation_delete' %}open{% endif %}">
@@ -195,6 +195,21 @@
             <a href="#" class="{% if request.resolver_match.url_name == 'delivery_note_list' %}active-page{% endif %}">
               <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
               Delivery Notes List
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="dropdown {% if request.resolver_match.url_name in 'delivery_note_list delivery_note_create delivery_note_update delivery_note_delete' %}open{% endif %}">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="ri:money-dollar-circle-line" class="menu-icon"></iconify-icon>
+          <span>Vouchers</span>
+        </a>
+
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="#" class="{% if request.resolver_match.url_name == 'delivery_note_list' %}active-page{% endif %}">
+              <i class="ri-circle-fill circle-icon text-info-main w-auto"></i>
+              Vouchers
             </a>
           </li>
         </ul>

@@ -358,3 +358,13 @@ def product_price(request, product_id):
     return JsonResponse(
         {"product_id": product.id, "selling_price": float(selling_price)}
     )
+    
+def sale_detail(request, pk):
+    sale = get_object_or_404(Sale.objects.prefetch_related('items__product', 'payments'), pk=pk)
+    return render(
+        request,
+        "sales/partials/sale_detail.html",
+        {
+            "sale": sale,
+        },
+    )
