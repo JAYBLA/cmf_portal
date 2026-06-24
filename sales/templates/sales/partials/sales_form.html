@@ -1,0 +1,205 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    {% if sale %}
+      Edit Sale
+    {% else %}
+      Add Sale
+    {% endif %}
+  </h5>
+
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="modal"
+    aria-label="Close"
+  ></button>
+</div>
+
+<form
+  method="POST"
+  hx-post="{% if sale %}{% url 'sales:sales_update' sale.id %}{% else %}{% url 'sales:sales_create' %}{% endif %}"
+  hx-swap="none"
+>
+  {% csrf_token %}
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- CUSTOMER -->
+
+      <div class="col-md-12 mb-3">
+        <label class="form-label">Customer</label>
+
+        {{ form.customer }}
+
+        <div class="text-danger small">
+          {{ form.customer.errors }}
+        </div>
+      </div>
+
+      <!-- SALE DATE -->
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Sale Date</label>
+
+        {{ form.sale_date }}
+
+        <div class="text-danger small">
+          {{ form.sale_date.errors }}
+        </div>
+      </div>
+
+      <!-- STATUS -->
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Status</label>
+
+        {{ form.status }}
+
+        <div class="text-danger small">
+          {{ form.status.errors }}
+        </div>
+      </div>
+
+      <!-- NOTES -->
+
+      <div class="col-12 mb-3">
+        <label class="form-label">Notes</label>
+
+        {{ form.notes }}
+
+        <div class="text-danger small">
+          {{ form.notes.errors }}
+        </div>
+      </div>
+    </div>
+
+    <!-- SALE ITEMS -->
+
+    <div class="card border">
+      <div class="card-header py-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Sale Items</h6>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        {{ formset.management_form }}
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th width="45%">Product</th>
+
+                <th width="20%">Qty</th>
+
+                <th width="25%">Unit Price</th>
+
+                <th width="10%" class="text-center">Del</th>
+              </tr>
+            </thead>
+
+            <tbody id="sale-items-body">
+              {% for item_form in formset %}
+
+                <tr class="sale-item-row">
+                  {% for hidden in item_form.hidden_fields %}
+                    {{ hidden }}
+                  {% endfor %}
+
+                  <td class="p-1">
+                    {{ item_form.product }}
+                  </td>
+
+                  <td class="p-1">
+                    {{ item_form.quantity }}
+                  </td>
+
+                  <td class="p-1">
+                    {{ item_form.unit_price }}
+                  </td>
+
+                  <td class="text-center p-1">
+                    {% if item_form.instance.pk %}
+
+                      <div class="form-check d-flex justify-content-center">
+                        {{ item_form.DELETE }}
+                      </div>
+
+                    {% else %}
+
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger remove-row"
+                      >
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+
+                    {% endif %}
+                  </td>
+                </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- EMPTY FORM TEMPLATE -->
+
+        <template id="empty-form-template">
+          <tr class="sale-item-row">
+            {% with item_form=formset.empty_form %}
+
+              {% for hidden in item_form.hidden_fields %}
+                {{ hidden }}
+              {% endfor %}
+
+              <td class="p-1">
+                {{ item_form.product }}
+              </td>
+
+              <td class="p-1">
+                {{ item_form.quantity }}
+              </td>
+
+              <td class="p-1">
+                {{ item_form.unit_price }}
+              </td>
+
+              <td class="text-center p-1">
+                <button type="button" class="btn btn-sm btn-danger remove-row">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+
+            {% endwith %}
+          </tr>
+        </template>
+      </div>
+    </div>
+
+    <!-- TOTALS -->
+
+    <div class="alert alert-info mt-3 mb-0">
+      <div class="d-flex justify-content-between">
+        <strong>Sale Total</strong>
+
+        <span id="sale-total-preview" class="fw-bold">0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      Close
+    </button>
+
+    <button type="submit" class="btn btn-primary">
+      {% if sale %}
+        Update Sale
+      {% else %}
+        Save Sale
+      {% endif %}
+    </button>
+  </div>
+</form>

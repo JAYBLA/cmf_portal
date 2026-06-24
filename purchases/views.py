@@ -14,6 +14,7 @@ from .models import *
 from products.models import Product
 from .forms import *
 from django.db.models import Sum
+from .services.pricing import recalculate_purchase_pricing
 
 # =========================================
 # PURCHASE LIST
@@ -127,6 +128,7 @@ def purchase_create(request):
             purchase.balance = purchase.total_amount - purchase.amount_paid
 
             purchase.save()
+            recalculate_purchase_pricing(purchase)
 
             # =====================================
             # RESPONSE
@@ -160,22 +162,15 @@ def purchase_create(request):
 # UPDATE PURCHASE
 # =========================================
 
+
 def purchase_update(request, pk):
 
-    purchase = get_object_or_404(
-        Purchase,
-        pk=pk
-    )
+    purchase = get_object_or_404(Purchase, pk=pk)
 
-    form = PurchaseForm(
-        request.POST or None,
-        instance=purchase
-    )
+    form = PurchaseForm(request.POST or None, instance=purchase)
 
     formset = PurchaseItemFormSet(
-        request.POST or None,
-        instance=purchase,
-        prefix="items"
+        request.POST or None, instance=purchase, prefix="items"
     )
 
     if request.method == "POST":
@@ -192,7 +187,7 @@ def purchase_update(request, pk):
                     quantity=old_item.quantity,
                     movement_type="out",
                     reference=purchase.purchase_number,
-                    notes="Purchase Update Reversal"
+                    notes="Purchase Update Reversal",
                 )
 
             # =====================================
@@ -225,7 +220,7 @@ def purchase_update(request, pk):
                     quantity=item.quantity,
                     movement_type="in",
                     reference=purchase.purchase_number,
-                    notes="Purchase Update"
+                    notes="Purchase Update",
                 )
 
             # =====================================
@@ -244,10 +239,7 @@ def purchase_update(request, pk):
 
                 purchase.total_amount = subtotal
 
-                purchase.total_amount_tzs = (
-                    subtotal *
-                    purchase.exchange_rate
-                )
+                purchase.total_amount_tzs = subtotal * purchase.exchange_rate
 
             else:
 
@@ -255,10 +247,7 @@ def purchase_update(request, pk):
 
                 purchase.total_amount_tzs = subtotal
 
-            purchase.balance = (
-                purchase.total_amount -
-                purchase.amount_paid
-            )
+            purchase.balance = purchase.total_amount - purchase.amount_paid
 
             if purchase.amount_paid <= 0:
 
@@ -273,6 +262,7 @@ def purchase_update(request, pk):
                 purchase.payment_status = "paid"
 
             purchase.save()
+            recalculate_purchase_pricing(purchase)
 
             # =====================================
             # RESPONSE
@@ -280,60 +270,37 @@ def purchase_update(request, pk):
 
             response = HttpResponse("")
 
-            response["HX-Trigger"] = json.dumps({
-
-                "recordSaved": True,
-
-                "refreshTable": True,
-
-                "showMessage": {
-
-                    "type": "success",
-
-                    "message":
-                        "Purchase updated successfully."
-
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": "Purchase updated successfully.",
+                    },
                 }
-
-            })
+            )
 
             return response
 
     context = {
-
         "form": form,
-
         "formset": formset,
-
         "purchase": purchase,
-
-        "products": Product.objects.filter(
-            status="active"
-        )
-
+        "products": Product.objects.filter(status="active"),
     }
 
-    return render(
-
-        request,
-
-        "purchases/partials/purchase_form.html",
-
-        context
-
-    )
+    return render(request, "purchases/partials/purchase_form.html", context)
 
 
 # =========================================
 # DELETE PURCHASE
 # =========================================
 
+
 def purchase_delete(request, pk):
 
-    purchase = get_object_or_404(
-        Purchase,
-        pk=pk
-    )
+    purchase = get_object_or_404(Purchase, pk=pk)
 
     if request.method == "POST":
 
@@ -347,7 +314,7 @@ def purchase_delete(request, pk):
                 quantity=item.quantity,
                 movement_type="out",
                 reference=purchase.purchase_number,
-                notes="Purchase Deleted"
+                notes="Purchase Deleted",
             )
 
         # =====================================
@@ -358,56 +325,34 @@ def purchase_delete(request, pk):
 
         response = HttpResponse("")
 
-        response["HX-Trigger"] = json.dumps({
-
-            "recordSaved": True,
-
-            "refreshTable": True,
-
-            "showMessage": {
-
-                "type": "success",
-
-                "message":
-                    "Purchase deleted successfully."
-
+        response["HX-Trigger"] = json.dumps(
+            {
+                "recordSaved": True,
+                "refreshTable": True,
+                "showMessage": {
+                    "type": "success",
+                    "message": "Purchase deleted successfully.",
+                },
             }
-
-        })
+        )
 
         return response
 
-    context = {
+    context = {"purchase": purchase}
 
-        "purchase": purchase
-
-    }
-
-    return render(
-
-        request,
-
-        "purchases/partials/purchase_delete.html",
-
-        context
-
-    )
+    return render(request, "purchases/partials/purchase_delete.html", context)
 
 
 # =========================================
 # CREATE PURCHASE PAYMENT
 # =========================================
 
+
 def purchase_payment_create(request, purchase_id):
 
-    purchase = get_object_or_404(
-        Purchase,
-        pk=purchase_id
-    )
+    purchase = get_object_or_404(Purchase, pk=purchase_id)
 
-    form = PurchasePaymentForm(
-        request.POST or None
-    )
+    form = PurchasePaymentForm(request.POST or None)
 
     if request.method == "POST":
 
@@ -417,9 +362,7 @@ def purchase_payment_create(request, purchase_id):
             # SAVE PAYMENT
             # =====================================
 
-            payment = form.save(
-                commit=False
-            )
+            payment = form.save(commit=False)
 
             payment.purchase = purchase
 
@@ -431,99 +374,58 @@ def purchase_payment_create(request, purchase_id):
 
             response = HttpResponse("")
 
-            response["HX-Trigger"] = json.dumps({
-
-                "recordSaved": True,
-
-                "refreshTable": True,
-
-                "showMessage": {
-
-                    "type": "success",
-
-                    "message": (
-                        "Purchase payment "
-                        "recorded successfully."
-                    )
-
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": ("Purchase payment " "recorded successfully."),
+                    },
                 }
-
-            })
+            )
 
             return response
 
     context = {
-
         "form": form,
-
         "purchase": purchase,
-
     }
 
-    return render(
-
-        request,
-
-        "purchases/payments/payment_form.html",
-
-        context
-
-    )
+    return render(request, "purchases/payments/payment_form.html", context)
 
 
 # =========================================
 # ADDITIONAL COST LIST
 # =========================================
 
+
 def additional_cost_list(request, purchase_id):
 
-    purchase = get_object_or_404(
-        Purchase,
-        pk=purchase_id
-    )
+    purchase = get_object_or_404(Purchase, pk=purchase_id)
 
-    additional_costs = (
-        purchase.additional_costs
-        .select_related("clearing_agent")
-        .order_by("id")
-    )
+    additional_costs = purchase.additional_costs.select_related(
+        "clearing_agent"
+    ).order_by("id")
 
     context = {
-
         "purchase": purchase,
-
         "additional_costs": additional_costs,
-
     }
 
-    return render(
+    return render(request, "purchases/additional_costs/list.html", context)
 
-        request,
-
-        "purchases/additional_costs/list.html",
-
-        context
-
-    )
 
 # =========================================
 # CREATE ADDITIONAL COST
 # =========================================
 
-# =========================================
-# CREATE ADDITIONAL COST
-# =========================================
 
 def additional_cost_create(request, purchase_id):
 
-    purchase = get_object_or_404(
-        Purchase,
-        pk=purchase_id
-    )
+    purchase = get_object_or_404(Purchase, pk=purchase_id)
 
-    form = PurchaseAdditionalCostForm(
-        request.POST or None
-    )
+    form = PurchaseAdditionalCostForm(request.POST or None)
 
     formset = AdditionalCostDocumentFormSet(
         request.POST or None,
@@ -535,9 +437,7 @@ def additional_cost_create(request, purchase_id):
 
         if form.is_valid() and formset.is_valid():
 
-            additional_cost = form.save(
-                commit=False
-            )
+            additional_cost = form.save(commit=False)
 
             additional_cost.purchase = purchase
 
@@ -546,64 +446,42 @@ def additional_cost_create(request, purchase_id):
             formset.instance = additional_cost
 
             formset.save()
+            recalculate_purchase_pricing(purchase)
 
             response = HttpResponse("")
 
-            response["HX-Trigger"] = json.dumps({
-
-                "recordSaved": True,
-
-                "refreshTable": True,
-
-                "showMessage": {
-
-                    "type": "success",
-
-                    "message":
-                        "Additional cost added successfully."
-
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": "Additional cost added successfully.",
+                    },
                 }
-
-            })
+            )
 
             return response
 
     context = {
-
         "form": form,
-
         "formset": formset,
-
         "purchase": purchase,
-
     }
 
-    return render(
-
-        request,
-
-        "purchases/additional_costs/form.html",
-
-        context
-
-    )
+    return render(request, "purchases/additional_costs/form.html", context)
 
 
 # =========================================
 # UPDATE ADDITIONAL COST
 # =========================================
 
+
 def additional_cost_update(request, pk):
 
-    additional_cost = get_object_or_404(
-        PurchaseAdditionalCost,
-        pk=pk
-    )
+    additional_cost = get_object_or_404(PurchaseAdditionalCost, pk=pk)
 
-    form = PurchaseAdditionalCostForm(
-        request.POST or None,
-        instance=additional_cost
-    )
+    form = PurchaseAdditionalCostForm(request.POST or None, instance=additional_cost)
 
     formset = AdditionalCostDocumentFormSet(
         request.POST or None,
@@ -621,86 +499,62 @@ def additional_cost_update(request, pk):
             formset.instance = additional_cost
 
             formset.save()
+            recalculate_purchase_pricing(additional_cost.purchase)
 
             response = HttpResponse("")
 
-            response["HX-Trigger"] = json.dumps({
-
-                "recordSaved": True,
-
-                "refreshTable": True,
-
-                "showMessage": {
-
-                    "type": "success",
-
-                    "message":
-                        "Additional cost updated successfully."
-
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": "Additional cost updated successfully.",
+                    },
                 }
-
-            })
+            )
 
             return response
 
     context = {
-
         "form": form,
-
         "formset": formset,
-
         "additional_cost": additional_cost,
-
         "purchase": additional_cost.purchase,
-
     }
 
-    return render(
-
-        request,
-
-        "purchases/additional_costs/form.html",
-
-        context
-
-    )
+    return render(request, "purchases/additional_costs/form.html", context)
 
 
 # =========================================
 # DELETE ADDITIONAL COST
 # =========================================
 
+
 def additional_cost_delete(request, pk):
 
-    additional_cost = get_object_or_404(
-        PurchaseAdditionalCost,
-        pk=pk
-    )
+    additional_cost = get_object_or_404(PurchaseAdditionalCost, pk=pk)
+    purchase = additional_cost.purchase
 
     if request.method == "POST":
 
         try:
 
             additional_cost.delete()
+            recalculate_purchase_pricing(purchase)
 
             response = HttpResponse("")
 
-            response["HX-Trigger"] = json.dumps({
-
-                "recordSaved": True,
-
-                "refreshTable": True,
-
-                "showMessage": {
-
-                    "type": "success",
-
-                    "message":
-                        "Additional cost deleted successfully."
-
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": "Additional cost deleted successfully.",
+                    },
                 }
-
-            })
+            )
 
             return response
 
@@ -708,69 +562,64 @@ def additional_cost_delete(request, pk):
 
             response = HttpResponse("")
 
-            response["HX-Trigger"] = json.dumps({
-
-                "showMessage": {
-
-                    "type": "error",
-
-                    "message":
-                        f"Unable to delete additional cost. {str(e)}"
-
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "showMessage": {
+                        "type": "error",
+                        "message": f"Unable to delete additional cost. {str(e)}",
+                    }
                 }
-
-            })
+            )
 
             return response
 
     context = {
-
         "additional_cost": additional_cost,
-
     }
 
-    return render(
-
-        request,
-
-        "purchases/additional_costs/delete.html",
-
-        context
-
-    )
+    return render(request, "purchases/additional_costs/delete.html", context)
 
 
 # =========================================
 # ADDITIONAL COST TABLE
 # =========================================
 
+
 def additional_cost_table(request, purchase_id):
 
-    purchase = get_object_or_404(
-        Purchase,
-        pk=purchase_id
-    )
+    purchase = get_object_or_404(Purchase, pk=purchase_id)
 
-    additional_costs = (
-        purchase.additional_costs
-        .select_related("clearing_agent")
-        .order_by("id")
-    )
+    additional_costs = purchase.additional_costs.select_related(
+        "clearing_agent"
+    ).order_by("id")
 
     context = {
-
         "purchase": purchase,
-
         "additional_costs": additional_costs,
+    }
 
+    return render(request, "purchases/additional_costs/table.html", context)
+
+# =========================================
+# ADDITIONAL COST DOCUMENTS
+# =========================================
+
+def additional_cost_documents(request, pk):
+
+    additional_cost = get_object_or_404(
+        PurchaseAdditionalCost,
+        pk=pk
+    )
+
+    documents = additional_cost.documents.all()
+
+    context = {
+        "additional_cost": additional_cost,
+        "documents": documents,
     }
 
     return render(
-
         request,
-
-        "purchases/additional_costs/table.html",
-
-        context
-
+        "purchases/additional_costs/documents.html",
+        context,
     )

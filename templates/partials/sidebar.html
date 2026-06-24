@@ -2,7 +2,7 @@
 <aside class="sidebar">
   <button type="button" class="sidebar-close-btn"><iconify-icon icon="radix-icons:cross-2"></iconify-icon></button>
   <div>
-    <a href="#" class="sidebar-logo">
+    <a href="/" class="sidebar-logo">
       <img src="{% static 'images/logo.png' %}" alt="site logo" class="light-logo" />
       <img src="{% static 'images/logo-light.png' %}" alt="site logo" class="dark-logo" />
       <img src="{% static 'images/logo-icon.png' %}" alt="site logo" class="logo-icon" />
@@ -125,7 +125,7 @@
 
         <ul class="sidebar-submenu">
           <li>
-            <a href="#" class="{% if request.resolver_match.url_name == 'sale_list' %}active-page{% endif %}">
+            <a href="{% url 'sales:sales_list' %}" class="{% if request.resolver_match.url_name == 'sales_list' %}active-page{% endif %}">
               <i class="ri-circle-fill circle-icon text-success-main w-auto"></i>
               Sales List
             </a>

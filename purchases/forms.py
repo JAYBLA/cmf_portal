@@ -302,3 +302,14 @@ AdditionalCostDocumentFormSet = inlineformset_factory(
     extra=0,
     can_delete=True,    
 )
+
+class PurchaseProductPricingForm(forms.Form):
+
+    purchase = forms.ModelChoiceField(
+        queryset=Purchase.objects.all(),
+        widget=forms.Select(
+            attrs={
+                "class": "form-select choices-select",
+            }
+        )
+    )

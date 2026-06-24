@@ -3,34 +3,33 @@
 ========================================= */
 
 function initializePlugins(container = document) {
+  if (typeof initializeTooltips === "function") {
+    initializeTooltips(container);
+  }
 
-    if (typeof initializeTooltips === "function") {
-        initializeTooltips(container);
-    }
+  if (typeof initializeChoices === "function") {
+    initializeChoices(container);
+  }
 
-    if (typeof initializeChoices === "function") {
-        initializeChoices(container);
-    }
+  if (typeof initializeFlatpickr === "function") {
+    initializeFlatpickr(container);
+  }
 
-    if (typeof initializeFlatpickr === "function") {
-        initializeFlatpickr(container);
-    }
+  if (typeof initializeTinyMCE === "function") {
+    initializeTinyMCE(container);
+  }
 
-    if (typeof initializeTinyMCE === "function") {
-        initializeTinyMCE(container);
-    }
+  if (typeof initializeDataTables === "function") {
+    initializeDataTables(container);
+  }
 
-    if (typeof initializeDataTables === "function") {
-        initializeDataTables(container);
-    }
+  if (typeof initializeAutoFormsets === "function") {
+    initializeAutoFormsets(container);
+  }
 
-    if (typeof initializeAutoFormsets === "function") {
-        initializeAutoFormsets(container);
-    }
-
-    if (typeof initializePurchaseCategory === "function") {
-        initializePurchaseCategory(container);
-    }
+  if (typeof initializePurchaseCategory === "function") {
+    initializePurchaseCategory(container);
+  }
 }
 
 /* =========================================
@@ -38,314 +37,228 @@ function initializePlugins(container = document) {
 ========================================= */
 
 document.addEventListener(
-    "DOMContentLoaded",
+  "DOMContentLoaded",
 
-    function () {
+  function () {
+    const modalElement = document.getElementById("globalModal");
 
-        const modalElement =
-            document.getElementById("globalModal");
+    const modalBody = document.getElementById("modal-body");
 
-        const modalBody =
-            document.getElementById("modal-body");
-
-        /* =====================================
+    /* =====================================
            OPEN MODAL AFTER SWAP
         ===================================== */
 
-        document.body.addEventListener(
-            "htmx:afterSwap",
+    document.body.addEventListener(
+      "htmx:afterSwap",
 
-            function (event) {
+      function (event) {
+        if (event.detail.target.id === "modal-body") {
+          const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 
-                if (
-                    event.detail.target.id ===
-                    "modal-body"
-                ) {
+          modal.show();
 
-                    const modal =
-                        bootstrap.Modal.getOrCreateInstance(
-                            modalElement
-                        );
+          initializePlugins(event.detail.target);
+        }
+      },
+    );
 
-                    modal.show();
-
-                    initializePlugins(
-                        event.detail.target
-                    );
-                }
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            REINITIALIZE PLUGINS
         ===================================== */
 
-        document.body.addEventListener(
-            "htmx:afterSettle",
+    document.body.addEventListener(
+      "htmx:afterSettle",
 
-            function (event) {
+      function (event) {
+        initializePlugins(event.target);
+      },
+    );
 
-                initializePlugins(
-                    event.target
-                );
-
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            CLOSE MODAL
         ===================================== */
 
-        document.body.addEventListener(
-            "closeModal",
+    document.body.addEventListener(
+      "closeModal",
 
-            function () {
+      function () {
+        const modal = bootstrap.Modal.getInstance(modalElement);
 
-                const modal =
-                    bootstrap.Modal.getInstance(
-                        modalElement
-                    );
+        if (modal) {
+          modal.hide();
+        }
+      },
+    );
 
-                if (modal) {
-                    modal.hide();
-                }
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            RECORD SAVED
         ===================================== */
 
-        document.body.addEventListener(
-            "recordSaved",
+    document.body.addEventListener(
+      "recordSaved",
 
-            function () {
+      function () {
+        const modal = bootstrap.Modal.getInstance(modalElement);
 
-                const modal =
-                    bootstrap.Modal.getInstance(
-                        modalElement
-                    );
+        if (modal) {
+          modal.hide();
+        }
 
-                if (modal) {
-                    modal.hide();
-                }
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            icon: "success",
 
-                if (typeof Swal !== "undefined") {
+            title: "Saved Successfully",
 
-                    Swal.fire({
+            timer: 1500,
 
-                        icon: "success",
+            showConfirmButton: false,
+          });
+        }
+      },
+    );
 
-                        title: "Saved Successfully",
-
-                        timer: 1500,
-
-                        showConfirmButton: false
-
-                    });
-
-                }
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            REFRESH TABLE
         ===================================== */
 
-        document.body.addEventListener(
-            "refreshTable",
+    document.body.addEventListener(
+      "refreshTable",
 
-            function () {
+      function () {
+        const container = document.getElementById("table-container");
 
-                const container =
-                    document.getElementById(
-                        "table-container"
-                    );
+        if (!container) {
+          return;
+        }
 
-                if (!container) {
-                    return;
-                }
+        const refreshUrl = container.dataset.refreshUrl;
 
-                const refreshUrl =
-                    container.dataset.refreshUrl;
+        if (!refreshUrl) {
+          console.warn("Missing data-refresh-url on #table-container");
 
-                if (!refreshUrl) {
+          return;
+        }
 
-                    console.warn(
-                        "Missing data-refresh-url on #table-container"
-                    );
+        htmx.ajax("GET", refreshUrl, {
+          target: "#table-container",
+          swap: "innerHTML",
+        });
+      },
+    );
 
-                    return;
-                }
-
-                htmx.ajax(
-                    "GET",
-                    refreshUrl,
-                    {
-                        target: "#table-container",
-                        swap: "innerHTML",
-                    }
-                );
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            SHOW MESSAGE
         ===================================== */
 
-        document.body.addEventListener(
-            "showMessage",
+    document.body.addEventListener(
+      "showMessage",
 
-            function (event) {
+      function (event) {
+        if (typeof Swal === "undefined") {
+          return;
+        }
 
-                if (typeof Swal === "undefined") {
-                    return;
-                }
+        Swal.fire({
+          icon: event.detail.type || "success",
 
-                Swal.fire({
+          title: event.detail.message || "Success",
 
-                    icon:
-                        event.detail.type ||
-                        "success",
+          timer: 2500,
 
-                    title:
-                        event.detail.message ||
-                        "Success",
+          showConfirmButton: false,
+        });
+      },
+    );
 
-                    timer: 2500,
-
-                    showConfirmButton: false
-
-                });
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            CLEAR MODAL CONTENT
         ===================================== */
 
-        if (modalElement) {
+    if (modalElement) {
+      modalElement.addEventListener(
+        "hidden.bs.modal",
 
-            modalElement.addEventListener(
-                "hidden.bs.modal",
+        function () {
+          if (modalBody) {
+            modalBody.innerHTML = "";
+          }
+        },
+      );
+    }
 
-                function () {
-
-                    if (modalBody) {
-
-                        modalBody.innerHTML =
-                            "";
-
-                    }
-                }
-            );
-        }
-
-        /* =====================================
+    /* =====================================
            RESPONSE ERRORS
         ===================================== */
 
-        document.body.addEventListener(
-            "htmx:responseError",
+    document.body.addEventListener(
+      "htmx:responseError",
 
-            function (event) {
+      function (event) {
+        console.error("HTMX Response Error:", event);
 
-                console.error(
-                    "HTMX Response Error:",
-                    event
-                );
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            icon: "error",
 
-                if (
-                    typeof Swal !==
-                    "undefined"
-                ) {
+            title: "Request Failed",
 
-                    Swal.fire({
+            text: "An error occurred while processing your request.",
+          });
+        }
+      },
+    );
 
-                        icon: "error",
-
-                        title: "Request Failed",
-
-                        text:
-                            "An error occurred while processing your request."
-
-                    });
-
-                }
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            NETWORK ERRORS
         ===================================== */
 
-        document.body.addEventListener(
-            "htmx:sendError",
+    document.body.addEventListener(
+      "htmx:sendError",
 
-            function (event) {
+      function (event) {
+        console.error("HTMX Network Error:", event);
 
-                console.error(
-                    "HTMX Network Error:",
-                    event
-                );
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            icon: "error",
 
-                if (
-                    typeof Swal !==
-                    "undefined"
-                ) {
+            title: "Network Error",
 
-                    Swal.fire({
+            text: "Unable to connect to the server.",
+          });
+        }
+      },
+    );
 
-                        icon: "error",
-
-                        title: "Network Error",
-
-                        text:
-                            "Unable to connect to the server."
-
-                    });
-
-                }
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            LOADING START
         ===================================== */
 
-        document.body.addEventListener(
-            "htmx:beforeRequest",
+    document.body.addEventListener(
+      "htmx:beforeRequest",
 
-            function () {
+      function () {
+        document.body.classList.add("loading");
+      },
+    );
 
-                document.body.classList.add(
-                    "loading"
-                );
-
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            LOADING END
         ===================================== */
 
-        document.body.addEventListener(
-            "htmx:afterRequest",
+    document.body.addEventListener(
+      "htmx:afterRequest",
 
-            function () {
+      function () {
+        document.body.classList.remove("loading");
+      },
+    );
 
-                document.body.classList.remove(
-                    "loading"
-                );
-
-            }
-        );
-
-        /* =====================================
+    /* =====================================
            INITIAL PAGE LOAD
         ===================================== */
 
-        initializePlugins(document);
-
-    }
+    initializePlugins(document);
+  },
 );

@@ -44,4 +44,9 @@ urlpatterns = [
         views.additional_cost_table,
         name="additional_cost_table",
     ),
+    path(
+    "additional-costs/<int:pk>/documents/",
+    views.additional_cost_documents,
+    name="additional_cost_documents",
+),
 ]

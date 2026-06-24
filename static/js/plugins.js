@@ -410,3 +410,67 @@ function initializePurchaseCategory(container = document) {
 
     updatePurchaseFields();
 }
+
+/* =========================================
+   SALE PRODUCT PRICE
+========================================= */
+
+document.body.addEventListener(
+    "change",
+    async function (event) {
+
+        const productField =
+            event.target.closest(".sale-product");
+
+        if (!productField) {
+            return;
+        }
+
+        const productId =
+            productField.value;
+
+        if (!productId) {
+            return;
+        }
+
+        const row =
+            productField.closest("tr");
+
+        const priceField =
+            row.querySelector(".item-price");
+
+        if (!priceField) {
+            return;
+        }
+
+        try {
+
+            const response =
+                await fetch(
+                    `/sales/product-price/${productId}/`
+                );
+
+            const data =
+                await response.json();
+
+            priceField.value =
+                data.selling_price || 0;
+
+            priceField.dispatchEvent(
+                new Event(
+                    "input",
+                    { bubbles: true }
+                )
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Unable to load product price",
+                error
+            );
+
+        }
+
+    }
+);

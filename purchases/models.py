@@ -451,3 +451,49 @@ class AdditionalCostDocument(models.Model):
 
     def __str__(self):
         return self.title
+    
+class PurchaseProductPricing(models.Model):
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE
+    )
+
+    purchase = models.ForeignKey(
+        Purchase,
+        on_delete=models.CASCADE
+    )
+
+    purchase_item = models.OneToOneField(
+        PurchaseItem,
+        on_delete=models.CASCADE
+    )
+
+    quantity = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    purchase_value_tzs = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0
+    )
+
+    allocated_cost_tzs = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0
+    )
+
+    landed_cost_total = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0
+    )
+
+    landed_unit_cost = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0
+    )

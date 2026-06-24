@@ -1,24 +1,111 @@
-<tbody id="additional-cost-table-body">
+{% load humanize %}
+{% for cost in additional_costs %}
+<tr id="cost-{{ cost.id }}" class="align-middle">
 
-    {% for additional_cost in additional_costs %}
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
 
-        {% include "purchases/additional_costs/row.html" %}
+    <!-- COST DETAILS (two horizontal lines) -->
+    <td>
 
-    {% empty %}
+        <!-- LINE 1: Cost Type (badge) + Amount + Currency + Payment Status -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+            <span class="badge bg-secondary">{{ cost.get_cost_type_display }}</span>
+            <span>
+                <span class="fw-light">Amount:</span>
+                <span class="fw-semibold text-primary">
+                    {{ cost.currency }} {{ cost.amount|floatformat:2|intcomma }}
+                </span>
+            </span>
+            {% if cost.currency == "USD" %}
+                <span class="text-muted">|</span>
+                <span>
+                    <span class="fw-light">Rate:</span> {{ cost.exchange_rate|floatformat:2 }}
+                </span>
+                <span class="text-muted">|</span>
+                <span>
+                    <span class="fw-light">TZS:</span>
+                    <span class="fw-semibold">{{ cost.amount_tzs|floatformat:2|intcomma }}</span>
+                </span>
+            {% endif %}
+            <span class="text-muted">|</span>
+            <span>
+                {% if cost.payment_status == "paid" %}
+                    <span class="badge bg-success">Paid</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                {% endif %}
+            </span>
+        </div>
 
-        <tr>
+        <!-- LINE 2: Clearing Agent, Description, Notes, Created -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+            {% if cost.clearing_agent %}
+                <span>
+                    <span class="fw-light">Agent:</span> {{ cost.clearing_agent.agent_name }}
+                </span>
+                <span>|</span>
+            {% endif %}
+            {% if cost.description %}
+                <span>
+                    <span class="fw-light">Description:</span> {{ cost.description|truncatechars:30 }}
+                </span>
+                <span>|</span>
+            {% endif %}
+            {% if cost.notes %}
+                <span>
+                    <span class="fw-light">Notes:</span> {{ cost.notes|truncatechars:20 }}
+                </span>
+                <span>|</span>
+            {% endif %}
+            <span>
+                <span class="fw-light">Added:</span> {{ cost.created_at|date:"Y-m-d H:i" }}
+            </span>
+        </div>
+    </td>
 
-            <td
-                colspan="7"
-                class="text-center text-muted py-5"
-            >
+    <!-- ACTIONS (icon buttons) -->
+    <td class="text-end">
+        <div class="d-flex flex-wrap justify-content-end gap-1">
+            <!-- Edit -->
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    hx-get="{% url 'purchases:additional_cost_update' cost.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Edit Cost">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <!-- Delete -->
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    hx-get="{% url 'purchases:additional_cost_delete' cost.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Delete Cost">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <button
+    type="button"
+    class="btn btn-info btn-sm"
+    hx-get="{% url 'purchases:additional_cost_documents' cost.id %}"
+    hx-target="#modal-body"
+    hx-swap="innerHTML"
+    title="View Documents">
 
-                No additional costs found.
+    <i class="fa-solid fa-paperclip"></i>
 
-            </td>
+</button>
+        </div>
+    </td>
 
-        </tr>
-
-    {% endfor %}
-
-</tbody>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3" class="text-center text-muted py-3">
+        No additional costs recorded for this purchase.
+    </td>
+</tr>
+{% endfor %}

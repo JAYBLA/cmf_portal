@@ -1,0 +1,213 @@
+{% load humanize %}
+
+{% for sale in sales %}
+
+<tr id="sale-{{ sale.id }}" class="align-middle">
+
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
+
+    <!-- SALE DETAILS -->
+    <td>
+
+        <!-- LINE 1 -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+
+            <span class="fw-bold text-primary">
+                {{ sale.sale_number }}
+            </span>
+
+            <span>
+
+                {% if sale.status == "confirmed" %}
+                    <span class="badge bg-success">Confirmed</span>
+
+                {% elif sale.status == "cancelled" %}
+                    <span class="badge bg-danger">Cancelled</span>
+
+                {% else %}
+                    <span class="badge bg-secondary">Draft</span>
+
+                {% endif %}
+
+            </span>
+
+            <span>
+
+                {% if sale.payment_status == "paid" %}
+                    <span class="badge bg-success">Paid</span>
+
+                {% elif sale.payment_status == "partial" %}
+                    <span class="badge bg-warning text-dark">Partial</span>
+
+                {% else %}
+                    <span class="badge bg-danger">Pending</span>
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+        <!-- LINE 2 -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+
+            <span>
+                <span class="fw-light">Customer:</span>
+                {{ sale.customer }}
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Date:</span>
+                {{ sale.sale_date|date:"M d, Y" }}
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Total:</span>
+
+                <span class="fw-semibold text-primary">
+                    TZS {{ sale.total_amount|floatformat:2|intcomma }}
+                </span>
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Paid:</span>
+
+                <span class="fw-semibold text-success">
+                    TZS {{ sale.amount_paid|floatformat:2|intcomma }}
+                </span>
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Balance:</span>
+
+                <span class="fw-bold text-danger">
+                    TZS {{ sale.balance|floatformat:2|intcomma }}
+                </span>
+            </span>
+
+            {% if sale.notes %}
+
+                <span>|</span>
+
+                <span>
+                    <span class="fw-light">Notes:</span>
+                    {{ sale.notes|truncatechars:50 }}
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </td>
+
+    <!-- ACTIONS -->
+    <td style="min-width:260px;">
+
+        <div class="row g-1">
+
+            <!-- EDIT -->
+            <div class="col-6">
+
+                <a
+                    hx-get="{% url 'sales:sales_update' sale.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    class="btn btn-warning btn-sm shadow w-100"
+                    data-bs-toggle="tooltip"
+                    title="Edit Sale">
+
+                    <i class="fa-solid fa-pen-to-square me-1"></i>
+
+                    Edit
+
+                </a>
+
+            </div>
+
+            <!-- DELETE -->
+            <div class="col-6">
+
+                <a
+                    hx-get="{% url 'sales:sale_delete' sale.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    class="btn btn-danger btn-sm shadow w-100"
+                    data-bs-toggle="tooltip"
+                    title="Delete Sale">
+
+                    <i class="fa-solid fa-trash-can me-1"></i>
+
+                    Delete
+
+                </a>
+
+            </div>
+
+            <!-- PAYMENT -->
+            <div class="col-6">
+
+                <a
+                    hx-get="{% url 'sales:sale_payment_create' sale.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    class="btn btn-success btn-sm shadow w-100"
+                    data-bs-toggle="tooltip"
+                    title="Record Payment">
+
+                    <i class="fa-solid fa-money-bill-wave me-1"></i>
+
+                    Payment
+
+                </a>
+
+            </div>
+
+            <!-- DETAILS -->
+            <div class="col-6">
+
+                <a
+                    hx-get="{# url 'sales:sales_detail' sale.id #}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    class="btn btn-info btn-sm shadow w-100"
+                    data-bs-toggle="tooltip"
+                    title="View Sale">
+
+                    <i class="fa-solid fa-eye me-1"></i>
+
+                    Details
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="3" class="text-center text-muted py-4">
+
+        No sales found.
+
+    </td>
+
+</tr>
+
+{% endfor %}
