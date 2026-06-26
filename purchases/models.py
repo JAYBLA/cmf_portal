@@ -199,10 +199,7 @@ class PurchaseItem(models.Model):
     @property
     def value_percentage(self):
 
-        purchase_total = sum(
-            item.subtotal_tzs
-            for item in self.purchase.items.all()
-        )
+        purchase_total = sum(item.subtotal_tzs for item in self.purchase.items.all())
 
         if purchase_total <= 0:
             return Decimal("0")
@@ -213,8 +210,7 @@ class PurchaseItem(models.Model):
     def allocated_additional_cost(self):
 
         total_additional_costs = sum(
-            cost.amount_tzs
-            for cost in self.purchase.additional_costs.all()
+            cost.amount_tzs for cost in self.purchase.additional_costs.all()
         )
 
         return total_additional_costs * self.value_percentage
@@ -222,10 +218,7 @@ class PurchaseItem(models.Model):
     @property
     def landed_cost_total(self):
 
-        return (
-            self.subtotal_tzs +
-            self.allocated_additional_cost
-        )
+        return self.subtotal_tzs + self.allocated_additional_cost
 
     @property
     def landed_unit_cost(self):
@@ -451,49 +444,22 @@ class AdditionalCostDocument(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+
 class PurchaseProductPricing(models.Model):
 
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE
-    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
-    purchase = models.ForeignKey(
-        Purchase,
-        on_delete=models.CASCADE
-    )
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
 
-    purchase_item = models.OneToOneField(
-        PurchaseItem,
-        on_delete=models.CASCADE
-    )
+    purchase_item = models.OneToOneField(PurchaseItem, on_delete=models.CASCADE)
 
-    quantity = models.DecimalField(
-        max_digits=12,
-        decimal_places=2
-    )
+    quantity = models.DecimalField(max_digits=12, decimal_places=2)
 
-    purchase_value_tzs = models.DecimalField(
-        max_digits=14,
-        decimal_places=2,
-        default=0
-    )
+    purchase_value_tzs = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-    allocated_cost_tzs = models.DecimalField(
-        max_digits=14,
-        decimal_places=2,
-        default=0
-    )
+    allocated_cost_tzs = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-    landed_cost_total = models.DecimalField(
-        max_digits=14,
-        decimal_places=2,
-        default=0
-    )
+    landed_cost_total = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 
-    landed_unit_cost = models.DecimalField(
-        max_digits=14,
-        decimal_places=2,
-        default=0
-    )
+    landed_unit_cost = models.DecimalField(max_digits=14, decimal_places=2, default=0)

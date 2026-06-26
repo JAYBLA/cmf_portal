@@ -28,7 +28,7 @@
               <h6 class="mb-0">{{ quotation_count }}</h6>
             </div>
             <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
-              <iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
+              <iconify-icon icon="ri:draft-line" class="text-white text-2xl mb-0"></iconify-icon>
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@
               <h6 class="mb-0">{{ invoice_count }}</h6>
             </div>
             <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
-              <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+              <iconify-icon icon="ri:bill-line" class="text-white text-2xl mb-0"></iconify-icon>
             </div>
           </div>
         </div>
@@ -110,103 +110,72 @@
         </div>
       </div>
     </div>
-<div class="col-xxl-6 col-xl-12">
-    <div class="card h-100">
+    <div class="col-xxl-6 col-xl-12">
+      <div class="card h-100">
         <div class="card-body p-24 mb-8">
+          <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
+            <h6 class="mb-2 fw-bold text-lg mb-0">Income Vs Expense</h6>
 
-            <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                <h6 class="mb-2 fw-bold text-lg mb-0">
-                    Income Vs Expense
-                </h6>
+            <select class="form-select form-select-sm w-auto bg-base border text-secondary-light">
+              <option selected>{{ current_year }}</option>
+            </select>
+          </div>
 
-                <select class="form-select form-select-sm w-auto bg-base border text-secondary-light">
-                    <option selected>{{ current_year }}</option>
-                </select>
-            </div>
+          <ul class="d-flex flex-wrap align-items-center justify-content-center my-3 gap-24">
+            <!-- Income -->
+            <li class="d-flex flex-column gap-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="w-8-px h-8-px rounded-pill bg-primary"></span>
+                <span class="text-secondary-light text-sm fw-semibold">Income</span>
+              </div>
 
-            <ul class="d-flex flex-wrap align-items-center justify-content-center my-3 gap-24">
+              <div class="d-flex align-items-center gap-8">
+                <h6 class="mb-0">TZS {{ total_income|floatformat:0|intcomma }}</h6>
 
-                <!-- Income -->
-                <li class="d-flex flex-column gap-1">
+                {% if total_income > total_expenses %}
+                  <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
+                    Profit
+                    <i class="ri-arrow-up-s-fill d-flex"></i>
+                  </span>
+                {% endif %}
+              </div>
+            </li>
 
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="w-8-px h-8-px rounded-pill bg-primary"></span>
-                        <span class="text-secondary-light text-sm fw-semibold">
-                            Income
-                        </span>
-                    </div>
+            <!-- Expenses -->
+            <li class="d-flex flex-column gap-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="w-8-px h-8-px rounded-pill bg-warning-600"></span>
+                <span class="text-secondary-light text-sm fw-semibold">Expenses</span>
+              </div>
+              <div class="d-flex align-items-center gap-8">
+                <h6 class="mb-0">TZS {{ total_expenses|floatformat:0|intcomma }}</h6>
 
-                    <div class="d-flex align-items-center gap-8">
+                {% if total_profit > 0 %}
+                  <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
+                    +TZS {{ total_profit|floatformat:0|intcomma }}
+                    <i class="ri-arrow-up-s-fill d-flex"></i>
+                  </span>
+                {% elif total_profit < 0 %}
+                  <span class="text-danger-600 d-flex align-items-center gap-1 text-sm fw-bolder">
+                    -TZS {{ total_profit|floatformat:0|intcomma|cut:'-' }}
+                    <i class="ri-arrow-down-s-fill d-flex"></i>
+                  </span>
+                {% else %}
+                  <span class="text-secondary-light text-sm fw-bolder">Break Even</span>
+                {% endif %}
+              </div>
+            </li>
+          </ul>
 
-                        <h6 class="mb-0">
-                            TZS {{ total_income|floatformat:0|intcomma }}
-                        </h6>
-
-                        {% if total_income > total_expenses %}
-                            <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
-                                Profit
-                                <i class="ri-arrow-up-s-fill d-flex"></i>
-                            </span>
-                        {% endif %}
-
-                    </div>
-
-                </li>
-
-                <!-- Expenses -->
-                <li class="d-flex flex-column gap-1">
-
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="w-8-px h-8-px rounded-pill bg-warning-600"></span>
-                        <span class="text-secondary-light text-sm fw-semibold">
-                            Expenses
-                        </span>
-                    </div>
-<div class="d-flex align-items-center gap-8">
-
-    <h6 class="mb-0">
-        TZS {{ total_expenses|floatformat:0|intcomma }}
-    </h6>
-
-    {% if total_profit > 0 %}
-
-        <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
-            +TZS {{ total_profit|floatformat:0|intcomma }}
-            <i class="ri-arrow-up-s-fill d-flex"></i>
-        </span>
-
-    {% elif total_profit < 0 %}
-
-        <span class="text-danger-600 d-flex align-items-center gap-1 text-sm fw-bolder">
-            -TZS {{ total_profit|floatformat:0|intcomma|cut:"-" }}
-            <i class="ri-arrow-down-s-fill d-flex"></i>
-        </span>
-
-    {% else %}
-
-        <span class="text-secondary-light text-sm fw-bolder">
-            Break Even
-        </span>
-
-    {% endif %}
-
-</div>
-                    
-
-                </li>
-
-            </ul>
-
-            <div id="incomeExpense" class="apexcharts-tooltip-style-1"></div>
-
+          <div id="incomeExpense" class="apexcharts-tooltip-style-1"></div>
         </div>
+      </div>
     </div>
-</div>
     <div class="col-xxl-6">
       <div class="card h-100">
         <div class="card-body p-24">
           <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
-            <h6 class="mb-2 fw-bold text-lg mb-0">Top Selling Product</h6>            
+            <h6 class="mb-2 fw-bold text-lg mb-0">Top Selling Product</h6>
           </div>
           <div class="table-responsive scroll-sm">
             <table class="table bordered-table mb-0">
@@ -255,7 +224,7 @@
       <div class="card h-100">
         <div class="card-body p-24">
           <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
-            <h6 class="mb-2 fw-bold text-lg mb-0">Stock Report</h6>            
+            <h6 class="mb-2 fw-bold text-lg mb-0">Stock Report</h6>
           </div>
           <div class="table-responsive scroll-sm">
             <table class="table bordered-table mb-0">
@@ -302,15 +271,21 @@
                             <div class="progress-bar
             {% if product.stock_status == 'out' %}
                                 
+                                
                 bg-danger-main
+
 
                               {% elif product.stock_status == 'low' %}
                                 
+                                
                 bg-warning-main
+
 
                               {% else %}
                                 
+                                
                 bg-success-main
+
 
                               {% endif %}
             rounded-pill"
