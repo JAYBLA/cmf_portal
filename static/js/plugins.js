@@ -474,3 +474,42 @@ document.body.addEventListener(
 
     }
 );
+
+const input = document.getElementById("globalSearch");
+const results = document.getElementById("searchResults");
+
+input.addEventListener("keyup", function () {
+
+    const q = this.value;
+
+    if (q.length < 2) {
+        results.innerHTML = "";
+        return;
+    }
+
+    fetch(`/search/?q=${encodeURIComponent(q)}`)
+        .then(response => response.json())
+        .then(data => {
+
+            let html = "";
+
+            data.forEach(item => {
+
+                html += `
+                    <a href="${item.url}" class="search-item">
+                        <i class="${item.icon}"></i>
+
+                        <div>
+                            <strong>${item.title}</strong><br>
+                            <small>${item.subtitle}</small>
+                        </div>
+                    </a>
+                `;
+
+            });
+
+            results.innerHTML = html;
+
+        });
+
+});

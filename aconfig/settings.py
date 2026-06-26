@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'quotations',
     'invoices',
     'sales',
+    'users',
+    'search',
 ]
 
 MIDDLEWARE = [
@@ -204,4 +206,6 @@ LOGGING = {
             'propagate': True,
         },
     },
-} 
+}
+
+AUTH_USER_MODEL = "users.CustomUser"
