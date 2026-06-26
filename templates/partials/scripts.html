@@ -27,6 +27,14 @@
 
 <!-- main js -->
 <script src="{% static 'js/app.js' %}"></script>
+<script>
+window.dashboardData = {
+    monthlySales: {{ sales_chart|safe }}
+};
+
+console.log("Sales data:", window.dashboardData.monthlySales);
+</script>
+
 <script src="{% static 'js/charts.js' %}"></script>
 <!-- HTMX -->
 <script src="https://unpkg.com/htmx.org@1.9.12"></script>

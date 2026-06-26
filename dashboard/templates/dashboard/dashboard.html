@@ -1,404 +1,298 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% block content %}
-    <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
-        <div class="col">
-            <div class="card shadow-none border bg-gradient-start-1 h-100">
-                <div class="card-body p-20">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div class="text-center">
-                            <p class="fw-medium text-primary-light mb-1">Total Customers</p>
-                            <h6 class="mb-0">{{customers_count}}</h6>
-                        </div>
-                        <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                            <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
-                        </div>
-                    </div>
-                </div>
+  <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
+    <div class="col">
+      <div class="card shadow-none border bg-gradient-start-1 h-100">
+        <div class="card-body p-20">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="text-center">
+              <p class="fw-medium text-primary-light mb-1">Total Customers</p>
+              <h6 class="mb-0">{{ customers_count }}</h6>
             </div>
-            <!-- card end -->
-        </div>
-        <div class="col">
-            <div class="card shadow-none border bg-gradient-start-2 h-100">
-                <div class="card-body p-20">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div class="text-center">
-                            <p class="fw-medium text-primary-light mb-1">Total Quotations</p>
-                            <h6 class="mb-0">{{quotation_count}}</h6>
-                        </div>
-                        <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
-                            <iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
-                        </div>
-                    </div>                    
-                </div>
+            <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
+              <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
             </div>
-            <!-- card end -->
+          </div>
         </div>
-        <div class="col">
-            <div class="card shadow-none border bg-gradient-start-3 h-100">
-                <div class="card-body p-20">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div class="text-center">
-                            <p class="fw-medium text-primary-light mb-1">Total Invoices</p>
-                            <h6 class="mb-0">{{invoice_count}}</h6>
-                        </div>
-                        <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
-                            <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
-                        </div>
-                    </div>                    
-                </div>
-            </div>
-            <!-- card end -->
-        </div>
-        <div class="col">
-            <div class="card shadow-none border bg-gradient-start-4 h-100">
-                <div class="card-body p-20">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div class="text-center">
-                            <p class="fw-medium text-primary-light mb-1">Total Income</p>
-                            <h6 class="mb-0">$42,000</h6>
-                        </div>
-                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
-                            <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
-                        </div>
-                    </div>                    
-                </div>
-            </div>
-            <!-- card end -->
-        </div>
-        <div class="col">
-            <div class="card shadow-none border bg-gradient-start-5 h-100">
-                <div class="card-body p-20">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div>
-                            <p class="fw-medium text-primary-light mb-1">Total Expense</p>
-                            <h6 class="mb-0">$30,000</h6>
-                        </div>
-                        <div class="w-50-px h-50-px bg-red rounded-circle d-flex justify-content-center align-items-center">
-                            <iconify-icon icon="fa6-solid:file-invoice-dollar" class="text-white text-2xl mb-0"></iconify-icon>
-                        </div>
-                    </div>                   
-                </div>
-            </div>
-            <!-- card end -->
-        </div>
+      </div>
+      <!-- card end -->
     </div>
-    <div class="row gy-4 mt-1">
-        <div class="col-xxl-6 col-xl-12">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between">
-                        <h6 class="text-lg mb-0">Sales Statistic</h6>
-                        <select class="form-select bg-base form-select-sm w-auto">
-                            <option>Yearly</option>
-                            <option>Monthly</option>
-                            <option>Weekly</option>
-                            <option>Today</option>
-                        </select>
-                    </div>
-                    <div class="d-flex flex-wrap align-items-center gap-2 mt-8">
-                        <h6 class="mb-0">$27,200</h6>
-                        <span class="text-sm fw-semibold rounded-pill bg-success-focus text-success-main border br-success px-8 py-4 line-height-1 d-flex align-items-center gap-1">10%<iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon></span>
-                        <span class="text-xs fw-medium">+ $1500 Per Day</span>
-                    </div>
-                    <div id="chart" class="pt-28 apexcharts-tooltip-style-1"></div>
-                </div>
+    <div class="col">
+      <div class="card shadow-none border bg-gradient-start-2 h-100">
+        <div class="card-body p-20">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="text-center">
+              <p class="fw-medium text-primary-light mb-1">Total Quotations</p>
+              <h6 class="mb-0">{{ quotation_count }}</h6>
             </div>
-        </div>
-        <div class="col-xxl-6 col-xl-12">
-            <div class="card h-100">
-                <div class="card-body p-24 mb-8">
-                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                        <h6 class="mb-2 fw-bold text-lg mb-0">Income Vs Expense</h6>
-                        <select class="form-select form-select-sm w-auto bg-base border text-secondary-light">
-                            <option>Yearly</option>
-                            <option>Monthly</option>
-                            <option>Weekly</option>
-                            <option>Today</option>
-                        </select>
-                    </div>
-                    <ul class="d-flex flex-wrap align-items-center justify-content-center my-3 gap-24">
-                        <li class="d-flex flex-column gap-1">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="w-8-px h-8-px rounded-pill bg-primary-600"></span>
-                                <span class="text-secondary-light text-sm fw-semibold">Income</span>
-                            </div>
-                            <div class="d-flex align-items-center gap-8">
-                                <h6 class="mb-0">$26,201</h6>
-                                <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
-                                    10%
-                                    <i class="ri-arrow-up-s-fill d-flex"></i>
-                                </span>
-                            </div>
-                        </li>
-                        <li class="d-flex flex-column gap-1">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="w-8-px h-8-px rounded-pill bg-warning-600"></span>
-                                <span class="text-secondary-light text-sm fw-semibold">Expenses</span>
-                            </div>
-                            <div class="d-flex align-items-center gap-8">
-                                <h6 class="mb-0">$18,120</h6>
-                                <span class="text-danger-600 d-flex align-items-center gap-1 text-sm fw-bolder">
-                                    10%
-                                    <i class="ri-arrow-down-s-fill d-flex"></i>
-                                </span>
-                            </div>
-                        </li>
-                    </ul>
-                    <div id="incomeExpense" class="apexcharts-tooltip-style-1"></div>
-                </div>
+            <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+              <iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
             </div>
+          </div>
         </div>
-                        <div class="col-xxl-6">
-                    <div class="card h-100">
-                        <div class="card-body p-24">
-                            <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
-                                <h6 class="mb-2 fw-bold text-lg mb-0">Top Selling Product</h6>
-                                <a href="javascript:void(0)"
-                                    class="text-primary-600 hover-text-primary d-flex align-items-center gap-1">
-                                    View All
-                                    <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                                </a>
-                            </div>
-                            <div class="table-responsive scroll-sm">
-                                <table class="table bordered-table mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Items</th>
-                                            <th scope="col">Price</th>
-                                            <th scope="col">Discount</th>
-                                            <th scope="col">Sold</th>
-                                            <th scope="col" class="text-center">Total Orders</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="assets/images/product/product-img1.png" alt=""
-                                                        class="flex-shrink-0 me-12 radius-8 me-12">
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="text-md mb-0 fw-normal">Blue t-shirt</h6>
-                                                        <span
-                                                            class="text-sm text-secondary-light fw-normal">Fashion</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>$500.00</td>
-                                            <td>15%</td>
-                                            <td>300</td>
-                                            <td class="text-center">
-                                                <span
-                                                    class="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">70</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="assets/images/product/product-img2.png" alt=""
-                                                        class="flex-shrink-0 me-12 radius-8 me-12">
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="text-md mb-0 fw-normal">Nike Air Shoe</h6>
-                                                        <span
-                                                            class="text-sm text-secondary-light fw-normal">Fashion</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>$150.00</td>
-                                            <td>N/A</td>
-                                            <td>200</td>
-                                            <td class="text-center">
-                                                <span
-                                                    class="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">70</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="assets/images/product/product-img3.png" alt=""
-                                                        class="flex-shrink-0 me-12 radius-8 me-12">
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="text-md mb-0 fw-normal">Woman Dresses</h6>
-                                                        <span
-                                                            class="text-sm text-secondary-light fw-normal">Fashion</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>$300.00</td>
-                                            <td>$50.00</td>
-                                            <td>1500</td>
-                                            <td class="text-center">
-                                                <span
-                                                    class="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">70</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="assets/images/product/product-img4.png" alt=""
-                                                        class="flex-shrink-0 me-12 radius-8 me-12">
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="text-md mb-0 fw-normal">Smart Watch</h6>
-                                                        <span
-                                                            class="text-sm text-secondary-light fw-normal">Fashion</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>$400.00</td>
-                                            <td>$50.00</td>
-                                            <td>700</td>
-                                            <td class="text-center">
-                                                <span
-                                                    class="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">70</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="assets/images/product/product-img5.png" alt=""
-                                                        class="flex-shrink-0 me-12 radius-8 me-12">
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="text-md mb-0 fw-normal">Hoodie Rose</h6>
-                                                        <span
-                                                            class="text-sm text-secondary-light fw-normal">Fashion</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>$300.00</td>
-                                            <td>25%</td>
-                                            <td>500</td>
-                                            <td class="text-center">
-                                                <span
-                                                    class="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">70</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xxl-6">
-                    <div class="card h-100">
-                        <div class="card-body p-24">
-                            <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
-                                <h6 class="mb-2 fw-bold text-lg mb-0">Stock Report</h6>
-                                <a href="javascript:void(0)"
-                                    class="text-primary-600 hover-text-primary d-flex align-items-center gap-1">
-                                    View All
-                                    <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                                </a>
-                            </div>
-                            <div class="table-responsive scroll-sm">
-                                <table class="table bordered-table mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Items</th>
-                                            <th scope="col">Price</th>
-                                            <th scope="col">
-                                                <div class="max-w-112 mx-auto">
-                                                    <span>Stock</span>
-                                                </div>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Nike Air Shoes</td>
-                                            <td>$500.00</td>
-                                            <td>
-                                                <div class="max-w-112 mx-auto">
-                                                    <div class="w-100">
-                                                        <div class="progress progress-sm rounded-pill"
-                                                            role="progressbar" aria-label="Success example"
-                                                            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                                            <div class="progress-bar bg-primary-600 rounded-pill"
-                                                                style="width: 0%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <span class="mt-12 text-secondary-light text-sm fw-medium">Out of
-                                                        Stock</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Nike Air Shoes</td>
-                                            <td>$300.00</td>
-                                            <td>
-                                                <div class="max-w-112 mx-auto">
-                                                    <div class="w-100">
-                                                        <div class="progress progress-sm rounded-pill"
-                                                            role="progressbar" aria-label="Success example"
-                                                            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                                            <div class="progress-bar bg-danger-main rounded-pill"
-                                                                style="width: 40%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <span class="mt-12 text-secondary-light text-sm fw-medium">18 Low
-                                                        Stock</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Nike Air Shoes</td>
-                                            <td>$500.00</td>
-                                            <td>
-                                                <div class="max-w-112 mx-auto">
-                                                    <div class="w-100">
-                                                        <div class="progress progress-sm rounded-pill"
-                                                            role="progressbar" aria-label="Success example"
-                                                            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                                            <div class="progress-bar bg-success-main rounded-pill"
-                                                                style="width: 80%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <span class="mt-12 text-secondary-light text-sm fw-medium">80 High
-                                                        Stock</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Nike Air Shoes</td>
-                                            <td>$300.00</td>
-                                            <td>
-                                                <div class="max-w-112 mx-auto">
-                                                    <div class="w-100">
-                                                        <div class="progress progress-sm rounded-pill"
-                                                            role="progressbar" aria-label="Success example"
-                                                            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                                            <div class="progress-bar bg-success-main rounded-pill"
-                                                                style="width: 50%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <span class="mt-12 text-secondary-light text-sm fw-medium">50 High
-                                                        Stock</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Nike Air Shoes</td>
-                                            <td>$150.00</td>
-                                            <td>
-                                                <div class="max-w-112 mx-auto">
-                                                    <div class="w-100">
-                                                        <div class="progress progress-sm rounded-pill"
-                                                            role="progressbar" aria-label="Success example"
-                                                            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                                            <div class="progress-bar bg-success-main rounded-pill"
-                                                                style="width: 70%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <span class="mt-12 text-secondary-light text-sm fw-medium">70 High
-                                                        Stock</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      </div>
+      <!-- card end -->
     </div>
-    {% endblock %}
-    {% block scripts %}{% endblock %}
+    <div class="col">
+      <div class="card shadow-none border bg-gradient-start-3 h-100">
+        <div class="card-body p-20">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="text-center">
+              <p class="fw-medium text-primary-light mb-1">Total Invoices</p>
+              <h6 class="mb-0">{{ invoice_count }}</h6>
+            </div>
+            <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
+              <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- card end -->
+    </div>
+    <div class="col">
+      <div class="card shadow-none border bg-gradient-start-4 h-100">
+        <div class="card-body p-20">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="text-center">
+              <p class="fw-medium text-primary-light mb-1">Total Income</p>
+              <h6 class="mb-0">$42,000</h6>
+            </div>
+            <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
+              <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- card end -->
+    </div>
+    <div class="col">
+      <div class="card shadow-none border bg-gradient-start-5 h-100">
+        <div class="card-body p-20">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <p class="fw-medium text-primary-light mb-1">Total Expense</p>
+              <h6 class="mb-0">$30,000</h6>
+            </div>
+            <div class="w-50-px h-50-px bg-red rounded-circle d-flex justify-content-center align-items-center">
+              <iconify-icon icon="fa6-solid:file-invoice-dollar" class="text-white text-2xl mb-0"></iconify-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- card end -->
+    </div>
+  </div>
+  <div class="row gy-4 mt-1">
+    <div class="col-xxl-6 col-xl-12">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <h6 class="text-lg mb-0">Sales Statistics</h6>
+            <select class="form-select bg-base form-select-sm w-auto">
+              <option selected>{{ current_year }}</option>
+            </select>
+          </div>
+          <div class="d-flex flex-wrap align-items-center gap-2 mt-8">
+            <h6 class="mb-0">TZS {{ yearly_sales|floatformat:0|intcomma }}</h6>
+            {% if sales_growth >= 0 %}
+              <span class="text-sm fw-semibold rounded-pill bg-success-focus text-success-main border br-success px-8 py-4 line-height-1 d-flex align-items-center gap-1">{{ sales_growth }}%<iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon></span>
+            {% else %}
+              <span class="text-sm fw-semibold rounded-pill bg-danger-focus text-danger-main border br-danger px-8 py-4 line-height-1 d-flex align-items-center gap-1">{{ sales_growth|floatformat:1 }}%<iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon></span>
+            {% endif %}
+            <span class="text-xs fw-medium">
+              This Month:
+              <strong>TZS {{ monthly_total|floatformat:0|intcomma }}</strong>
+            </span>
+          </div>
+          <div id="chart" class="pt-28 apexcharts-tooltip-style-1"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-6 col-xl-12">
+      <div class="card h-100">
+        <div class="card-body p-24 mb-8">
+          <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
+            <h6 class="mb-2 fw-bold text-lg mb-0">Income Vs Expense</h6>
+            <select class="form-select form-select-sm w-auto bg-base border text-secondary-light">
+              <option>Yearly</option>
+              <option>Monthly</option>
+              <option>Weekly</option>
+              <option>Today</option>
+            </select>
+          </div>
+          <ul class="d-flex flex-wrap align-items-center justify-content-center my-3 gap-24">
+            <li class="d-flex flex-column gap-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="w-8-px h-8-px rounded-pill bg-primary-600"></span>
+                <span class="text-secondary-light text-sm fw-semibold">Income</span>
+              </div>
+              <div class="d-flex align-items-center gap-8">
+                <h6 class="mb-0">$26,201</h6>
+                <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
+                  10%
+                  <i class="ri-arrow-up-s-fill d-flex"></i>
+                </span>
+              </div>
+            </li>
+            <li class="d-flex flex-column gap-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="w-8-px h-8-px rounded-pill bg-warning-600"></span>
+                <span class="text-secondary-light text-sm fw-semibold">Expenses</span>
+              </div>
+              <div class="d-flex align-items-center gap-8">
+                <h6 class="mb-0">$18,120</h6>
+                <span class="text-danger-600 d-flex align-items-center gap-1 text-sm fw-bolder">
+                  10%
+                  <i class="ri-arrow-down-s-fill d-flex"></i>
+                </span>
+              </div>
+            </li>
+          </ul>
+          <div id="incomeExpense" class="apexcharts-tooltip-style-1"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-6">
+      <div class="card h-100">
+        <div class="card-body p-24">
+          <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+            <h6 class="mb-2 fw-bold text-lg mb-0">Top Selling Product</h6>            
+          </div>
+          <div class="table-responsive scroll-sm">
+            <table class="table bordered-table mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Items</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Discount</th>
+                  <th scope="col">Sold</th>
+                  <th scope="col" class="text-center">Total Orders</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in top_selling_products %}
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-12 w-40-px h-40-px bg-primary-50 rounded-circle d-flex justify-content-center align-items-center">
+                          <iconify-icon icon="solar:box-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        </div>
+                        <div class="flex-grow-1">
+                          <h6 class="text-md mb-0 fw-normal">{{ product.product__product_name }}</h6>
+                          <span class="text-sm text-secondary-light fw-normal">{{ product.product__product_category__name }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>TZS {{ product.unit_price|floatformat:0 }}</td>
+                    <td>—</td>
+                    <td>{{ product.total_sold|floatformat:0 }}</td>
+                    <td class="text-center">
+                      <span class="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">{{ product.total_orders }}</span>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center">No sales available.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-6">
+      <div class="card h-100">
+        <div class="card-body p-24">
+          <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+            <h6 class="mb-2 fw-bold text-lg mb-0">Stock Report</h6>            
+          </div>
+          <div class="table-responsive scroll-sm">
+            <table class="table bordered-table mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Items</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">
+                    <div class="max-w-112 mx-auto">
+                      <span>Stock</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in stock_report %}
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-12 w-40-px h-40-px bg-primary-50 rounded-circle d-flex justify-content-center align-items-center">
+                          <iconify-icon icon="solar:box-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        </div>
+
+                        <div class="flex-grow-1">
+                          <h6 class="text-md mb-0 fw-normal">{{ product.product_name }}</h6>
+
+                          <span class="text-sm text-secondary-light fw-normal">{{ product.product_category.name }}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      {% if product.sales_pricing %}
+                        TZS {{ product.sales_pricing.selling_price|floatformat:0 }}
+                      {% else %}
+                        —
+                      {% endif %}
+                    </td>
+
+                    <td>
+                      <div class="max-w-112 mx-auto">
+                        <div class="w-100">
+                          <div class="progress progress-sm rounded-pill">
+                            <div class="progress-bar
+            {% if product.stock_status == 'out' %}
+                                
+                bg-danger-main
+
+                              {% elif product.stock_status == 'low' %}
+                                
+                bg-warning-main
+
+                              {% else %}
+                                
+                bg-success-main
+
+                              {% endif %}
+            rounded-pill"
+                              style="width:{{ product.stock_percentage }}%;"></div>
+                          </div>
+                        </div>
+
+                        {% if product.stock_status == 'out' %}
+                          <span class="mt-12 text-danger-main text-sm fw-medium">Out of Stock</span>
+                        {% elif product.stock_status == 'low' %}
+                          <span class="mt-12 text-warning-main text-sm fw-medium">{{ product.current_stock|floatformat:0 }} Low Stock</span>
+                        {% else %}
+                          <span class="mt-12 text-success-main text-sm fw-medium">{{ product.current_stock|floatformat:0 }} In Stock</span>
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="3" class="text-center py-5">No products available.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

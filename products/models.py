@@ -125,6 +125,20 @@ class Product(models.Model):
             return "low"
 
         return "in"
+    @property
+    def stock_percentage(self):
+        """
+        Returns a stock level between 0 and 100.
+        """
+
+        total = self.current_stock + self.minimum_stock
+
+        if total <= 0:
+            return 0
+
+        percentage = (self.current_stock / total) * 100
+
+        return min(round(float(percentage)), 100)
 
     def __str__(self):
         return f"{self.product_name} ({self.sku_code})"
