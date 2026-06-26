@@ -10,6 +10,7 @@ from datetime import date
 import json
 from django.db.models import *
 from sales.models import *
+from dashboard.financials import chart_data
 
 
 def dashboard(request):
@@ -21,6 +22,7 @@ def dashboard(request):
 
     current_year = date.today().year
     current_month = date.today().month
+    financial = chart_data(current_year)
 
     # ===========================
     # Monthly Sales Chart (Jan-Dec)
@@ -125,23 +127,27 @@ def dashboard(request):
     )
 
     context = {
-        # Counts
+        # Dashboard cards
         "customers_count": customers_count,
         "quotation_count": quotation_count,
         "invoice_count": invoice_count,
-        # Dashboard Sales Statistics
-        "yearly_sales": float(yearly_sales),
-        "monthly_total": float(monthly_total),
+
+        # Sales chart
+        "sales_chart": sales_chart,
+        "yearly_sales": yearly_sales,
+        "monthly_total": monthly_total,
         "sales_growth": sales_growth,
-        # ApexCharts data
-        "sales_chart": json.dumps(sales_chart),
-        # Current year
         "current_year": current_year,
-        # Top Selling Products
+
+        # Top selling products
         "top_selling_products": top_selling_products,
-        # Stock Report
-        "stock_report": stock_report
+
+        # Stock report
+        "stock_report": stock_report,
     }
+
+    # Add all financial dashboard data
+    context.update(financial)
 
     return render(
         request,

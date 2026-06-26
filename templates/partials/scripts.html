@@ -29,10 +29,12 @@
 <script src="{% static 'js/app.js' %}"></script>
 <script>
 window.dashboardData = {
-    monthlySales: {{ sales_chart|safe }}
+    monthlySales: {{ sales_chart|safe }},
+    // Income vs Expense chart
+    income: {{ income|safe }},
+    expenses: {{ expenses|safe }},
+    profit: {{ profit|safe }}
 };
-
-console.log("Sales data:", window.dashboardData.monthlySales);
 </script>
 
 <script src="{% static 'js/charts.js' %}"></script>
