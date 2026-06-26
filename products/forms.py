@@ -37,7 +37,7 @@ class ProductForm(forms.ModelForm):
             ),
             "product_category": forms.Select(
                 attrs={
-                    "class": "form-select choices-select",
+                    "class": "form-select",
                     "data-placeholder": "Select product category",
                 }
             ),
@@ -49,13 +49,13 @@ class ProductForm(forms.ModelForm):
             ),
             "product_unit": forms.Select(
                 attrs={
-                    "class": "form-select choices-select",
+                    "class": "form-select",
                     "data-placeholder": "Select product unit",
                 }
             ),
             "product_type": forms.Select(
                 attrs={
-                    "class": "form-select choices-select",
+                    "class": "form-select",
                     "data-placeholder": "Select product type",
                 }
             ),

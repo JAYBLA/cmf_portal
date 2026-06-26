@@ -4,8 +4,8 @@
   <div>
     <a href="/" class="sidebar-logo">
       <img src="{% static 'images/logo.png' %}" alt="site logo" class="light-logo" />
-      <img src="{% static 'images/logo-light.png' %}" alt="site logo" class="dark-logo" />
-      <img src="{% static 'images/logo-icon.png' %}" alt="site logo" class="logo-icon" />
+      <img src="{% static 'images/logo.png' %}" alt="site logo" class="dark-logo" />
+      <img src="{% static 'images/logo.png' %}" alt="site logo" class="logo-icon" />
     </a>
   </div>
   <div class="sidebar-menu-area">
@@ -45,7 +45,7 @@
             </a>
           </li>
         </ul>
-      </li>
+      </li>     
 
       <!-- PROCUREMENT -->
       <li class="sidebar-menu-group-title">Procurement</li>
@@ -81,7 +81,7 @@
           </li>
         </ul>
       </li>
-            <li class="dropdown {% if request.resolver_match.url_name in 'agent_list agent_create agent_update agent_delete' %}open{% endif %}">
+      <li class="dropdown {% if request.resolver_match.url_name in 'agent_list agent_create agent_update agent_delete' %}open{% endif %}">
         <a href="javascript:void(0)">
           <iconify-icon icon="ri:user-star-line" class="menu-icon"></iconify-icon>
           <span>Agents</span>
@@ -197,7 +197,7 @@
           </li>
         </ul>
       </li>
-            <!-- OFFICE OPERATIONS -->
+      <!-- OFFICE OPERATIONS -->
       <li class="sidebar-menu-group-title">Office Operations</li>
 
       <li class="dropdown {% if request.resolver_match.url_name in 'sale_list sale_create sale_update sale_delete' %}open{% endif %}">
