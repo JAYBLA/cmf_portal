@@ -1,5 +1,7 @@
 from decimal import Decimal
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class ProductCategory(models.Model):
@@ -36,6 +38,9 @@ class ProductUnit(models.Model):
         return self.abbreviation or self.name
 
 
+from django.db import models
+
+
 class Product(models.Model):
 
     PRODUCT_TYPE_CHOICES = (
@@ -51,65 +56,67 @@ class Product(models.Model):
     )
 
     product_name = models.CharField(
-        max_length=255
+        max_length=255,
     )
 
     short_description = models.TextField(
         blank=True,
-        null=True
+        null=True,
     )
 
     product_category = models.ForeignKey(
         ProductCategory,
         on_delete=models.PROTECT,
-        related_name="products"
+        related_name="products",
     )
 
     sku_code = models.CharField(
         max_length=100,
-        unique=True
+        unique=True,
     )
 
     product_unit = models.ForeignKey(
         ProductUnit,
         on_delete=models.PROTECT,
-        related_name="products"
+        related_name="products",
     )
 
     product_type = models.CharField(
         max_length=20,
         choices=PRODUCT_TYPE_CHOICES,
-        default="stock"
+        default="stock",
     )
 
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default="active"
+        default="active",
     )
 
     # =====================================
     # INVENTORY
     # =====================================
 
+    # Cached stock balance.
+    # Updated ONLY through the Stock Movement Service.
     current_stock = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0
+        default=0,
     )
 
     minimum_stock = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0
+        default=0,
     )
 
     created_at = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
-        auto_now=True
+        auto_now=True,
     )
 
     class Meta:
@@ -117,6 +124,12 @@ class Product(models.Model):
 
     @property
     def stock_status(self):
+        """
+        Returns:
+            out  -> No stock
+            low  -> Stock is at or below minimum
+            in   -> Sufficient stock
+        """
 
         if self.current_stock <= 0:
             return "out"
@@ -125,10 +138,12 @@ class Product(models.Model):
             return "low"
 
         return "in"
+
     @property
     def stock_percentage(self):
         """
-        Returns a stock level between 0 and 100.
+        Returns the stock level as a percentage
+        relative to the minimum stock level.
         """
 
         total = self.current_stock + self.minimum_stock
@@ -140,102 +155,86 @@ class Product(models.Model):
 
         return min(round(float(percentage)), 100)
 
+    @property
+    def is_in_stock(self):
+        return self.current_stock > 0
+
+    @property
+    def is_low_stock(self):
+        return (
+            self.current_stock > 0
+            and self.current_stock <= self.minimum_stock
+        )
+
+    @property
+    def is_out_of_stock(self):
+        return self.current_stock <= 0
+
     def __str__(self):
         return f"{self.product_name} ({self.sku_code})"
-
-    # =====================================
-    # STOCK MOVEMENTS
-    # =====================================
-
-    def update_stock(
-        self,
-        quantity,
-        movement_type="in",
-        reference=None,
-        notes=None,
-    ):
-
-        quantity = Decimal(str(quantity))
-
-        if movement_type == "in":
-
-            self.current_stock += quantity
-
-        elif movement_type == "out":
-
-            self.current_stock -= quantity
-
-        elif movement_type == "adjustment":
-
-            self.current_stock += quantity
-
-        self.save(
-            update_fields=[
-                "current_stock",
-                "updated_at",
-            ]
-        )
-
-        StockMovement.objects.create(
-            product=self,
-            movement_type=movement_type,
-            quantity=quantity,
-            balance_after=self.current_stock,
-            reference=reference,
-            notes=notes,
-        )
-
 class StockMovement(models.Model):
 
     MOVEMENT_TYPES = (
+        ("purchase", "Purchase"),
+        ("sale", "Sale"),
+        ("lending", "Lending"),
+        ("return", "Return"),
+        ("adjustment", "Adjustment"),
+        ("production", "Production"),
+        ("damage", "Damage"),
+        ("transfer", "Transfer"),
+    )
+
+    DIRECTION = (
         ("in", "Stock In"),
         ("out", "Stock Out"),
-        ("adjustment", "Adjustment"),
     )
 
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name="stock_movements"
+        related_name="stock_movements",
     )
 
     movement_type = models.CharField(
         max_length=20,
-        choices=MOVEMENT_TYPES
+        choices=MOVEMENT_TYPES,
+    )
+
+    direction = models.CharField(
+        max_length=10,
+        choices=DIRECTION,
     )
 
     quantity = models.DecimalField(
         max_digits=12,
-        decimal_places=2
+        decimal_places=2,
     )
 
     balance_after = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0
+        default=0,
     )
 
-    reference = models.CharField(
-        max_length=100,
+    # Generic reference
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        null=True,
         blank=True,
-        null=True
     )
 
-    notes = models.TextField(
+    object_id = models.PositiveBigIntegerField(
+        null=True,
         blank=True,
-        null=True
     )
 
-    created_at = models.DateTimeField(
-        auto_now_add=True
+    reference = GenericForeignKey(
+        "content_type",
+        "object_id",
     )
 
-    class Meta:
-        ordering = ["-id"]
+    remarks = models.TextField(blank=True)
 
-    def __str__(self):
-
-        return (
-            f"{self.product.product_name} - "
-            f"{self.get_movement_type_display()}"
-        )
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -17,6 +17,7 @@ from .models import *
 from .forms import *
 
 from products.models import Product
+from products.services.stock import move_stock
 
 # =========================================
 # SALE LIST
@@ -83,11 +84,13 @@ def sale_create(request):
 
                 item.save()
 
-                item.product.update_stock(
+                move_stock(
+                    product=item.product,
                     quantity=item.quantity,
-                    movement_type="out",
-                    reference=sale.sale_number,
-                    notes="Sales Stock Out",
+                    direction="out",
+                    movement_type="sale",
+                    reference=sale,
+                    notes="Sale",
                 )
 
             for obj in formset.deleted_objects:
@@ -149,10 +152,12 @@ def sale_update(request, pk):
 
             for old_item in sale.items.all():
 
-                old_item.product.update_stock(
+                move_stock(
+                    product=old_item.product,
                     quantity=old_item.quantity,
-                    movement_type="in",
-                    reference=sale.sale_number,
+                    direction="in",
+                    movement_type="sale",
+                    reference=sale,
                     notes="Sale Update Reversal",
                 )
 
@@ -174,10 +179,12 @@ def sale_update(request, pk):
 
                 item.save()
 
-                item.product.update_stock(
+                move_stock(
+                    product=item.product,
                     quantity=item.quantity,
-                    movement_type="out",
-                    reference=sale.sale_number,
+                    direction="out",
+                    movement_type="sale",
+                    reference=sale,
                     notes="Sale Update",
                 )
 
@@ -243,13 +250,14 @@ def sale_delete(request, pk):
 
         for item in sale.items.all():
 
-            item.product.update_stock(
+            move_stock(
+                product=item.product,
                 quantity=item.quantity,
-                movement_type="in",
-                reference=sale.sale_number,
+                direction="in",
+                movement_type="sale",
+                reference=sale,
                 notes="Sale Deleted",
             )
-
         sale.delete()
 
         response = HttpResponse("")

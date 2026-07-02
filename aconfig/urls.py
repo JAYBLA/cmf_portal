@@ -33,6 +33,8 @@ urlpatterns = [
     path("sales/", include("sales.urls")),
     path("users/", include("users.urls")),
     path("search/", include("search.urls")),
+    path("vouchers/", include("vouchers.urls")),
+    path("delivery_notes/", include("deliverynotes.urls")),
 ]
 
 if settings.DEBUG:

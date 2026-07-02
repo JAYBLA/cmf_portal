@@ -1,0 +1,169 @@
+<form hx-post="{% url 'delivery_notes:delivery_note_delete' delivery_note.id %}">
+
+    {% csrf_token %}
+
+    <div class="modal-header border-0 pb-0">
+
+        <h5 class="modal-title text-danger fw-bold">
+            <i class="ri-delete-bin-6-line me-2"></i>
+            Delete Delivery Note
+        </h5>
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal">
+        </button>
+
+    </div>
+
+    <div class="modal-body">
+
+        <div class="text-center mb-4">
+
+            <div class="display-1 text-danger mb-3">
+                <i class="ri-error-warning-line"></i>
+            </div>
+
+            <h4 class="fw-bold">
+                Confirm Deletion
+            </h4>
+
+            <p class="text-muted mb-0">
+                This action cannot be undone.
+            </p>
+
+        </div>
+
+        <div class="card border-danger">
+
+            <div class="card-header bg-danger text-white">
+
+                <strong>
+                    Delivery Note Information
+                </strong>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted d-block">
+                            Delivery Number
+                        </small>
+
+                        <strong>
+                            {{ delivery_note.delivery_number }}
+                        </strong>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted d-block">
+                            Delivery Date
+                        </small>
+
+                        <strong>
+                            {{ delivery_note.delivery_date }}
+                        </strong>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted d-block">
+                            Customer
+                        </small>
+
+                        <strong>
+                            {{ delivery_note.customer.customer_name }}
+                        </strong>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted d-block">
+                            Quotation
+                        </small>
+
+                        <strong>
+                            {{ delivery_note.quotation.title }}
+                        </strong>
+
+                    </div>
+
+                    {% if delivery_note.receiver_name %}
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted d-block">
+                            Receiver
+                        </small>
+
+                        <strong>
+                            {{ delivery_note.receiver_name }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted d-block">
+                            Status
+                        </small>
+
+                        <strong>
+                            {{ delivery_note.get_status_display }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="alert alert-warning mt-3 mb-0">
+
+            <i class="ri-information-line me-2"></i>
+
+            Deleting this delivery note will permanently remove
+            the delivery note together with all associated delivery
+            items from the system.
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer border-0">
+
+        <button
+            type="button"
+            class="btn btn-light"
+            data-bs-dismiss="modal">
+
+            <i class="ri-close-line me-1"></i>
+            Cancel
+
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-danger">
+
+            <i class="ri-delete-bin-6-line me-1"></i>
+            Delete Delivery Note
+
+        </button>
+
+    </div>
+
+</form>

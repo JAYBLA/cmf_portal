@@ -26,7 +26,7 @@
     <div class="row">
       <!-- CUSTOMER -->
 
-      <div class="col-md-12 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Customer</label>
 
         {{ form.customer }}
@@ -38,7 +38,7 @@
 
       <!-- SALE DATE -->
 
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Sale Date</label>
 
         {{ form.sale_date }}
@@ -50,7 +50,7 @@
 
       <!-- STATUS -->
 
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Status</label>
 
         {{ form.status }}
@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <div class="card-body p-0">
+      <div class="card-body p-0 cmf-items-container">
         {{ formset.management_form }}
 
         <div class="table-responsive">
@@ -175,16 +175,6 @@
             {% endwith %}
           </tr>
         </template>
-      </div>
-    </div>
-
-    <!-- TOTALS -->
-
-    <div class="alert alert-info mt-3 mb-0">
-      <div class="d-flex justify-content-between">
-        <strong>Sale Total</strong>
-
-        <span id="sale-total-preview" class="fw-bold">0.00</span>
       </div>
     </div>
   </div>

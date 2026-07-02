@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-12">
+
+    <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h4 class="card-title mb-0">
+                Delivery Notes
+            </h4>
+
+            <button
+                class="btn btn-primary"
+                hx-get="{% url 'delivery_notes:delivery_note_create' %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML">
+
+                Add Delivery Note
+
+            </button>
+
+        </div>
+
+        <div class="card-body p-1">
+
+            <table
+                id="responsiveTable"
+                class="table table-sm table-hover align-middle"
+                style="width:100%;">
+
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width:50px;" class="text-center">#</th>
+                        <th scope="col">Delivery Note Details</th>
+                        <th scope="col" style="width:140px;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody
+                    id="table-container"
+                    data-refresh-url="{% url 'delivery_notes:delivery_note_table' %}">
+
+                    {% include "delivery_notes/partials/delivery_note_table.html" %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

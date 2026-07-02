@@ -1,0 +1,227 @@
+{% load humanize %}
+
+{% for delivery_note in delivery_notes %}
+
+<tr id="delivery-note-{{ delivery_note.id }}" class="align-middle">
+
+    <!-- S/N -->
+
+    <td class="text-center fw-semibold text-muted">
+
+        {{ forloop.counter }}
+
+    </td>
+
+    <!-- DELIVERY NOTE DETAILS -->
+
+    <td>
+
+        <!-- Line 1 -->
+
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+
+            <span class="fw-bold text-primary">
+
+                {{ delivery_note.delivery_number }}
+
+            </span>
+
+            <span class="text-muted">|</span>
+
+            <span>
+
+                <span class="fw-light">
+                    Customer:
+                </span>
+
+                {{ delivery_note.customer.customer_name }}
+
+            </span>
+
+            <span class="text-muted">|</span>
+
+            <span>
+
+                <span class="fw-light">
+                    Quotation:
+                </span>
+
+                {{ delivery_note.quotation.title }}
+
+            </span>
+
+            <span class="text-muted">|</span>
+
+            <span>
+
+                <span class="fw-light">
+                    Total:
+                </span>
+
+                <span class="fw-semibold text-success">
+
+                    {{ delivery_note.total_amount|floatformat:2|intcomma }}
+
+                </span>
+
+            </span>
+
+        </div>
+
+        <!-- Line 2 -->
+
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+
+            <span>
+
+                <span class="fw-light">
+                    Delivery Date:
+                </span>
+
+                {{ delivery_note.delivery_date|date:"Y-m-d" }}
+
+            </span>
+
+            <span>|</span>
+
+            <span>
+
+                <span class="fw-light">
+                    Receiver:
+                </span>
+
+                {{ delivery_note.receiver_name|default:"—" }}
+
+            </span>
+
+            <span>|</span>
+
+            <span>
+
+                <span class="fw-light">
+                    Driver:
+                </span>
+
+                {{ delivery_note.driver_name|default:"—" }}
+
+            </span>
+
+            <span>|</span>
+
+            <span>
+
+                <span class="fw-light">
+                    Status:
+                </span>
+
+                {% if delivery_note.status == "pending" %}
+
+                    <span class="badge bg-warning text-dark">
+
+                        Pending
+
+                    </span>
+
+                {% elif delivery_note.status == "partial" %}
+
+                    <span class="badge bg-info">
+
+                        Partial
+
+                    </span>
+
+                {% elif delivery_note.status == "completed" %}
+
+                    <span class="badge bg-success">
+
+                        Completed
+
+                    </span>
+
+                {% endif %}
+
+            </span>
+
+            <span>|</span>
+
+            <span>
+
+                <span class="fw-light">
+                    Created:
+                </span>
+
+                {{ delivery_note.created_at|date:"Y-m-d H:i" }}
+
+            </span>
+
+        </div>
+
+    </td>
+
+    <!-- ACTIONS -->
+
+    <td class="text-end">
+
+        <div class="d-flex flex-wrap justify-content-end gap-1">
+
+            <!-- View -->
+
+            <button
+                type="button"
+                class="btn btn-info btn-sm"
+                hx-get="{% url 'delivery_notes:delivery_note_detail' delivery_note.id %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="View Delivery Note">
+
+                <i class="fa-solid fa-eye"></i>
+
+            </button>
+
+            <!-- Edit -->
+
+            <button
+                type="button"
+                class="btn btn-warning btn-sm"
+                hx-get="{% url 'delivery_notes:delivery_note_update' delivery_note.id %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="Edit Delivery Note">
+
+                <i class="fa-solid fa-pen-to-square"></i>
+
+            </button>
+
+            <!-- Delete -->
+
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                hx-get="{% url 'delivery_notes:delivery_note_delete' delivery_note.id %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="Delete Delivery Note">
+
+                <i class="fa-solid fa-trash-can"></i>
+
+            </button>
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="3" class="text-center py-5 text-muted">
+
+        No delivery notes found.
+
+    </td>
+
+</tr>
+
+{% endfor %}

@@ -4,6 +4,18 @@ from customers.models import Customer
 from decimal import Decimal
 from django.db.models import Sum
 
+class PaymentTerm(models.Model):
+
+    term = models.CharField(max_length=300)
+
+    is_default = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["term"]
+
+    def __str__(self):
+        return self.term
+
 
 class Quotation(models.Model):
 
@@ -18,6 +30,29 @@ class Quotation(models.Model):
     quote_date = models.DateField()
 
     due_date = models.DateField()
+    TIME_UNIT_CHOICES = (
+        ("days", "Days"),
+        ("weeks", "Weeks"),
+        ("months", "Months"),
+    )
+
+    completion_period_from = models.PositiveIntegerField(default=0)
+
+    completion_period_to = models.PositiveIntegerField(default=0)
+
+    completion_period_unit = models.CharField(
+        max_length=10,
+        choices=TIME_UNIT_CHOICES,
+        default="days",
+    )
+    payment_terms = models.ManyToManyField(
+        PaymentTerm,
+        blank=True,
+        related_name="quotations",
+    )
+    additional_terms = models.TextField(
+        blank=True,
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -119,3 +154,5 @@ class QuotationItem(models.Model):
             return 0
 
         return round((self.delivered_quantity / self.quantity) * 100, 2)
+
+

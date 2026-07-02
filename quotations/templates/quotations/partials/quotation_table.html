@@ -47,7 +47,7 @@
 
     <!-- ACTIONS (icon buttons) -->
     <td class="text-end">
-        <div class="d-flex flex-wrap justify-content-end gap-1">
+        <div class="d-flex justify-content-end gap-1">
             <!-- Edit -->
             <button type="button"
                     class="btn btn-warning btn-sm"
@@ -65,7 +65,15 @@
                     hx-swap="innerHTML"
                     title="Delete Quotation">
                 <i class="fa-solid fa-trash-can"></i>
-            </button>            
+            </button>
+            <!-- Download PDF -->
+<a href="{% url 'quotations:download_quotation_pdf' quotation.id %}"
+   class="btn btn-success btn-sm"
+   title="Download Quotation PDF">
+
+    <i class="fa-solid fa-file-pdf"></i>
+
+</a>            
         </div>
     </td>
 

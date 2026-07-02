@@ -75,6 +75,34 @@ class Sale(models.Model):
         auto_now_add=True
     )
     
+    class Meta:
+        ordering = ["-id"]
+
+    def __str__(self):
+        return self.sale_number
+    
+    def save(self, *args, **kwargs):
+
+        if not self.sale_number:
+
+            year = timezone.now().year
+
+            last_sale = (
+                Sale.objects.filter(
+                    sale_number__startswith=f"SAL-{year}"
+                )
+                .order_by("-id")
+                .first()
+            )
+
+            next_number = 1
+
+            if last_sale:
+                next_number = int(last_sale.sale_number.split("-")[-1]) + 1
+
+            self.sale_number = f"SAL-{year}-{next_number:05d}"
+
+        super().save(*args, **kwargs)
 class SaleItem(models.Model):
 
     sale = models.ForeignKey(

@@ -34,7 +34,14 @@
         height: 100pt;
     }
 
-    @frame quotation_description_frame {
+    @frame payment_terms_frame {
+        -pdf-frame-content: payment_terms;
+        left:30pt;
+        width:300pt;
+        top:690pt;
+        height:180pt;
+    }
+        @frame quotation_description_frame {
         -pdf-frame-content: quotation_description;
         left: 320pt;
         width: 270pt;
@@ -133,6 +140,27 @@ h4{
 
 </div>
 
+<!-- PAYMENT TERMS -->
+
+<div id="payment_terms">
+
+    <strong>Terms &amp; Conditions</strong>
+
+    <ul>
+
+        {% for term in quotation.payment_terms.all %}
+
+            <li>{{ term.term }}</li>
+
+        {% empty %}
+
+            <li>No payment terms specified.</li>
+
+        {% endfor %}
+
+    </ul>
+
+</div>
 
 <!-- QUOTATION DESCRIPTION -->
 

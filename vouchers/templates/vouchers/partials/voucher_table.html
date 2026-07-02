@@ -1,0 +1,148 @@
+{% load humanize %}
+
+{% for voucher in vouchers %}
+<tr id="voucher-{{ voucher.id }}" class="align-middle">
+
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
+
+    <!-- VOUCHER DETAILS -->
+    <td>
+
+        <!-- LINE 1 -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+
+            <span class="fw-bold text-primary">
+                {{ voucher.voucher_number }}
+            </span>
+
+            <span class="text-muted">|</span>
+
+            <span>
+                <span class="fw-light">Payee:</span>
+                {{ voucher.payee_name }}
+            </span>
+
+            <span class="text-muted">|</span>
+
+            <span>
+                <span class="fw-light">Total:</span>
+
+                <span class="fw-semibold text-success">
+                    {{ voucher.total_amount|floatformat:2|intcomma }}
+                </span>
+            </span>
+
+        </div>
+
+        <!-- LINE 2 -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+
+            <span>
+                <span class="fw-light">Date:</span>
+                {{ voucher.voucher_date|date:"Y-m-d" }}
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Approved By:</span>
+                {{ voucher.approved_by }}
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Received By:</span>
+                {{ voucher.received_by }}
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Status:</span>
+
+                {% if voucher.status == "draft" %}
+                    <span class="badge bg-secondary">
+                        Draft
+                    </span>
+
+                {% elif voucher.status == "approved" %}
+                    <span class="badge bg-info">
+                        Approved
+                    </span>
+
+                {% elif voucher.status == "paid" %}
+                    <span class="badge bg-success">
+                        Paid
+                    </span>
+
+                {% else %}
+                    <span class="badge bg-danger">
+                        Cancelled
+                    </span>
+                {% endif %}
+
+            </span>
+
+            <span>|</span>
+
+            <span>
+                <span class="fw-light">Created:</span>
+                {{ voucher.created_at|date:"Y-m-d H:i" }}
+            </span>
+
+        </div>
+
+    </td>
+
+    <!-- ACTIONS -->
+    <td class="text-end">
+
+        <div class="d-flex flex-wrap justify-content-end gap-1">
+
+            <!-- Edit -->
+            <button
+                type="button"
+                class="btn btn-warning btn-sm"
+                hx-get="{% url 'vouchers:voucher_update' voucher.id %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="Edit Voucher">
+
+                <i class="fa-solid fa-pen-to-square"></i>
+
+            </button>
+
+            <!-- Delete -->
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                hx-get="{% url 'vouchers:voucher_delete' voucher.id %}"
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="Delete Voucher">
+
+                <i class="fa-solid fa-trash-can"></i>
+
+            </button>
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="3" class="text-center text-muted py-4">
+        No vouchers found.
+    </td>
+
+</tr>
+
+{% endfor %}

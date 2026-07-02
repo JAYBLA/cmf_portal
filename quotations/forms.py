@@ -2,14 +2,28 @@ from django import forms
 from django.forms import inlineformset_factory
 
 from .models import (
+    PaymentTerm,
     Quotation,
-    QuotationItem
+    QuotationItem,
 )
 
 
+# =========================================
+# QUOTATION FORM
+# =========================================
+
 class QuotationForm(forms.ModelForm):
 
+    use_required_attribute = False
+
+    payment_terms = forms.ModelMultipleChoiceField(
+        queryset=PaymentTerm.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     class Meta:
+
         model = Quotation
 
         fields = [
@@ -18,6 +32,11 @@ class QuotationForm(forms.ModelForm):
             "quote_date",
             "due_date",
             "description",
+            "additional_terms",
+            "payment_terms",
+            "completion_period_from",
+            "completion_period_to",
+            "completion_period_unit",
         ]
 
         widgets = {
@@ -25,53 +44,93 @@ class QuotationForm(forms.ModelForm):
             "title": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Quotation Title"
+                    "placeholder": "Quotation Title",
                 }
             ),
 
             "customer": forms.Select(
                 attrs={
-                    "class": "form-select choices"
+                    "class": "form-select choices-select",
                 }
             ),
 
             "quote_date": forms.DateInput(
                 attrs={
                     "class": "form-control flatpickr",
+                    "placeholder": "Select quotation date",
                     "autocomplete": "off",
-                    "placeholder": "Click to select quote date"
                 }
             ),
 
             "due_date": forms.DateInput(
                 attrs={
                     "class": "form-control flatpickr",
+                    "placeholder": "Select due date",
                     "autocomplete": "off",
-                    "placeholder": "Click to select due date"
                 }
             ),
 
             "description": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": 4
+                    "rows": 3,
                 }
             ),
 
+            "additional_terms": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                }
+            ),
+
+            "completion_period_from": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "min": 0,
+                }
+            ),
+
+            "completion_period_to": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "min": 0,
+                }
+            ),
+
+            "completion_period_unit": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
 
-        self.fields["customer"].empty_label = (
-            "Select Customer"
-        )
+        self.fields["customer"].empty_label = "Select Customer"
 
+        # Pre-select default payment terms on new quotations
+        if not self.instance.pk:
+
+            self.fields["payment_terms"].initial = (
+                PaymentTerm.objects.filter(
+                    is_default=True
+                ).values_list("pk", flat=True)
+            )
+
+
+# =========================================
+# QUOTATION ITEM FORM
+# =========================================
 
 class QuotationItemForm(forms.ModelForm):
 
+    use_required_attribute = False
+
     class Meta:
+
         model = QuotationItem
 
         fields = [
@@ -85,26 +144,27 @@ class QuotationItemForm(forms.ModelForm):
             "item_name": forms.TextInput(
                 attrs={
                     "class": "form-control form-control-sm",
-                    "placeholder": "Item Name"
+                    "placeholder": "Item Name",
                 }
             ),
 
             "quantity": forms.NumberInput(
                 attrs={
-                    "class": "form-control text-end form-control-sm",
+                    "class": "form-control form-control-sm text-end",
+                    "placeholder": "Qty",
                     "step": "0.01",
-                    "min": "0"
+                    "min": "0",
                 }
             ),
 
             "unit_price": forms.NumberInput(
                 attrs={
-                    "class": "form-control text-end form-control-sm",
+                    "class": "form-control form-control-sm text-end",
+                    "placeholder": "Unit Price",
                     "step": "0.01",
-                    "min": "0"
+                    "min": "0",
                 }
             ),
-
         }
 
     def __init__(self, *args, **kwargs):
@@ -115,15 +175,19 @@ class QuotationItemForm(forms.ModelForm):
 
             self.fields["DELETE"].widget.attrs.update(
                 {
-                    "class": "form-check-input"
+                    "class": "form-check-input",
                 }
             )
 
 
+# =========================================
+# QUOTATION ITEM FORMSET
+# =========================================
+
 QuotationItemFormSet = inlineformset_factory(
-    Quotation,
-    QuotationItem,
+    parent_model=Quotation,
+    model=QuotationItem,
     form=QuotationItemForm,
     extra=0,
-    can_delete=True
+    can_delete=True,
 )

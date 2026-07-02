@@ -171,16 +171,17 @@
         </div>
       </div>
     </div>
-    <div class="col-xxl-6">
+    <div class="col-xxl-12">
       <div class="card h-100">
         <div class="card-body p-24">
           <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
             <h6 class="mb-2 fw-bold text-lg mb-0">Top Selling Product</h6>
           </div>
           <div class="table-responsive scroll-sm">
-            <table class="table bordered-table mb-0">
+            <table class="table bordered-table mb-0" id="responsiveTable">
               <thead>
                 <tr>
+                  <th style="width: 6%;" class="text-center">S/N</th>
                   <th scope="col">Items</th>
                   <th scope="col">Price</th>
                   <th scope="col">Discount</th>
@@ -191,6 +192,7 @@
               <tbody>
                 {% for product in top_selling_products %}
                   <tr>
+                    <td style="width: 6%;" class="text-center">{{ forloop.counter }}</td>
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="flex-shrink-0 me-12 w-40-px h-40-px bg-primary-50 rounded-circle d-flex justify-content-center align-items-center">
@@ -220,16 +222,17 @@
         </div>
       </div>
     </div>
-    <div class="col-xxl-6">
+    <div class="col-xxl-12">
       <div class="card h-100">
         <div class="card-body p-24">
           <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
             <h6 class="mb-2 fw-bold text-lg mb-0">Stock Report</h6>
           </div>
           <div class="table-responsive scroll-sm">
-            <table class="table bordered-table mb-0">
+            <table class="table bordered-table mb-0" id="responsiveTable">
               <thead>
                 <tr>
+                  <th style="width: 6%;" class="text-center">S/N</th>
                   <th scope="col">Items</th>
                   <th scope="col">Price</th>
                   <th scope="col">
@@ -242,6 +245,7 @@
               <tbody>
                 {% for product in stock_report %}
                   <tr>
+                    <td style="width: 6%;" class="text-center">{{ forloop.counter }}</td>
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="flex-shrink-0 me-12 w-40-px h-40-px bg-primary-50 rounded-circle d-flex justify-content-center align-items-center">

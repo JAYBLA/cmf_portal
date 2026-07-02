@@ -7,33 +7,28 @@
     {% endif %}
   </h5>
 
-  <button
-    type="button"
-    class="btn-close"
-    data-bs-dismiss="modal"
-    aria-label="Close"
-  ></button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
-<form
-  method="POST"
-  hx-post="{% if purchase %}{% url 'purchases:purchase_update' purchase.id %}{% else %}{% url 'purchases:purchase_create' %}{% endif %}"
-  hx-swap="none"
->
+<form method="POST"
+  hx-post="{% if purchase %}
+    {% url 'purchases:purchase_update' purchase.id %}
+  {% else %}
+    {% url 'purchases:purchase_create' %}
+  {% endif %}"
+  hx-swap="none">
   {% csrf_token %}
 
   <div class="modal-body">
     <div class="row">
       <!-- SUPPLIER -->
 
-      <div class="col-md-12 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Supplier</label>
 
         {{ form.supplier }}
 
-        <div class="text-danger small">
-          {{ form.supplier.errors }}
-        </div>
+        <div class="text-danger small">{{ form.supplier.errors }}</div>
       </div>
 
       <!-- PURCHASE CATEGORY -->
@@ -43,9 +38,7 @@
 
         {{ form.purchase_category }}
 
-        <div class="text-danger small">
-          {{ form.purchase_category.errors }}
-        </div>
+        <div class="text-danger small">{{ form.purchase_category.errors }}</div>
       </div>
 
       <!-- CURRENCY -->
@@ -55,9 +48,7 @@
 
         {{ form.currency }}
 
-        <div class="text-danger small">
-          {{ form.currency.errors }}
-        </div>
+        <div class="text-danger small">{{ form.currency.errors }}</div>
       </div>
 
       <!-- EXCHANGE RATE -->
@@ -67,32 +58,26 @@
 
         {{ form.exchange_rate }}
 
-        <div class="text-danger small">
-          {{ form.exchange_rate.errors }}
-        </div>
+        <div class="text-danger small">{{ form.exchange_rate.errors }}</div>
       </div>
       <!-- SUPPLIER INVOICE -->
 
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Supplier Invoice Number</label>
 
         {{ form.supplier_invoice_number }}
 
-        <div class="text-danger small">
-          {{ form.supplier_invoice_number.errors }}
-        </div>
+        <div class="text-danger small">{{ form.supplier_invoice_number.errors }}</div>
       </div>
 
       <!-- PURCHASE DATE -->
 
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Purchase Date</label>
 
         {{ form.purchase_date }}
 
-        <div class="text-danger small">
-          {{ form.purchase_date.errors }}
-        </div>
+        <div class="text-danger small">{{ form.purchase_date.errors }}</div>
       </div>
 
       <!-- NOTES -->
@@ -102,9 +87,7 @@
 
         {{ form.notes }}
 
-        <div class="text-danger small">
-          {{ form.notes.errors }}
-        </div>
+        <div class="text-danger small">{{ form.notes.errors }}</div>
       </div>
     </div>
 
@@ -117,7 +100,7 @@
         </div>
       </div>
 
-      <div class="card-body p-0">
+      <div class="card-body p-0 cmf-items-container">
         {{ formset.management_form }}
 
         <div class="table-responsive">
@@ -133,44 +116,23 @@
 
             <tbody id="purchase-items-body">
               {% for item_form in formset %}
-
                 <tr class="purchase-item-row">
                   {% for hidden in item_form.hidden_fields %}
                     {{ hidden }}
                   {% endfor %}
 
-                  <td class="p-1">
-                    {{ item_form.product }}
-                  </td>
+                  <td class="p-1">{{ item_form.product }}</td>
 
-                  <td class="p-1">
-                    {{ item_form.quantity }}
-                  </td>
+                  <td class="p-1">{{ item_form.quantity }}</td>
 
-                  <td class="p-1">
-                    {{ item_form.unit_cost }}
-                  </td>
+                  <td class="p-1">{{ item_form.unit_cost }}</td>
 
                   <td class="text-center p-1">
-                    {% if item_form.instance.pk %}
+                    <div class="d-none">{{ item_form.DELETE }}</div>
 
-                      <div class="form-check d-flex justify-content-center">
-                        {{ item_form.DELETE }}
-                      </div>
-
-                    {% else %}
-
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger remove-row"
-                      >
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-
-                    {% endif %}
+                    <button type="button" class="btn btn-sm btn-danger remove-row"><i class="fa-solid fa-trash"></i></button>
                   </td>
                 </tr>
-
               {% endfor %}
             </tbody>
           </table>
@@ -181,29 +143,19 @@
         <template id="empty-form-template">
           <tr class="purchase-item-row">
             {% with item_form=formset.empty_form %}
-
               {% for hidden in item_form.hidden_fields %}
                 {{ hidden }}
               {% endfor %}
 
-              <td class="p-1">
-                {{ item_form.product }}
-              </td>
+              <td class="p-1">{{ item_form.product }}</td>
 
-              <td class="p-1">
-                {{ item_form.quantity }}
-              </td>
+              <td class="p-1">{{ item_form.quantity }}</td>
 
-              <td class="p-1">
-                {{ item_form.unit_cost }}
-              </td>
+              <td class="p-1">{{ item_form.unit_cost }}</td>
 
               <td class="text-center p-1">
-                <button type="button" class="btn btn-sm btn-danger remove-row">
-                  <i class="fa fa-trash"></i>
-                </button>
+                <button type="button" class="btn btn-sm btn-danger remove-row"><i class="fa fa-trash"></i></button>
               </td>
-
             {% endwith %}
           </tr>
         </template>
@@ -212,9 +164,7 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-      Close
-    </button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
     <button type="submit" class="btn btn-primary">
       {% if purchase %}

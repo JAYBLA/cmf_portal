@@ -1,0 +1,281 @@
+<form
+    method="POST"
+    hx-post="{% if voucher %}
+        {% url 'vouchers:voucher_update' voucher.id %}
+    {% else %}
+        {% url 'vouchers:voucher_create' %}
+    {% endif %}"
+    hx-swap="none">
+
+    {% csrf_token %}
+
+    {{ formset.management_form }}
+
+    <div class="modal-header">
+        <h5 class="modal-title">
+            {% if voucher %}
+                Edit Voucher
+            {% else %}
+                New Voucher
+            {% endif %}
+        </h5>
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal">
+        </button>
+    </div>
+
+    <div
+        class="modal-body"
+        style="overflow-y:auto; max-height:calc(95vh - 180px);">
+
+        <!-- Voucher Details -->
+
+        <div class="card mb-4">
+
+            <div class="card-header">
+                Voucher Details
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Voucher Date
+                        </label>
+
+                        {{ form.voucher_date }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Payee Name
+                        </label>
+
+                        {{ form.payee_name }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Payee Phone
+                        </label>
+
+                        {{ form.payee_phone }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Approved By
+                        </label>
+
+                        {{ form.approved_by }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Received By
+                        </label>
+
+                        {{ form.received_by }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Status
+                        </label>
+
+                        {{ form.status }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Notes
+                        </label>
+
+                        {{ form.notes }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Voucher Items -->
+
+        <div class="card">
+
+            <div
+                class="card-header d-flex justify-content-between align-items-center">
+
+                <span>
+                    Voucher Items
+                </span>
+
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    id="add-item-row">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                </button>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-sm table-bordered align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Description</th>
+
+                            <th width="180">
+                                Amount
+                            </th>
+
+                            <th width="60">
+                                Del
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="items-container">
+
+                        {% for form in formset %}
+
+                        <tr class="voucher-item-row">
+
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+
+                            <td>
+
+                                {{ form.description }}
+
+                            </td>
+
+                            <td>
+
+                                {{ form.amount }}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <div class="d-none">
+
+                                    {{ form.DELETE }}
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-danger btn-sm remove-row">
+
+                                    <i class="fa-solid fa-trash"></i>
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">
+
+            Close
+
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-success">
+
+            Save Voucher
+
+        </button>
+
+    </div>
+
+</form>
+
+<!-- =========================================
+     EMPTY ROW TEMPLATE
+========================================== -->
+
+<template id="empty-form-template">
+
+    <tr class="voucher-item-row">
+
+        <input
+            type="hidden"
+            name="items-__prefix__-id"
+            id="id_items-__prefix__-id">
+
+        <td>
+
+            <input
+                type="text"
+                name="items-__prefix__-description"
+                id="id_items-__prefix__-description"
+                class="form-control form-control-sm"
+                placeholder="Payment Description">
+
+        </td>
+
+        <td>
+
+            <input
+                type="number"
+                step="0.01"
+                min="0"
+                name="items-__prefix__-amount"
+                id="id_items-__prefix__-amount"
+                class="form-control form-control-sm text-end"
+                placeholder="Amount">
+
+        </td>
+
+        <td class="text-center">
+
+            <button
+                type="button"
+                class="btn btn-danger btn-sm remove-row">
+
+                <i class="fa-solid fa-trash"></i>
+
+            </button>
+
+        </td>
+
+    </tr>
+
+</template>

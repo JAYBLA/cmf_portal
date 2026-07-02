@@ -15,61 +15,31 @@ class DeliveryNote(models.Model):
         ("completed", "Completed"),
     )
 
-    delivery_number = models.CharField(
-        max_length=30,
-        unique=True,
-        editable=False
-    )
+    delivery_number = models.CharField(max_length=30, unique=True, editable=False)
 
     quotation = models.ForeignKey(
-        Quotation,
-        on_delete=models.PROTECT,
-        related_name="delivery_notes"
+        Quotation, on_delete=models.PROTECT, related_name="delivery_notes"
     )
 
     delivery_date = models.DateField()
 
-    delivery_address = models.TextField(
-        blank=True
-    )
+    delivery_address = models.TextField(blank=True)
 
-    receiver_name = models.CharField(
-        max_length=255,
-        blank=True
-    )
+    receiver_name = models.CharField(max_length=255, blank=True)
 
-    receiver_phone = models.CharField(
-        max_length=50,
-        blank=True
-    )
+    receiver_phone = models.CharField(max_length=50, blank=True)
 
-    driver_name = models.CharField(
-        max_length=255,
-        blank=True
-    )
+    driver_name = models.CharField(max_length=255, blank=True)
 
-    vehicle_number = models.CharField(
-        max_length=100,
-        blank=True
-    )
+    vehicle_number = models.CharField(max_length=100, blank=True)
 
-    notes = models.TextField(
-        blank=True
-    )
+    notes = models.TextField(blank=True)
 
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default="pending"
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    updated_at = models.DateTimeField(
-        auto_now=True
-    )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-id"]
@@ -83,16 +53,11 @@ class DeliveryNote(models.Model):
 
     @property
     def quoted_quantity(self):
-        return sum(
-            item.quantity
-            for item in self.quotation.items.all()
-        )
+        return sum(item.quantity for item in self.quotation.items.all())
 
     @property
     def delivered_quantity(self):
-        return self.items.aggregate(
-            total=Sum("quantity")
-        )["total"] or Decimal("0")
+        return self.items.aggregate(total=Sum("quantity"))["total"] or Decimal("0")
 
     @property
     def total_items(self):
@@ -100,10 +65,7 @@ class DeliveryNote(models.Model):
 
     @property
     def total_amount(self):
-        return sum(
-            item.total_price
-            for item in self.items.all()
-        )
+        return sum(item.total_price for item in self.items.all())
 
     def save(self, *args, **kwargs):
 
@@ -112,8 +74,7 @@ class DeliveryNote(models.Model):
             today = timezone.now().strftime("%Y%m%d")
 
             last = (
-                DeliveryNote.objects
-                .filter(delivery_number__startswith=f"DN-{today}")
+                DeliveryNote.objects.filter(delivery_number__startswith=f"DN-{today}")
                 .order_by("-id")
                 .first()
             )
@@ -131,26 +92,16 @@ class DeliveryNote(models.Model):
 class DeliveryNoteItem(models.Model):
 
     delivery_note = models.ForeignKey(
-        DeliveryNote,
-        on_delete=models.CASCADE,
-        related_name="items"
+        DeliveryNote, on_delete=models.CASCADE, related_name="items"
     )
 
     quotation_item = models.ForeignKey(
-        QuotationItem,
-        on_delete=models.PROTECT,
-        related_name="delivery_items"
+        QuotationItem, on_delete=models.PROTECT, related_name="delivery_items"
     )
 
-    quantity = models.DecimalField(
-        max_digits=10,
-        decimal_places=2
-    )
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
 
-    remarks = models.CharField(
-        max_length=255,
-        blank=True
-    )
+    remarks = models.CharField(max_length=255, blank=True)
 
     class Meta:
         ordering = ["id"]
