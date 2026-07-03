@@ -2,7 +2,9 @@ from django.shortcuts import render
 from customers.models import *
 from quotations.models import *
 from invoices.models import *
-from sales.models import Sale
+from sales.models import *
+from receipts.models import *
+from vouchers.models import *
 
 from django.db.models.functions import *
 
@@ -19,6 +21,8 @@ def dashboard(request):
     customers_count = Customer.objects.count()
     quotation_count = Quotation.objects.count()
     invoice_count = Invoice.objects.count()
+    receipt_count = Receipt.objects.count()
+    voucher_count = Voucher.objects.count()
 
     current_year = date.today().year
     current_month = date.today().month
@@ -131,7 +135,8 @@ def dashboard(request):
         "customers_count": customers_count,
         "quotation_count": quotation_count,
         "invoice_count": invoice_count,
-
+        "receipt_count": receipt_count,
+        "voucher_count": voucher_count,
         # Sales chart
         "sales_chart": sales_chart,
         "yearly_sales": yearly_sales,

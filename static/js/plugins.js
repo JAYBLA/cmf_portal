@@ -281,7 +281,7 @@ function initializeDataTables(container = document) {
     $(table).DataTable({
       responsive: true,
 
-      pageLength: 25,
+      pageLength: 10,
 
       ordering: true,
 
