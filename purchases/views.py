@@ -1,20 +1,22 @@
-# views.py
-
 from decimal import Decimal
 import json
 
+from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import (
     render,
     get_object_or_404,
 )
 
-from django.http import HttpResponse
-
 from .models import *
-from products.models import Product
 from .forms import *
-from django.db.models import Sum
+
+from products.models import *
+from sales.models import *
+from products.services.stock import move_stock
+
 from .services.pricing import recalculate_purchase_pricing
+
 
 # =========================================
 # PURCHASE LIST
@@ -25,9 +27,15 @@ def purchase_list(request):
 
     purchases = Purchase.objects.select_related("supplier").all()
 
-    context = {"purchases": purchases}
+    context = {
+        "purchases": purchases,
+    }
 
-    return render(request, "purchases/purchase_list.html", context)
+    return render(
+        request,
+        "purchases/purchase_list.html",
+        context,
+    )
 
 
 # =========================================
@@ -39,9 +47,15 @@ def purchase_table(request):
 
     purchases = Purchase.objects.select_related("supplier").all()
 
-    context = {"purchases": purchases}
+    context = {
+        "purchases": purchases,
+    }
 
-    return render(request, "purchases/partials/purchase_table.html", context)
+    return render(
+        request,
+        "purchases/partials/purchase_table.html",
+        context,
+    )
 
 
 # =========================================
@@ -49,11 +63,15 @@ def purchase_table(request):
 # =========================================
 
 
+@transaction.atomic
 def purchase_create(request):
 
     form = PurchaseForm(request.POST or None)
 
-    formset = PurchaseItemFormSet(request.POST or None, prefix="items")
+    formset = PurchaseItemFormSet(
+        request.POST or None,
+        prefix="items",
+    )
 
     if request.method == "POST":
 
@@ -83,23 +101,29 @@ def purchase_create(request):
             for item in items:
 
                 item.purchase = purchase
-
                 item.save()
-
-                item.product.update_stock(
-                    quantity=item.quantity,
-                    movement_type="in",
-                    reference=purchase.purchase_number,
-                    notes="Purchase Stock In",
-                )
 
             # =====================================
             # DELETE MARKED ITEMS
             # =====================================
 
             for obj in formset.deleted_objects:
-
                 obj.delete()
+
+            # =====================================
+            # MOVE STOCK IN
+            # =====================================
+
+            for item in purchase.items.select_related("product"):
+
+                move_stock(
+                    product=item.product,
+                    quantity=item.quantity,
+                    direction="in",
+                    movement_type="purchase",
+                    reference=purchase,
+                    notes="Purchase Stock In",
+                )
 
             # =====================================
             # CALCULATE TOTALS
@@ -108,7 +132,6 @@ def purchase_create(request):
             subtotal = Decimal("0.00")
 
             for item in purchase.items.all():
-
                 subtotal += item.subtotal
 
             purchase.subtotal = subtotal
@@ -117,17 +140,21 @@ def purchase_create(request):
 
                 purchase.total_amount = subtotal
 
-                purchase.total_amount_tzs = subtotal * purchase.exchange_rate
+                purchase.total_amount_tzs = (
+                    subtotal * purchase.exchange_rate
+                )
 
             else:
 
                 purchase.total_amount = subtotal
-
                 purchase.total_amount_tzs = subtotal
 
-            purchase.balance = purchase.total_amount - purchase.amount_paid
+            purchase.balance = (
+                purchase.total_amount - purchase.amount_paid
+            )
 
             purchase.save()
+
             recalculate_purchase_pricing(purchase)
 
             # =====================================
@@ -142,7 +169,7 @@ def purchase_create(request):
                     "refreshTable": True,
                     "showMessage": {
                         "type": "success",
-                        "message": ("Purchase saved successfully."),
+                        "message": "Purchase saved successfully.",
                     },
                 }
             )
@@ -155,7 +182,11 @@ def purchase_create(request):
         "products": Product.objects.filter(status="active"),
     }
 
-    return render(request, "purchases/partials/purchase_form.html", context)
+    return render(
+        request,
+        "purchases/partials/purchase_form.html",
+        context,
+    )
 
 
 # =========================================
@@ -163,14 +194,25 @@ def purchase_create(request):
 # =========================================
 
 
+@transaction.atomic
 def purchase_update(request, pk):
 
-    purchase = get_object_or_404(Purchase, pk=pk)
+    purchase = get_object_or_404(
+        Purchase.objects.prefetch_related(
+            "items__product"
+        ),
+        pk=pk,
+    )
 
-    form = PurchaseForm(request.POST or None, instance=purchase)
+    form = PurchaseForm(
+        request.POST or None,
+        instance=purchase,
+    )
 
     formset = PurchaseItemFormSet(
-        request.POST or None, instance=purchase, prefix="items"
+        request.POST or None,
+        instance=purchase,
+        prefix="items",
     )
 
     if request.method == "POST":
@@ -181,12 +223,18 @@ def purchase_update(request, pk):
             # REVERSE EXISTING STOCK
             # =====================================
 
-            for old_item in purchase.items.all():
+            old_items = list(
+                purchase.items.select_related("product")
+            )
 
-                old_item.product.update_stock(
+            for old_item in old_items:
+
+                move_stock(
+                    product=old_item.product,
                     quantity=old_item.quantity,
-                    movement_type="out",
-                    reference=purchase.purchase_number,
+                    direction="out",
+                    movement_type="purchase_reversal",
+                    reference=purchase,
                     notes="Purchase Update Reversal",
                 )
 
@@ -194,32 +242,32 @@ def purchase_update(request, pk):
             # SAVE PURCHASE
             # =====================================
 
-            purchase = form.save(commit=False)
-
-            purchase.save()
+            purchase = form.save()
 
             # =====================================
-            # SAVE ITEMS
+            # SAVE FORMSET
             # =====================================
 
             formset.instance = purchase
 
-            items = formset.save(commit=False)
+            formset.save()
 
-            for obj in formset.deleted_objects:
+            # =====================================
+            # ADD CURRENT STOCK BACK
+            # =====================================
 
-                obj.delete()
+            current_items = purchase.items.select_related(
+                "product"
+            )
 
-            for item in items:
+            for item in current_items:
 
-                item.purchase = purchase
-
-                item.save()
-
-                item.product.update_stock(
+                move_stock(
+                    product=item.product,
                     quantity=item.quantity,
-                    movement_type="in",
-                    reference=purchase.purchase_number,
+                    direction="in",
+                    movement_type="purchase",
+                    reference=purchase,
                     notes="Purchase Update",
                 )
 
@@ -230,7 +278,6 @@ def purchase_update(request, pk):
             subtotal = Decimal("0.00")
 
             for item in purchase.items.all():
-
                 subtotal += item.subtotal
 
             purchase.subtotal = subtotal
@@ -239,15 +286,22 @@ def purchase_update(request, pk):
 
                 purchase.total_amount = subtotal
 
-                purchase.total_amount_tzs = subtotal * purchase.exchange_rate
+                purchase.total_amount_tzs = (
+                    subtotal * purchase.exchange_rate
+                )
 
             else:
 
                 purchase.total_amount = subtotal
-
                 purchase.total_amount_tzs = subtotal
 
-            purchase.balance = purchase.total_amount - purchase.amount_paid
+            purchase.balance = (
+                purchase.total_amount - purchase.amount_paid
+            )
+
+            # =====================================
+            # PAYMENT STATUS
+            # =====================================
 
             if purchase.amount_paid <= 0:
 
@@ -262,6 +316,7 @@ def purchase_update(request, pk):
                 purchase.payment_status = "paid"
 
             purchase.save()
+
             recalculate_purchase_pricing(purchase)
 
             # =====================================
@@ -290,7 +345,11 @@ def purchase_update(request, pk):
         "products": Product.objects.filter(status="active"),
     }
 
-    return render(request, "purchases/partials/purchase_form.html", context)
+    return render(
+        request,
+        "purchases/partials/purchase_form.html",
+        context,
+    )
 
 
 # =========================================
@@ -298,30 +357,58 @@ def purchase_update(request, pk):
 # =========================================
 
 
+@transaction.atomic
 def purchase_delete(request, pk):
 
-    purchase = get_object_or_404(Purchase, pk=pk)
+    purchase = get_object_or_404(
+        Purchase.objects.prefetch_related(
+            "items__product"
+        ),
+        pk=pk,
+    )
 
     if request.method == "POST":
+
+        # =====================================
+        # GET PURCHASE ITEMS
+        # =====================================
+
+        items = list(
+            purchase.items.select_related("product")
+        )
 
         # =====================================
         # REVERSE STOCK
         # =====================================
 
-        for item in purchase.items.all():
+        for item in items:
 
-            item.product.update_stock(
+            move_stock(
+                product=item.product,
                 quantity=item.quantity,
-                movement_type="out",
-                reference=purchase.purchase_number,
+                direction="out",
+                movement_type="purchase_reversal",
+                reference=purchase,
                 notes="Purchase Deleted",
             )
+
+        # =====================================
+        # DELETE SALES PRICING
+        # =====================================
+
+        SalesProductPricing.objects.filter(
+            purchase_pricing__purchase_item__purchase=purchase
+        ).delete()
 
         # =====================================
         # DELETE PURCHASE
         # =====================================
 
         purchase.delete()
+
+        # =====================================
+        # RESPONSE
+        # =====================================
 
         response = HttpResponse("")
 
@@ -338,10 +425,15 @@ def purchase_delete(request, pk):
 
         return response
 
-    context = {"purchase": purchase}
+    context = {
+        "purchase": purchase,
+    }
 
-    return render(request, "purchases/partials/purchase_delete.html", context)
-
+    return render(
+        request,
+        "purchases/partials/purchase_delete.html",
+        context,
+    )
 
 # =========================================
 # CREATE PURCHASE PAYMENT
