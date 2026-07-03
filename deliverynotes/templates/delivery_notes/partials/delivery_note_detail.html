@@ -1,513 +1,207 @@
 {% load humanize %}
 
-<div class="modal-header border-0 pb-0">
-
-    <div>
-
-        <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
-
-            <i class="bi bi-truck"></i>
-
-            Delivery Note Details
-
-            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fs-6 fw-semibold px-3 py-1">
-
-                {{ delivery_note.delivery_number }}
-
-            </span>
-
-        </h5>
-
-        {% if delivery_note.notes %}
-
-        <div class="card shadow-sm border-0 mt-2">
-
-            <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
-
-                <i class="bi bi-sticky text-primary"></i>
-
-                <span class="fw-semibold">
-                    Notes
-                </span>
-
-            </div>
-
-            <div class="card-body">
-
-                {{ delivery_note.notes|linebreaks }}
-
-            </div>
-
-        </div>
-
-        {% endif %}
-
-        <p class="text-muted small mb-0 mt-1">
-
-            <i class="bi bi-calendar3 me-1"></i>
-
-            Created {{ delivery_note.created_at|timesince }} ago
-
-        </p>
-
-    </div>
-
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="modal"
-        aria-label="Close">
-    </button>
-
+<!-- =========================================
+     MODAL HEADER
+========================================== -->
+<div class="modal-header py-2 bg-primary bg-opacity-10 border-bottom border-primary">
+    <h5 class="modal-title mb-0">
+        <i class="fa-solid fa-truck-fast me-2 text-primary"></i>
+        Delivery Note – <span class="text-primary">{{ delivery_note.delivery_number }}</span>
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 </div>
 
-<div class="modal-body pt-2">
+<!-- =========================================
+     MODAL BODY
+========================================== -->
+<div class="modal-body" style="padding: 0.5rem 1rem; max-height: calc(95vh - 180px); overflow-y: auto;">
 
-    <!-- Status -->
-
-    <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-3 border">
-
-        <div class="d-flex align-items-center gap-2">
-
-            <i class="bi bi-tag text-muted"></i>
-
-            <span class="text-muted small fw-medium">
-                Status:
-            </span>
-
-            {% if delivery_note.status == "pending" %}
-
-                <span class="badge bg-warning text-dark fs-6 px-3 py-2">
-
-                    <i class="bi bi-clock me-1"></i>
-
-                    Pending
-
-                </span>
-
-            {% elif delivery_note.status == "partial" %}
-
-                <span class="badge bg-info fs-6 px-3 py-2">
-
-                    <i class="bi bi-box-seam me-1"></i>
-
-                    Partial
-
-                </span>
-
-            {% else %}
-
-                <span class="badge bg-success fs-6 px-3 py-2">
-
-                    <i class="bi bi-check-circle me-1"></i>
-
-                    Completed
-
-                </span>
-
-            {% endif %}
-
+    <!-- DELIVERY INFORMATION (Primary accent) -->
+    <div class="card border-0 shadow-sm mb-2 border-start border-4 border-primary">
+        <div class="card-header bg-primary bg-opacity-10 fw-semibold py-1 px-2 small text-primary">
+            <i class="fa-regular fa-file-lines me-1"></i> Delivery Information
         </div>
-
-        <div class="vr"></div>
-
-        <div>
-
-            <small class="text-muted d-block lh-1">
-
-                Delivery Date
-
-            </small>
-
-            <strong class="small">
-
-                {{ delivery_note.delivery_date }}
-
-            </strong>
-
-        </div>
-
-    </div>
-
-    <!-- Customer & Summary -->
-
-    <div class="row g-3 mb-4">
-
-        <!-- Customer -->
-
-        <div class="col-md-6">
-
-            <div class="card h-100 shadow-sm border-0">
-
-                <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
-
-                    <i class="bi bi-person-badge text-primary"></i>
-
-                    <span class="fw-semibold">
-                        Customer
-                    </span>
-
+        <div class="card-body p-2">
+            <div class="row g-1">
+                <div class="col-md-4">
+                    <div class="small text-muted">Delivery Number</div>
+                    <div class="fw-semibold">{{ delivery_note.delivery_number }}</div>
                 </div>
-
-                <div class="card-body">
-
-                    <div class="d-flex flex-column gap-2">
-
-                        <div>
-
-                            <small class="text-muted d-block lh-1">
-
-                                Name
-
-                            </small>
-
-                            <strong>
-
-                                {{ delivery_note.customer.customer_name }}
-
-                            </strong>
-
-                        </div>
-
-                        {% if delivery_note.customer.company_name %}
-
-                        <div>
-
-                            <small class="text-muted d-block lh-1">
-
-                                Company
-
-                            </small>
-
-                            <span>
-
-                                {{ delivery_note.customer.company_name }}
-
-                            </span>
-
-                        </div>
-
-                        {% endif %}
-
-                        {% if delivery_note.customer.phone_number %}
-
-                        <div>
-
-                            <small class="text-muted d-block lh-1">
-
-                                Phone
-
-                            </small>
-
-                            <span>
-
-                                <i class="bi bi-telephone me-1"></i>
-
-                                {{ delivery_note.customer.phone_number }}
-
-                            </span>
-
-                        </div>
-
-                        {% endif %}
-
+                <div class="col-md-4">
+                    <div class="small text-muted">Delivery Date</div>
+                    <div class="fw-semibold">{{ delivery_note.delivery_date|date:"d M Y" }}</div>
+                </div>
+                <div class="col-md-4">
+                    <div class="small text-muted">Status</div>
+                    <span class="badge 
+                        {% if delivery_note.status == "completed" %}bg-success
+                        {% elif delivery_note.status == "partial" %}bg-warning text-dark
+                        {% else %}bg-secondary{% endif %}">
+                        {{ delivery_note.get_status_display }}
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <div class="small text-muted">Quotation</div>
+                    <div class="fw-semibold">
+                        <span class="badge bg-primary bg-opacity-25 text-primary">CMFQ00{{ delivery_note.quotation.id }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="small text-muted">Customer</div>
+                    <div class="fw-semibold">{{ delivery_note.customer.customer_name }}</div>
+                </div>
+                <div class="col-12">
+                    <div class="small text-muted">Delivery Address</div>
+                    <div>
                         {% if delivery_note.delivery_address %}
-
-                        <div>
-
-                            <small class="text-muted d-block lh-1">
-
-                                Delivery Address
-
-                            </small>
-
-                            <span class="small">
-
-                                {{ delivery_note.delivery_address }}
-
-                            </span>
-
-                        </div>
-
+                            {{ delivery_note.delivery_address }}
+                        {% else %}
+                            <span class="text-muted">Not specified</span>
                         {% endif %}
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
-        <!-- Summary -->
-
-        <div class="col-md-6">
-
-            <div class="card h-100 shadow-sm border-0">
-
-                <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
-
-                    <i class="bi bi-calculator text-primary"></i>
-
-                    <span class="fw-semibold">
-
-                        Summary
-
-                    </span>
-
-                </div>
-
-                <div class="card-body d-flex flex-column justify-content-center">
-
-                    <div class="row g-2">
-
-                        <div class="col-12">
-
-                            <small class="text-muted d-block lh-1">
-
-                                Total Amount
-
-                            </small>
-
-                            <span class="fw-bold fs-4 text-primary">
-
-                                {{ delivery_note.total_amount|floatformat:0|intcomma }}
-
-                            </span>
-
-                        </div>
-
-                        <div class="col-6">
-
-                            <small class="text-muted d-block lh-1">
-
-                                Items
-
-                            </small>
-
-                            <span class="fw-semibold">
-
-                                {{ delivery_note.items.count }}
-
-                            </span>
-
-                        </div>
-
-                        <div class="col-6">
-
-                            <small class="text-muted d-block lh-1">
-
-                                Delivered Qty
-
-                            </small>
-
-                            <span class="fw-semibold">
-
-                                {{ delivery_note.delivered_quantity }}
-
-                            </span>
-
-                        </div>
-
-                        <div class="col-12">
-
-                            <small class="text-muted d-block lh-1">
-
-                                Quotation
-
-                            </small>
-
-                            <span>
-
-                                {{ delivery_note.quotation.title }}
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
     </div>
 
-    <!-- Delivery Items -->
-
-    <div class="card shadow-sm border-0 mb-3">
-
-        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-2">
-
-            <div class="d-flex align-items-center gap-2">
-
-                <i class="bi bi-list-ul text-primary"></i>
-
-                <span class="fw-semibold">
-
-                    Delivered Items
-
-                </span>
-
-            </div>
-
-            <span class="badge bg-light text-dark border">
-
-                {{ delivery_note.items.count }} items
-
-            </span>
-
+    <!-- RECEIVER INFORMATION (Success accent) -->
+    <div class="card border-0 shadow-sm mb-2 border-start border-4 border-success">
+        <div class="card-header bg-success bg-opacity-10 fw-semibold py-1 px-2 small text-success">
+            <i class="fa-regular fa-user me-1"></i> Receiver Information
         </div>
+        <div class="card-body p-2">
+            <div class="row g-1">
+                <div class="col-md-6">
+                    <div class="small text-muted">Receiver Name</div>
+                    <div>
+                        {% if delivery_note.receiver_name %}
+                            <span class="fw-semibold">{{ delivery_note.receiver_name }}</span>
+                        {% else %}
+                            <span class="text-muted">Not specified</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="small text-muted">Receiver Phone</div>
+                    <div>
+                        {% if delivery_note.receiver_phone %}
+                            <i class="fa-solid fa-phone me-1 text-success"></i> {{ delivery_note.receiver_phone }}
+                        {% else %}
+                            <span class="text-muted">Not specified</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- TRANSPORT INFORMATION (Info accent) -->
+    <div class="card border-0 shadow-sm mb-2 border-start border-4 border-info">
+        <div class="card-header bg-info bg-opacity-10 fw-semibold py-1 px-2 small text-info">
+            <i class="fa-solid fa-truck me-1"></i> Transport Information
+        </div>
+        <div class="card-body p-2">
+            <div class="row g-1">
+                <div class="col-md-6">
+                    <div class="small text-muted">Driver Name</div>
+                    <div>
+                        {% if delivery_note.driver_name %}
+                            <span class="fw-semibold"><i class="fa-regular fa-id-card me-1"></i> {{ delivery_note.driver_name }}</span>
+                        {% else %}
+                            <span class="text-muted">Not specified</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="small text-muted">Vehicle Number</div>
+                    <div>
+                        {% if delivery_note.vehicle_number %}
+                            <span class="fw-semibold"><i class="fa-solid fa-car me-1"></i> {{ delivery_note.vehicle_number }}</span>
+                        {% else %}
+                            <span class="text-muted">Not specified</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELIVERY ITEMS (Warning accent) -->
+    <div class="card border-0 shadow-sm mb-2 border-start border-4 border-warning">
+        <div class="card-header bg-warning bg-opacity-10 fw-semibold py-1 px-2 small text-warning d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-list me-1"></i> Delivery Items</span>
+            <span class="badge bg-warning text-dark">{{ delivery_note.items.count }}</span>
+        </div>
         <div class="card-body p-0">
-
             <div class="table-responsive">
-
-                <table class="table table-hover table-striped mb-0">
-
+                <table class="table table-sm table-striped table-bordered mb-0 align-middle">
                     <thead class="table-light">
-
-                        <tr>
-
-                            <th width="50" class="text-center">#</th>
-
+                        <tr class="small">
+                            <th style="width:40px;" class="text-center">#</th>
                             <th>Item</th>
-
-                            <th width="90" class="text-center">Quoted</th>
-
-                            <th width="90" class="text-center">Delivered</th>
-
-                            <th width="140" class="text-end">Unit Price</th>
-
-                            <th width="140" class="text-end">Amount</th>
-
+                            <th style="width:80px;" class="text-center">Quoted</th>
+                            <th style="width:90px;" class="text-center">Delivered</th>
+                            <th>Remarks</th>
                         </tr>
-
                     </thead>
-
                     <tbody>
-
                         {% for item in delivery_note.items.all %}
-
                         <tr>
-
-                            <td class="text-center text-muted small">
-
-                                {{ forloop.counter }}
-
-                            </td>
-
-                            <td>
-
-                                <span class="fw-medium">
-
-                                    {{ item.item_name }}
-
-                                </span>
-
-                                {% if item.remarks %}
-
-                                    <div class="small text-muted">
-
-                                        {{ item.remarks }}
-
-                                    </div>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td class="text-center">
-
-                                {{ item.quoted_quantity|floatformat:0 }}
-
-                            </td>
-
-                            <td class="text-center">
-
+                            <td class="text-center text-muted">{{ forloop.counter }}</td>
+                            <td class="fw-semibold">{{ item.item_name }}</td>
+                            <td class="text-center">{{ item.quoted_quantity|floatformat:0 }}</td>
+                            <td class="text-center fw-semibold 
+                                {% if item.quantity >= item.quoted_quantity %}text-success
+                                {% elif item.quantity > 0 %}text-warning
+                                {% else %}text-danger{% endif %}">
                                 {{ item.quantity|floatformat:0 }}
-
                             </td>
-
-                            <td class="text-end font-monospace">
-
-                                {{ item.unit_price|floatformat:0|intcomma }}
-
+                            <td>
+                                {% if item.remarks %}
+                                    {{ item.remarks }}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
                             </td>
-
-                            <td class="text-end fw-semibold font-monospace">
-
-                                {{ item.total_price|floatformat:0|intcomma }}
-
-                            </td>
-
                         </tr>
-
                         {% empty %}
-
                         <tr>
-
-                            <td colspan="6" class="text-center py-5 text-muted">
-
-                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-
-                                No delivery items found.
-
-                            </td>
-
+                            <td colspan="5" class="text-center text-muted py-3">No delivery items found.</td>
                         </tr>
-
                         {% endfor %}
-
                     </tbody>
-
-                    <tfoot class="table-light fw-semibold">
-
+                    <tfoot class="table-light fw-bold">
                         <tr>
-
-                            <td colspan="5" class="text-end">
-
-                                Total
-
-                            </td>
-
-                            <td class="text-end font-monospace">
-
-                                {{ delivery_note.total_amount|floatformat:0|intcomma }}
-
-                            </td>
-
+                            <td colspan="2" class="text-end">Total Delivered</td>
+                            <td></td>
+                            <td class="text-center text-primary">{{ delivery_note.delivered_quantity|floatformat:0 }}</td>
+                            <td></td>
                         </tr>
-
                     </tfoot>
-
                 </table>
-
             </div>
-
         </div>
-
     </div>
+
+    <!-- NOTES (Neutral accent) -->
+    {% if delivery_note.notes %}
+    <div class="card border-0 shadow-sm border-start border-4 border-secondary">
+        <div class="card-header bg-secondary bg-opacity-10 fw-semibold py-1 px-2 small text-secondary">
+            <i class="fa-regular fa-note-sticky me-1"></i> Notes
+        </div>
+        <div class="card-body p-2">
+            {{ delivery_note.notes|linebreaksbr }}
+        </div>
+    </div>
+    {% endif %}
 
 </div>
 
-<div class="modal-footer border-0 pt-0">
-
-    <div class="d-flex gap-2 w-100 justify-content-end">
-
-        <button
-            type="button"
-            class="btn btn-outline-warning"
-            data-bs-dismiss="modal">
-
-            <i class="bi bi-x-lg me-1"></i>
-
-            Close
-
-        </button>
-
-    </div>
-
+<!-- =========================================
+     MODAL FOOTER
+========================================== -->
+<div class="modal-footer py-2 bg-light">
+    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
+        <i class="fa-solid fa-xmark me-1"></i> Close
+    </button>
 </div>

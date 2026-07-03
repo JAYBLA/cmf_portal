@@ -1,0 +1,155 @@
+<form hx-post="{% if receipt %}
+    {% url 'receipts:receipt_update' receipt.id %}
+  {% else %}
+    {% url 'receipts:receipt_create' %}
+  {% endif %}"
+  hx-swap="none">
+  {% csrf_token %}
+
+  <!--  =========================================
+         MODAL HEADER
+    ==========================================  -->
+
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {% if receipt %}
+        Edit Receipt
+      {% else %}
+        New Receipt
+      {% endif %}
+    </h5>
+
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+
+  <!--  =========================================
+         MODAL BODY
+    ==========================================  -->
+
+  <div class="modal-body" style="
+            overflow-y: auto;
+            max-height: calc(95vh - 180px);
+        ">
+    <!--  =====================================
+             NON FIELD ERRORS
+        ======================================  -->
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!--  =====================================
+             RECEIPT DETAILS
+        ======================================  -->
+
+    <div class="card">
+      <div class="card-header">Receipt Details</div>
+
+      <div class="card-body">
+        <div class="row g-3">
+            <!--  =================================
+                         TITLE
+                    ==================================  -->
+            <div class="col-md-12">
+                <label class="form-label">Title</label>
+
+                {{ form.title }}
+
+                <div class="text-danger small">{{ form.title.errors }}</div>
+            </div>
+          <!--  =================================
+                         INVOICE
+                    ==================================  -->
+
+          <div class="col-md-12">
+            <label class="form-label">Invoice</label>
+
+            {{ form.invoice }}
+
+            <div class="text-danger small">{{ form.invoice.errors }}</div>
+          </div>
+
+          <!--  =================================
+                         RECEIPT DATE
+                    ==================================  -->
+
+          <div class="col-md-6">
+            <label class="form-label">Receipt Date</label>
+
+            {{ form.receipt_date }}
+
+            <div class="text-danger small">{{ form.receipt_date.errors }}</div>
+          </div>
+
+          <!--  =================================
+                         AMOUNT
+                    ==================================  -->
+
+          <div class="col-md-6">
+            <label class="form-label">Amount Received</label>
+
+            {{ form.amount }}
+
+            <div class="text-danger small">{{ form.amount.errors }}</div>
+          </div>
+
+          <!--  =================================
+                         PAYMENT METHOD
+                    ==================================  -->
+
+          <div class="col-md-6">
+            <label class="form-label">Payment Method</label>
+
+            {{ form.payment_method }}
+
+            <div class="text-danger small">{{ form.payment_method.errors }}</div>
+          </div>
+
+          <!--  =================================
+                         PAYMENT REFERENCE
+                    ==================================  -->
+
+          <div class="col-md-6">
+            <label class="form-label">Payment Reference</label>
+
+            {{ form.payment_reference }}
+
+            <div class="text-danger small">{{ form.payment_reference.errors }}</div>
+          </div>
+
+          <!--  =================================
+                         NOTES
+                    ==================================  -->
+
+          <div class="col-12">
+            <label class="form-label">Description</label>
+
+            {{ form.notes }}
+
+            <div class="text-danger small">{{ form.notes.errors }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  =========================================
+         MODAL FOOTER
+    ==========================================  -->
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+    <button type="submit" class="btn btn-success">
+      {% if receipt %}
+        Update Receipt
+      {% else %}
+        Save Receipt
+      {% endif %}
+    </button>
+  </div>
+</form>

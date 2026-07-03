@@ -22,5 +22,25 @@
         <div class="modal-content" id="modal-body"></div>
       </div>
     </div>
+    {% if messages %}
+
+  <div
+    id="django-messages"
+    class="d-none"
+  >
+
+    {% for message in messages %}
+
+      <div
+        class="django-message"
+        data-type="{{ message.tags|default:'info' }}"
+        data-message="{{ message|escape }}"
+      ></div>
+
+    {% endfor %}
+
+  </div>
+
+{% endif %}
   </body>
 </html>

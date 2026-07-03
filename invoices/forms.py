@@ -31,6 +31,7 @@ class InvoiceForm(forms.ModelForm):
             "discount_amount",
             "status",
             "notes",
+            "invoice_type",
         ]
 
         widgets = {
@@ -68,6 +69,11 @@ class InvoiceForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 4
+                }
+            ),
+            "invoice_type": forms.Select(
+                attrs={
+                    "class": "form-select"
                 }
             ),
 
@@ -118,7 +124,7 @@ class InvoiceItemForm(forms.ModelForm):
 
             "product": forms.Select(
                 attrs={
-                    "class": "form-select choices"
+                    "class": "form-select"
                 }
             ),
             "description": forms.TextInput(

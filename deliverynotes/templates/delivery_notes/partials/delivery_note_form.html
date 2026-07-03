@@ -1,215 +1,133 @@
-<form
-    method="POST"
-    hx-post="{% if delivery_note %}
-        {% url 'delivery_notes:delivery_note_update' delivery_note.id %}
-    {% else %}
-        {% url 'delivery_notes:delivery_note_create' %}
-    {% endif %}"
-    hx-swap="none">
-
+<form hx-post="{% if delivery_note %}{% url 'delivery_notes:delivery_note_update' delivery_note.id %}{% else %}{% url 'delivery_notes:delivery_note_create' %}{% endif %}"
+      hx-swap="none">
     {% csrf_token %}
-
     <div class="modal-header">
-
         <h5 class="modal-title">
-
             {% if delivery_note %}
                 Edit Delivery Note
             {% else %}
                 New Delivery Note
             {% endif %}
-
         </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body"
+         style="overflow-y: auto;
+                max-height: calc(95vh - 180px)">
+        <div class="card mb-4">
+            <div class="card-header">Delivery Details</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12"
+                         id="quotation-field"
+                         data-items-url="{% url 'delivery_notes:quotation_items' 999999 %}">
+                        <label class="form-label">Quotation</label>
+                        {{ form.quotation }}
+                        <div class="text-danger small">{{ form.quotation.errors }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Delivery Date</label>
+                        {{ form.delivery_date }}
+                        <div class="text-danger small">{{ form.delivery_date.errors }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Delivery Address</label>
+                        {{ form.delivery_address }}
+                    </div>
+                     <div class="col-4">
+                        <label class="form-label">Notes</label>
+                        {{ form.notes }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Receiver Name</label>
+                        {{ form.receiver_name }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Receiver Phone</label>
+                        {{ form.receiver_phone }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Driver Name</label>
+                        {{ form.driver_name }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Vehicle Number</label>
+                        {{ form.vehicle_number }}
+                    </div>                   
+                </div>
+            </div>
+        </div>
+<!-- =========================================
+     DELIVERY ITEMS
+========================================== -->
 
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal">
-        </button>
+<div class="card">
 
+    <div class="card-header">
+        Delivery Items
     </div>
 
-    <div
-        class="modal-body"
-        style="overflow-y:auto;max-height:calc(95vh - 180px);">
 
-        <!-- Delivery Note Details -->
+    <div id="delivery-items-wrapper">
 
-        <div class="card mb-4">
+        {% if delivery_note %}
 
-            <div class="card-header">
-
-                Delivery Note Details
-
-            </div>
-
-            <div class="card-body">
-
-                <div class="row g-3">
-
-                    <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Quotation
-
-                        </label>
-
-                        {{ form.quotation }}
-
-                    </div>
-
-                    <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Delivery Date
-
-                        </label>
-
-                        {{ form.delivery_date }}
-
-                    </div>
-
-                    <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Status
-
-                        </label>
-
-                        {{ form.status }}
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-
-                            Receiver Name
-
-                        </label>
-
-                        {{ form.receiver_name }}
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-
-                            Receiver Phone
-
-                        </label>
-
-                        {{ form.receiver_phone }}
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-
-                            Driver Name
-
-                        </label>
-
-                        {{ form.driver_name }}
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-
-                            Vehicle Number
-
-                        </label>
-
-                        {{ form.vehicle_number }}
-
-                    </div>
-
-                    <div class="col-12">
-
-                        <label class="form-label">
-
-                            Delivery Address
-
-                        </label>
-
-                        {{ form.delivery_address }}
-
-                    </div>
-
-                    <div class="col-12">
-
-                        <label class="form-label">
-
-                            Notes
-
-                        </label>
-
-                        {{ form.notes }}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Delivery Items -->
-
-        <div class="card">
-
-            <div class="card-header">
-
-                Delivery Items
-
-            </div>
+            {{ formset.management_form }}
 
             <div class="table-responsive">
 
-                <table class="table table-sm table-bordered align-middle mb-0">
+                <table
+                    class="
+                        table
+                        table-sm
+                        table-bordered
+                        mb-0
+                        align-middle
+                    "
+                >
 
                     <thead class="table-light">
 
                         <tr>
 
-                            <th>Item</th>
-
-                            <th width="90" class="text-center">
-                                Quoted Qty
+                            <th style="width: 35%;">
+                                Item
                             </th>
 
-                            <th width="120" class="text-end">
-                                Unit Price
+                            <th
+                                style="width: 12%;"
+                                class="text-center"
+                            >
+                                Quoted
                             </th>
 
-                            <th width="120" class="text-center">
-                                Delivered Qty
+                            <th style="width: 15%;">
+                                Deliver Qty
                             </th>
 
-                            <th>
+                            <th style="width: 30%;">
                                 Remarks
                             </th>
 
-                            <th width="60" class="text-center">
-                                Remove
+                            <th
+                                style="width: 8%;"
+                                class="text-center"
+                            >
+                                Del
                             </th>
 
                         </tr>
 
                     </thead>
 
-                    <tbody id="items-container">
 
-                        {% if delivery_note %}
-                            {% include "delivery_notes/partials/quotation_items_rows.html" %}
-                        {% endif %}
+                    <tbody>
+
+                        {% for form in formset %}
+
+                            {% include "delivery_notes/partials/item_row.html" with form=form %}
+
+                        {% endfor %}
 
                     </tbody>
 
@@ -217,79 +135,190 @@
 
             </div>
 
-        </div>
+        {% else %}
+
+            <div class="text-center text-muted py-4">
+
+                Select a quotation to load
+                delivery items.
+
+            </div>
+
+        {% endif %}
 
     </div>
 
+</div>
+    </div>
     <div class="modal-footer">
-
-        <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">
-
-            Close
-
-        </button>
-
-        <button
-            type="submit"
-            class="btn btn-success">
-
-            Save Delivery Note
-
-        </button>
-
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success">Save Delivery Note</button>
     </div>
-
 </form>
-
 <script>
 
-(function () {
+;(function () {
 
-    const quotationSelect = document.getElementById("id_quotation");
+    /* =========================================
+       ELEMENTS
+    ========================================= */
 
-    if (!quotationSelect) return;
-
-    function loadQuotationItems() {
-
-        const quotationId = quotationSelect.value;
-        const container = document.getElementById("items-container");
-
-        if (!quotationId) {
-
-            container.innerHTML = "";
-
-            return;
-
-        }
-
-        htmx.ajax(
-            "GET",
-            "{% url 'delivery_notes:quotation_items' 0 %}".replace("/0/", "/" + quotationId + "/"),
-            {
-                target: "#items-container",
-                swap: "innerHTML"
-            }
+    const quotation =
+        document.getElementById(
+            "id_quotation"
         );
 
+
+    const quotationField =
+        document.getElementById(
+            "quotation-field"
+        );
+
+
+    const itemsWrapper =
+        document.getElementById(
+            "delivery-items-wrapper"
+        );
+
+
+    if (
+        !quotation ||
+        !quotationField ||
+        !itemsWrapper
+    ) {
+        return;
     }
 
-    quotationSelect.addEventListener(
+
+    /* =========================================
+       PREVENT DUPLICATE EVENT
+    ========================================= */
+
+    if (
+        quotation.dataset.deliveryItemsBound
+        === "true"
+    ) {
+        return;
+    }
+
+
+    quotation.dataset.deliveryItemsBound =
+        "true";
+
+
+    /* =========================================
+       QUOTATION CHANGE
+    ========================================= */
+
+    quotation.addEventListener(
         "change",
-        loadQuotationItems
-    );
 
-    {% if delivery_note %}
+        function () {
 
-        if (quotationSelect.value) {
+            const quotationId =
+                this.value;
 
-            loadQuotationItems();
+
+            if (!quotationId) {
+
+                itemsWrapper.innerHTML = `
+
+                    <div
+                        class="
+                            text-center
+                            text-muted
+                            py-4
+                        "
+                    >
+
+                        Select a quotation to load
+                        delivery items.
+
+                    </div>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            const url =
+                quotationField
+                    .dataset
+                    .itemsUrl
+                    .replace(
+                        "999999",
+                        quotationId
+                    );
+
+
+            htmx.ajax(
+                "GET",
+
+                url,
+
+                {
+                    target:
+                        "#delivery-items-wrapper",
+
+                    swap:
+                        "innerHTML",
+                }
+            );
 
         }
 
-    {% endif %}
+    );
+
+
+    /* =========================================
+       REMOVE DELIVERY ITEM
+    ========================================= */
+
+    document.addEventListener(
+        "click",
+
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".remove-delivery-row"
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            const row =
+                button.closest("tr");
+
+
+            if (!row) {
+                return;
+            }
+
+
+            const deleteInput =
+                row.querySelector(
+                    'input[name$="-DELETE"]'
+                );
+
+
+            if (deleteInput) {
+
+                deleteInput.checked = true;
+
+                row.style.display = "none";
+
+            }
+
+        }
+
+    );
 
 })();
 

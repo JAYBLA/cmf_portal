@@ -15022,9 +15022,54 @@ td.fc-header-center {
   display: block;
 }
 
+/* =========================================
+   ACTIVE SIDEBAR LINK
+========================================= */
+
 .sidebar-menu li > a.active-page {
+  background: transparent !important;
+  color: inherit !important;
+  border-radius: 0 !important;
+}
+
+
+/* =========================================
+   ACTIVE MENU TEXT
+========================================= */
+
+.sidebar-menu li > a.active-page span {
+  position: relative;
+  display: inline-block;
+  color: inherit !important;
+}
+
+
+/* =========================================
+   ACTIVE TEXT UNDERLINE
+========================================= */
+
+.sidebar-menu li > a.active-page span::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  bottom: -8px;
+
+  height: 4px;
+
   background-color: var(--brand);
-  color: #fff;
+}
+
+
+/* =========================================
+   ACTIVE MENU ICON
+========================================= */
+
+.sidebar-menu li > a.active-page .menu-icon {
+  color: currentColor !important;
 }
 
 .sidebar-menu li > a.active-page:hover {

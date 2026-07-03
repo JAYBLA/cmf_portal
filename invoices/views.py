@@ -1,18 +1,37 @@
+import json
 from decimal import Decimal
 
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-
-from .forms import InvoiceForm, InvoiceItemFormSet
-from .models import *
-
-from utils import render_to_pdf
-from django.templatetags.static import static
-from django.utils.text import slugify
 from django.db import transaction
 
-from customers.models import *
-from products.models import *
+from django.http import (
+    HttpResponse,
+)
+
+from django.shortcuts import (
+    render,
+    get_object_or_404,
+)
+
+from django.templatetags.static import static
+
+from django.utils.text import slugify
+
+from .models import (
+    Invoice,
+    InvoiceItem,
+)
+
+from .forms import (
+    InvoiceForm,
+    InvoiceItemFormSet,
+)
+
+from customers.models import (
+    Customer,
+)
+
+from utils import render_to_pdf
+
 
 # =====================================================
 # HELPER
@@ -21,15 +40,28 @@ from products.models import *
 
 def update_invoice_totals(invoice):
 
-    subtotal = sum(item.subtotal for item in invoice.items.all())
+    subtotal = sum(
+        (
+            item.subtotal
+            for item in invoice.items.all()
+        ),
+        Decimal("0.00"),
+    )
 
     invoice.subtotal = subtotal
 
-    invoice.total_amount = subtotal - invoice.discount_amount
+    invoice.total_amount = (
+        subtotal - invoice.discount_amount
+    )
 
-    invoice.balance = invoice.total_amount - invoice.amount_paid
+    invoice.balance = (
+        invoice.total_amount - invoice.amount_paid
+    )
 
-    if invoice.balance <= 0 and invoice.total_amount > 0:
+    if (
+        invoice.balance <= 0
+        and invoice.total_amount > 0
+    ):
 
         invoice.status = "paid"
 
@@ -41,46 +73,91 @@ def update_invoice_totals(invoice):
 
         invoice.status = "unpaid"
 
+    else:
+
+        invoice.status = "draft"
+
     invoice.save()
 
 
 # =====================================================
-# LIST
+# INVOICE LIST
 # =====================================================
 
 
 def invoice_list(request):
 
-    invoices = Invoice.objects.select_related("customer").all()
+    invoices = Invoice.objects.select_related(
+        "customer",
+    ).prefetch_related(
+        "items",
+    )
+
+    context = {
+        "invoices": invoices,
+    }
 
     return render(
         request,
         "invoices/invoice_list.html",
-        {"invoices": invoices},
+        context,
     )
 
+
 # =====================================================
-# CREATE
+# INVOICE TABLE
 # =====================================================
+
+
+def invoice_table(request):
+
+    invoices = Invoice.objects.select_related(
+        "customer",
+    ).prefetch_related(
+        "items",
+    )
+
+    context = {
+        "invoices": invoices,
+    }
+
+    return render(
+        request,
+        "invoices/partials/invoice_table.html",
+        context,
+    )
+
+
+# =====================================================
+# CREATE INVOICE
+# =====================================================
+
+
 @transaction.atomic
 def invoice_create(request):
 
+    form = InvoiceForm(
+        request.POST or None
+    )
+
+    formset = InvoiceItemFormSet(
+        request.POST or None,
+        prefix="items",
+    )
+
     if request.method == "POST":
-
-        form = InvoiceForm(request.POST)
-
-        formset = InvoiceItemFormSet(
-            request.POST,
-            prefix="items",
-        )
 
         if form.is_valid() and formset.is_valid():
 
+            # ---------------------------------
+            # Save invoice
+            # ---------------------------------
+
             invoice = form.save(commit=False)
 
-            # ==================================
-            # CUSTOMER
-            # ==================================
+            # ---------------------------------
+            # Customer
+            # ---------------------------------
 
             customer_value = (
                 form.cleaned_data["customer_text"]
@@ -99,87 +176,84 @@ def invoice_create(request):
                 Customer.DoesNotExist,
             ):
 
-                customer, _ = Customer.objects.get_or_create(
-                    customer_name=customer_value
+                customer, _ = (
+                    Customer.objects.get_or_create(
+                        customer_name=customer_value
+                    )
                 )
 
             invoice.customer = customer
 
             invoice.save()
 
-            # ==================================
-            # ITEMS
-            # ==================================
+            # ---------------------------------
+            # Save items
+            # ---------------------------------
 
-            for item_form in formset.forms:
+            formset.instance = invoice
 
-                if not item_form.cleaned_data:
-                    continue
+            items = formset.save(
+                commit=False
+            )
 
-                if item_form.cleaned_data.get("DELETE"):
-                    continue
+            for item in items:
 
-                product = item_form.cleaned_data.get(
-                    "product"
-                )
+                item.invoice = invoice
 
-                description = item_form.cleaned_data.get(
-                    "description"
-                )
+                item.save()
 
-                quantity = item_form.cleaned_data.get(
-                    "quantity"
-                )
+            # ---------------------------------
+            # Delete removed items
+            # ---------------------------------
 
-                unit_price = item_form.cleaned_data.get(
-                    "unit_price"
-                )
+            for obj in formset.deleted_objects:
 
-                if (
-                    quantity is None
-                    or unit_price is None
-                ):
-                    continue
+                obj.delete()
 
-                # Require either product or description
-
-                if not product and not description:
-                    continue
-
-                InvoiceItem.objects.create(
-                    invoice=invoice,
-                    product=product,
-                    description=description,
-                    quantity=quantity,
-                    unit_price=unit_price,
-                )
+            # ---------------------------------
+            # Update totals
+            # ---------------------------------
 
             update_invoice_totals(invoice)
 
+            # ---------------------------------
+            # Response
+            # ---------------------------------
+
             response = HttpResponse()
 
-            response["HX-Refresh"] = "true"
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": (
+                            "Invoice created successfully."
+                        ),
+                    },
+                }
+            )
 
             return response
 
-    else:
-
-        form = InvoiceForm()       
-        formset = InvoiceItemFormSet(
-            prefix="items"
-        )
+    context = {
+        "form": form,
+        "formset": formset,
+    }
 
     return render(
         request,
         "invoices/partials/invoice_form.html",
-        {
-            "form": form,
-            "formset": formset,           
-        },
+        context,
     )
 
 
-    
+# =====================================================
+# UPDATE INVOICE
+# =====================================================
+
+
 @transaction.atomic
 def invoice_update(request, pk):
 
@@ -188,26 +262,30 @@ def invoice_update(request, pk):
         pk=pk,
     )
 
+    form = InvoiceForm(
+        request.POST or None,
+        instance=invoice,
+    )
+
+    formset = InvoiceItemFormSet(
+        request.POST or None,
+        instance=invoice,
+        prefix="items",
+    )
+
     if request.method == "POST":
-
-        form = InvoiceForm(
-            request.POST,
-            instance=invoice,
-        )
-
-        formset = InvoiceItemFormSet(
-            request.POST,
-            instance=invoice,
-            prefix="items",
-        )
 
         if form.is_valid() and formset.is_valid():
 
+            # ---------------------------------
+            # Save invoice
+            # ---------------------------------
+
             invoice = form.save(commit=False)
 
-            # ==================================
-            # CUSTOMER
-            # ==================================
+            # ---------------------------------
+            # Customer
+            # ---------------------------------
 
             customer_value = (
                 form.cleaned_data["customer_text"]
@@ -226,76 +304,86 @@ def invoice_update(request, pk):
                 Customer.DoesNotExist,
             ):
 
-                customer, _ = Customer.objects.get_or_create(
-                    customer_name=customer_value
+                customer, _ = (
+                    Customer.objects.get_or_create(
+                        customer_name=customer_value
+                    )
                 )
 
             invoice.customer = customer
 
             invoice.save()
 
-            # ==================================
-            # ITEMS
-            # ==================================
+            # ---------------------------------
+            # Save items
+            # ---------------------------------
 
-            for item_form in formset.forms:
+            formset.instance = invoice
 
-                if not item_form.cleaned_data:
-                    continue
+            items = formset.save(
+                commit=False
+            )
 
-                item = item_form.save(commit=False)
-
-                if item_form.cleaned_data.get("DELETE"):
-
-                    if item.pk:
-                        item.delete()
-
-                    continue
-
-                if (
-                    not item.product
-                    and not item.description
-                ):
-                    continue
+            for item in items:
 
                 item.invoice = invoice
 
                 item.save()
 
+            # ---------------------------------
+            # Delete removed items
+            # ---------------------------------
+
+            for obj in formset.deleted_objects:
+
+                obj.delete()
+
+            # ---------------------------------
+            # Update totals
+            # ---------------------------------
+
             update_invoice_totals(invoice)
+
+            # ---------------------------------
+            # Response
+            # ---------------------------------
 
             response = HttpResponse()
 
-            response["HX-Refresh"] = "true"
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": (
+                            "Invoice updated successfully."
+                        ),
+                    },
+                }
+            )
 
             return response
 
-    else:
-
-        form = InvoiceForm(
-            instance=invoice,
-        )
-
-        formset = InvoiceItemFormSet(
-            instance=invoice,
-            prefix="items",
-        )
+    context = {
+        "invoice": invoice,
+        "form": form,
+        "formset": formset,
+    }
 
     return render(
         request,
         "invoices/partials/invoice_form.html",
-        {
-            "form": form,
-            "formset": formset,
-            "invoice": invoice,
-        },
+        context,
     )
 
+
 # =====================================================
-# DELETE
+# DELETE INVOICE
 # =====================================================
 
 
+@transaction.atomic
 def invoice_delete(request, pk):
 
     invoice = get_object_or_404(
@@ -309,14 +397,57 @@ def invoice_delete(request, pk):
 
         response = HttpResponse()
 
-        response["HX-Refresh"] = "true"
+        response["HX-Trigger"] = json.dumps(
+            {
+                "recordSaved": True,
+                "refreshTable": True,
+                "showMessage": {
+                    "type": "success",
+                    "message": (
+                        "Invoice deleted successfully."
+                    ),
+                },
+            }
+        )
 
         return response
+
+    context = {
+        "invoice": invoice,
+    }
 
     return render(
         request,
         "invoices/partials/invoice_delete.html",
-        {"invoice": invoice},
+        context,
+    )
+
+
+# =====================================================
+# INVOICE DETAIL
+# =====================================================
+
+
+def invoice_detail(request, pk):
+
+    invoice = get_object_or_404(
+        Invoice.objects.select_related(
+            "customer",
+        ).prefetch_related(
+            "items",
+            "items__product",
+        ),
+        pk=pk,
+    )
+
+    context = {
+        "invoice": invoice,
+    }
+
+    return render(
+        request,
+        "invoices/partials/invoice_detail.html",
+        context,
     )
 
 
@@ -327,34 +458,54 @@ def invoice_delete(request, pk):
 
 def invoice_item_empty_row(request):
 
-    total_forms = int(request.GET.get("total_forms", 0))
+    total_forms = int(
+        request.GET.get(
+            "total_forms",
+            0,
+        )
+    )
 
-    formset = InvoiceItemFormSet(prefix="items")
+    formset = InvoiceItemFormSet(
+        prefix="items"
+    )
 
     form = formset.empty_form
 
-    form.prefix = f"items-{total_forms}"
+    form.prefix = (
+        f"items-{total_forms}"
+    )
+
+    context = {
+        "form": form,
+    }
 
     return render(
         request,
         "invoices/partials/item_row.html",
-        {"form": form},
+        context,
     )
 
 
 # =====================================================
-# PDF DOWNLOAD
+# DOWNLOAD INVOICE PDF
 # =====================================================
 
 
 def download_invoice_pdf(request, pk):
 
     invoice = get_object_or_404(
-        Invoice,
+        Invoice.objects.select_related(
+            "customer",
+        ).prefetch_related(
+            "items",
+            "items__product",
+        ),
         pk=pk,
     )
 
-    bg_image = request.build_absolute_uri(static("images/invoice.png"))
+    bg_image = request.build_absolute_uri(
+        static("images/invoice.png")
+    )
 
     context = {
         "invoice": invoice,
@@ -369,41 +520,27 @@ def download_invoice_pdf(request, pk):
 
     if pdf:
 
-        customer_name = slugify(invoice.customer.customer_name)
+        customer_name = slugify(
+            invoice.customer.customer_name
+        )
 
-        filename = f"{invoice.invoice_number}-" f"{customer_name}.pdf"
+        filename = (
+            f"{invoice.invoice_number}-"
+            f"{customer_name}.pdf"
+        )
 
         response = HttpResponse(
             pdf,
             content_type="application/pdf",
         )
 
+        # below code is for pdf download
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
-
+        # below code is for pdf browser preview
+        #response["Content-Disposition"] = f'inline; filename="{filename}"'
         return response
 
     return HttpResponse(
         "Error generating PDF",
         status=400,
     )
-    
-def invoice_detail(request, pk):
-
-    invoice = get_object_or_404(
-        Invoice.objects.select_related(
-            "customer",
-        ).prefetch_related(
-            "items",
-            "items__product",
-        ),
-        pk=pk,
-    )
-
-    return render(
-        request,
-        "invoices/partials/invoice_detail.html",
-        {
-            "invoice": invoice,
-        },
-    )
-

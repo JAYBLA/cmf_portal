@@ -21,8 +21,7 @@
 <form
     method="POST"
     hx-post="{% if agent %}{% url 'agents:update' agent.id %}{% else %}{% url 'agents:create' %}{% endif %}"
-    hx-target="{% if agent %}#agent-{{ agent.id }}{% else %}#clearing-agent-table-body{% endif %}"
-    hx-swap="{% if agent %}outerHTML{% else %}beforeend{% endif %}"
+    hx-swap="none"
 >
     {% csrf_token %}
 

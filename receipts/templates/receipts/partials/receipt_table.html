@@ -1,0 +1,101 @@
+{% load humanize %}
+{% for receipt in receipts %}
+<tr id="receipt-{{ receipt.id }}" class="align-middle">
+
+    <!-- S/N -->
+    <td class="text-center fw-semibold text-muted">
+        {{ forloop.counter }}
+    </td>
+
+    <!-- RECEIPT DETAILS (two horizontal lines) -->
+    <td>
+
+        <!-- LINE 1: Receipt Number + Invoice + Customer + Amount + Method -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small">
+            <span class="fw-bold text-primary">{{ receipt.receipt_number }}</span>
+            <span class="text-muted">|</span>
+            <span>
+                <span class="fw-light">Invoice:</span> {{ receipt.invoice.invoice_number }}
+            </span>
+            <span class="text-muted">|</span>
+            <span>
+                <span class="fw-light">Customer:</span> {{ receipt.customer.customer_name }}
+            </span>
+            <span class="text-muted">|</span>
+            <span>
+                <span class="fw-light">Amount:</span>
+                <span class="fw-semibold text-success">{{ receipt.amount|floatformat:2|intcomma }}</span>
+            </span>
+            <span class="text-muted">|</span>
+            <span>
+                <span class="badge bg-info">{{ receipt.get_payment_method_display }}</span>
+            </span>
+        </div>
+
+        <!-- LINE 2: Receipt Date, Payment Reference, Notes (truncated), Created -->
+        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+            <span>
+                <span class="fw-light">Receipt Date:</span> {{ receipt.receipt_date|date:"Y-m-d" }}
+            </span>
+            <span>|</span>
+            <span>
+                <span class="fw-light">Reference:</span> {{ receipt.payment_reference|default:"—" }}
+            </span>
+            <span>|</span>
+            <span>
+                <span class="fw-light">Notes:</span> {{ receipt.notes|default:"—"|truncatechars:20 }}
+            </span>
+            <span>|</span>
+            <span>
+                <span class="fw-light">Created:</span> {{ receipt.created_at|date:"Y-m-d H:i" }}
+            </span>
+        </div>
+    </td>
+
+    <!-- ACTIONS (icon buttons) -->
+    <td class="text-end">
+        <div class="d-flex justify-content-end gap-1">
+            <!-- View Details -->
+            <button type="button"
+                    class="btn btn-info btn-sm"
+                    hx-get="{% url 'receipts:receipt_detail' receipt.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="View Receipt">
+                <i class="fa-solid fa-eye"></i>
+            </button>
+            <!-- Edit -->
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    hx-get="{% url 'receipts:receipt_update' receipt.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Edit Receipt">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <!-- Delete -->
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    hx-get="{% url 'receipts:receipt_delete' receipt.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="Delete Receipt">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <!-- Optional: Download PDF receipt -->
+            <a href="{% url 'receipts:download_receipt_pdf' receipt.id %}"
+               class="btn btn-success btn-sm"
+               title="Download PDF">
+                <i class="fa-solid fa-file-pdf"></i>
+            </a>
+        </div>
+    </td>
+
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3" class="text-center text-muted py-3">
+        No receipts recorded.
+    </td>
+</tr>
+{% endfor %}

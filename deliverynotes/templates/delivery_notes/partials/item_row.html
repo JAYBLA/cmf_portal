@@ -1,0 +1,106 @@
+<tr>
+
+    {{ form.id }}
+
+
+    <!-- =====================================
+         ITEM
+    ====================================== -->
+
+    <td>
+
+        {{ form.quotation_item }}
+
+        <span class="fw-semibold">
+
+            {{ form.quotation_item_object.item_name }}
+
+        </span>
+
+
+        <div class="text-danger small">
+
+            {{ form.quotation_item.errors }}
+
+        </div>
+
+    </td>
+
+
+    <!-- =====================================
+         QUOTED QUANTITY
+    ====================================== -->
+
+    <td class="text-center">
+
+        {{ form.quotation_item_object.quantity|floatformat:0 }}
+
+    </td>
+
+
+    <!-- =====================================
+         DELIVERY QUANTITY
+    ====================================== -->
+
+    <td>
+
+        {{ form.quantity }}
+
+
+        <div class="text-danger small">
+
+            {{ form.quantity.errors }}
+
+        </div>
+
+    </td>
+
+
+    <!-- =====================================
+         REMARKS
+    ====================================== -->
+
+    <td>
+
+        {{ form.remarks }}
+
+
+        <div class="text-danger small">
+
+            {{ form.remarks.errors }}
+
+        </div>
+
+    </td>
+
+
+    <!-- =====================================
+         DELETE
+    ====================================== -->
+
+    <td class="text-center">
+
+        <div class="d-none">
+
+            {{ form.DELETE }}
+
+        </div>
+
+
+        <button
+            type="button"
+            class="
+                btn
+                btn-sm
+                btn-danger
+                remove-delivery-row
+            "
+        >
+
+            <i class="fa-solid fa-trash"></i>
+
+        </button>
+
+    </td>
+
+</tr>

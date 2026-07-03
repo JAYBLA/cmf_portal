@@ -15,21 +15,183 @@ function initializeTooltips(container = document) {
 ========================================= */
 
 function initializeChoices(container = document) {
-  container.querySelectorAll(".choices-select").forEach(function (element) {
-    if (element.dataset.choicesLoaded) {
-      return;
-    }
+  if (
+    !container ||
+    typeof container.querySelectorAll !== "function"
+  ) {
+    container = document;
+  }
 
-    new Choices(element, {
-      searchEnabled: true,
 
-      itemSelectText: "",
+  /* =========================================
+     NORMAL SELECT
+  ========================================= */
 
-      shouldSort: false,
+  container
+    .querySelectorAll(".choices-select")
+    .forEach(function (element) {
+
+      if (
+        element.dataset.choicesLoaded === "true"
+      ) {
+        return;
+      }
+
+      new Choices(element, {
+        searchEnabled: true,
+        itemSelectText: "",
+        shouldSort: false,
+      });
+
+      element.dataset.choicesLoaded = "true";
     });
 
-    element.dataset.choicesLoaded = "true";
-  });
+
+  /* =========================================
+     TAG / CREATE NEW VALUE
+  ========================================= */
+
+  container
+    .querySelectorAll(".choices-tags")
+    .forEach(function (element) {
+
+      if (
+        element.dataset.choicesLoaded === "true"
+      ) {
+        return;
+      }
+
+
+      /* =====================================
+         INITIALIZE CHOICES
+      ===================================== */
+
+      const choices = new Choices(
+        element,
+        {
+          searchEnabled: true,
+
+          searchChoices: true,
+
+          itemSelectText: "",
+
+          shouldSort: false,
+
+          duplicateItemsAllowed: false,
+
+          allowHTML: false,
+
+          noResultsText:
+            "Press Enter to add customer",
+
+          noChoicesText:
+            "No customers available",
+        }
+      );
+
+
+      /* =====================================
+         GET SEARCH INPUT
+      ===================================== */
+
+      const searchInput =
+        choices.input.element;
+
+
+      /* =====================================
+         CREATE CUSTOMER ON ENTER
+      ===================================== */
+
+      searchInput.addEventListener(
+        "keydown",
+
+        function (event) {
+
+          if (event.key !== "Enter") {
+            return;
+          }
+
+
+          const value =
+            searchInput.value.trim();
+
+
+          if (!value) {
+            return;
+          }
+
+
+          /* =================================
+             CHECK EXISTING CUSTOMER
+          ================================= */
+
+          const existingOption =
+            Array.from(element.options).find(
+              function (option) {
+
+                return (
+                  option.text
+                    .trim()
+                    .toLowerCase()
+                  ===
+                  value.toLowerCase()
+                );
+
+              }
+            );
+
+
+          if (existingOption) {
+
+            return;
+
+          }
+
+
+          /* =================================
+             PREVENT FORM SUBMISSION
+          ================================= */
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          /* =================================
+             ADD NEW CUSTOMER
+          ================================= */
+
+          choices.setChoices(
+            [
+              {
+                value: value,
+
+                label: value,
+
+                selected: true,
+              },
+            ],
+
+            "value",
+
+            "label",
+
+            false
+          );
+
+
+          /* =================================
+             CLEAR SEARCH
+          ================================= */
+
+          choices.clearInput();
+
+        }
+      );
+
+
+      element.dataset.choicesLoaded = "true";
+    });
 }
 
 /* =========================================
@@ -37,18 +199,51 @@ function initializeChoices(container = document) {
 ========================================= */
 
 function initializeFlatpickr(container = document) {
-  container.querySelectorAll(".flatpickr").forEach(function (element) {
+  if (
+    !container ||
+    typeof container.querySelectorAll !== "function"
+  ) {
+    container = document;
+  }
+
+  const elements = [];
+
+  // =========================================
+  // INCLUDE CONTAINER ITSELF
+  // =========================================
+
+  if (
+    container.matches &&
+    container.matches(".flatpickr")
+  ) {
+    elements.push(container);
+  }
+
+  // =========================================
+  // FIND FLATPICKR FIELDS
+  // =========================================
+
+  elements.push(
+    ...container.querySelectorAll(".flatpickr")
+  );
+
+  // =========================================
+  // INITIALIZE
+  // =========================================
+
+  elements.forEach(function (element) {
     if (element._flatpickr) {
       return;
     }
 
     flatpickr(element, {
       dateFormat: "Y-m-d",
-      allowInput: true,
+      allowInput: false,
+      clickOpens: true,
+      closeOnSelect: true,
     });
   });
 }
-
 /* =========================================
    TINYMCE
 ========================================= */
@@ -474,3 +669,104 @@ document.body.addEventListener(
 
     }
 );
+
+/* =========================================
+   GLOBAL TOASTR MESSAGE
+========================================= */
+
+function showMessage(options = {}) {
+  if (typeof toastr === "undefined") {
+    console.warn("Toastr is not loaded.");
+    return;
+  }
+
+  let type = options.type || "info";
+
+  const message =
+    options.message || "Operation completed.";
+
+  const title =
+    options.title || "";
+
+
+  /* =========================================
+     NORMALIZE MESSAGE TYPE
+  ========================================= */
+
+  if (type.includes("success")) {
+    type = "success";
+  } else if (type.includes("error")) {
+    type = "error";
+  } else if (type.includes("warning")) {
+    type = "warning";
+  } else if (type.includes("info")) {
+    type = "info";
+  } else if (type.includes("debug")) {
+    type = "info";
+  } else {
+    type = "info";
+  }
+
+
+  /* =========================================
+     TOASTR OPTIONS
+  ========================================= */
+
+  toastr.options = {
+    closeButton: true,
+    debug: false,
+    newestOnTop: true,
+    progressBar: true,
+    positionClass: "toast-top-right",
+    preventDuplicates: true,
+    onclick: null,
+    showDuration: "300",
+    hideDuration: "500",
+    timeOut: "3000",
+    extendedTimeOut: "1000",
+    showEasing: "swing",
+    hideEasing: "linear",
+    showMethod: "fadeIn",
+    hideMethod: "fadeOut",
+  };
+
+
+  /* =========================================
+     SHOW TOAST
+  ========================================= */
+
+  toastr[type](
+    message,
+    title
+  );
+}
+
+
+/* =========================================
+   INITIALIZE DJANGO MESSAGES
+========================================= */
+
+function initializeMessages(container = document) {
+  if (
+    !container ||
+    typeof container.querySelectorAll !== "function"
+  ) {
+    container = document;
+  }
+
+  const messages =
+    container.querySelectorAll(
+      ".django-message:not([data-message-loaded])"
+    );
+
+  messages.forEach(function (element) {
+    element.dataset.messageLoaded = "true";
+
+    showMessage({
+      type: element.dataset.type || "info",
+
+      message:
+        element.dataset.message || "",
+    });
+  });
+}

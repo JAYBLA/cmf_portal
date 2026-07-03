@@ -1,20 +1,26 @@
 import json
 
+from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-from django.templatetags.static import static
-from django.utils.text import slugify
+from django.shortcuts import (
+    get_object_or_404,
+    render,
+)
 
-from utils import render_to_pdf
-
-from .forms import *
-from .models import *
 from quotations.models import Quotation
 
+from .forms import *
+
+from .models import *
+from decimal import Decimal
+
+from django.db.models import Sum
+
 
 # =========================================
-# DELIVERY NOTE LIST
+# DELIVERYNOTE LIST
 # =========================================
+
 
 def delivery_note_list(request):
 
@@ -24,84 +30,161 @@ def delivery_note_list(request):
             "quotation",
             "quotation__customer",
         )
-        .all()
+        .prefetch_related(
+            "items",
+            "items__quotation_item",
+        )
     )
+
+
+    context = {
+        "delivery_notes": delivery_notes,
+    }
+
 
     return render(
         request,
         "delivery_notes/delivery_note_list.html",
-        {
-            "delivery_notes": delivery_notes,
-        },
+        context,
     )
 
 
 # =========================================
-# CREATE
+# DELIVERYNOTE TABLE
 # =========================================
 
+
+def delivery_note_table(request):
+
+    delivery_notes = (
+        DeliveryNote.objects
+        .select_related(
+            "quotation",
+            "quotation__customer",
+        )
+        .prefetch_related(
+            "items",
+            "items__quotation_item",
+        )
+    )
+
+
+    context = {
+        "delivery_notes": delivery_notes,
+    }
+
+
+    return render(
+        request,
+        "delivery_notes/partials/delivery_note_table.html",
+        context,
+    )
+
+
+# =========================================
+# CREATE DELIVERYNOTE
+# =========================================
+
+
+@transaction.atomic
 def delivery_note_create(request):
+
+    form = DeliveryNoteForm(
+        request.POST or None
+    )
+
 
     if request.method == "POST":
 
-        form = DeliveryNoteForm(request.POST)
+        formset = DeliveryNoteItemFormSet(
+            request.POST,
+            prefix="items",
+        )
 
-        if form.is_valid():
+
+        if (
+            form.is_valid()
+            and formset.is_valid()
+        ):
 
             delivery_note = form.save()
 
-            quotation_items = request.POST.getlist("quotation_item")
-            quantities = request.POST.getlist("quantity")
-            remarks = request.POST.getlist("remarks")
 
-            for quotation_item_id, quantity, remark in zip(
-                quotation_items,
-                quantities,
-                remarks,
-            ):
+            formset.instance = delivery_note
 
-                if not quotation_item_id:
-                    continue
 
-                DeliveryNoteItem.objects.create(
-                    delivery_note=delivery_note,
-                    quotation_item_id=quotation_item_id,
-                    quantity=quantity,
-                    remarks=remark,
+            items = formset.save(
+                commit=False
+            )
+
+
+            for item in items:
+
+                item.delivery_note = (
+                    delivery_note
                 )
 
-            response = HttpResponse("")
+                item.save()
+
+
+            for obj in formset.deleted_objects:
+
+                obj.delete()
+
+
+            delivery_note.update_delivery_status()
+
+
+            response = HttpResponse()
+
 
             response["HX-Trigger"] = json.dumps(
                 {
                     "recordSaved": True,
+
                     "refreshTable": True,
+
                     "showMessage": {
                         "type": "success",
-                        "message": "Delivery note created successfully.",
+
+                        "message": (
+                            "Delivery note created "
+                            "successfully."
+                        ),
                     },
                 }
             )
 
+
             return response
+
 
     else:
 
-        form = DeliveryNoteForm()
+        formset = DeliveryNoteItemFormSet(
+            prefix="items",
+        )
+
+
+    context = {
+        "form": form,
+        "formset": formset,
+    }
+
 
     return render(
         request,
         "delivery_notes/partials/delivery_note_form.html",
-        {
-            "form": form,
-        },
+        context,
     )
 
 
 # =========================================
-# UPDATE
+# UPDATE DELIVERYNOTE
 # =========================================
 
+
+@transaction.atomic
 def delivery_note_update(request, pk):
 
     delivery_note = get_object_or_404(
@@ -109,73 +192,223 @@ def delivery_note_update(request, pk):
         pk=pk,
     )
 
+
+    form = DeliveryNoteForm(
+        request.POST or None,
+        instance=delivery_note,
+    )
+
+
+    formset = DeliveryNoteItemFormSet(
+        request.POST or None,
+        instance=delivery_note,
+        prefix="items",
+    )
+
+
     if request.method == "POST":
 
-        form = DeliveryNoteForm(
-            request.POST,
-            instance=delivery_note,
-        )
-
-        if form.is_valid():
+        if (
+            form.is_valid()
+            and formset.is_valid()
+        ):
 
             delivery_note = form.save()
 
-            # Remove old rows
-            delivery_note.items.all().delete()
 
-            quotation_items = request.POST.getlist("quotation_item")
-            quantities = request.POST.getlist("quantity")
-            remarks = request.POST.getlist("remarks")
+            formset.instance = delivery_note
 
-            for quotation_item_id, quantity, remark in zip(
-                quotation_items,
-                quantities,
-                remarks,
-            ):
 
-                if not quotation_item_id:
-                    continue
+            items = formset.save(
+                commit=False
+            )
 
-                DeliveryNoteItem.objects.create(
-                    delivery_note=delivery_note,
-                    quotation_item_id=quotation_item_id,
-                    quantity=quantity,
-                    remarks=remark,
+
+            for item in items:
+
+                item.delivery_note = (
+                    delivery_note
                 )
 
-            response = HttpResponse("")
+                item.save()
+
+
+            for obj in formset.deleted_objects:
+
+                obj.delete()
+
+
+            delivery_note.update_delivery_status()
+
+
+            response = HttpResponse()
+
 
             response["HX-Trigger"] = json.dumps(
                 {
                     "recordSaved": True,
+
                     "refreshTable": True,
+
                     "showMessage": {
                         "type": "success",
-                        "message": "Delivery note updated successfully.",
+
+                        "message": (
+                            "Delivery note updated "
+                            "successfully."
+                        ),
                     },
                 }
             )
 
+
             return response
 
-    else:
 
-        form = DeliveryNoteForm(
-            instance=delivery_note,
-        )
+    context = {
+        "delivery_note": delivery_note,
+        "form": form,
+        "formset": formset,
+    }
+
 
     return render(
         request,
         "delivery_notes/partials/delivery_note_form.html",
-        {
-            "form": form,
-            "delivery_note": delivery_note,
-        },
+        context,
     )
 
 # =========================================
-# DELETE
+# QUOTATION ITEMS
 # =========================================
+
+
+def quotation_items(request, quotation_id):
+
+    quotation = get_object_or_404(
+        Quotation.objects.prefetch_related(
+            "items",
+        ),
+        pk=quotation_id,
+    )
+
+
+    initial = []
+
+
+    # =========================================
+    # BUILD REMAINING DELIVERY ITEMS
+    # =========================================
+
+    for quotation_item in quotation.items.all():
+
+        delivered_quantity = (
+            quotation_item
+            .delivery_items
+            .aggregate(
+                total=Sum("quantity")
+            )["total"]
+            or Decimal("0")
+        )
+
+
+        remaining_quantity = (
+            quotation_item.quantity
+            - delivered_quantity
+        )
+
+
+        if remaining_quantity <= 0:
+            continue
+
+
+        initial.append(
+            {
+                "quotation_item":
+                    quotation_item.pk,
+
+                "quantity":
+                    remaining_quantity,
+
+                "remarks":
+                    "",
+            }
+        )
+
+
+    # =========================================
+    # DYNAMIC FORMSET
+    # =========================================
+
+    QuotationDeliveryItemFormSet = (
+        inlineformset_factory(
+            parent_model=DeliveryNote,
+            model=DeliveryNoteItem,
+            form=DeliveryNoteItemForm,
+            extra=len(initial),
+            can_delete=True,
+        )
+    )
+
+
+    formset = QuotationDeliveryItemFormSet(
+        initial=initial,
+        prefix="items",
+    )
+
+
+    context = {
+        "quotation": quotation,
+        "formset": formset,
+    }
+
+
+    return render(
+        request,
+        (
+            "delivery_notes/partials/"
+            "quotation_items_rows.html"
+        ),
+        context,
+    )
+    
+# =========================================
+# DELIVERY NOTE DETAIL
+# =========================================
+
+
+def delivery_note_detail(request, pk):
+
+    delivery_note = get_object_or_404(
+        DeliveryNote.objects.select_related(
+            "quotation",
+            "quotation__customer",
+        ).prefetch_related(
+            "items",
+            "items__quotation_item",
+        ),
+        pk=pk,
+    )
+
+
+    context = {
+        "delivery_note": delivery_note,
+    }
+
+
+    return render(
+        request,
+        (
+            "delivery_notes/partials/"
+            "delivery_note_detail.html"
+        ),
+        context,
+    )
+    
+# =========================================
+# DELETE DELIVERY NOTE
+# =========================================
+
 
 def delivery_note_delete(request, pk):
 
@@ -186,9 +419,13 @@ def delivery_note_delete(request, pk):
 
     if request.method == "POST":
 
+        delivery_number = (
+            delivery_note.delivery_number
+        )
+
         delivery_note.delete()
 
-        response = HttpResponse("")
+        response = HttpResponse()
 
         response["HX-Trigger"] = json.dumps(
             {
@@ -196,138 +433,26 @@ def delivery_note_delete(request, pk):
                 "refreshTable": True,
                 "showMessage": {
                     "type": "success",
-                    "message": "Delivery note deleted successfully.",
+                    "message": (
+                        f"Delivery note "
+                        f"{delivery_number} "
+                        f"deleted successfully."
+                    ),
                 },
             }
         )
 
         return response
 
-    return render(
-        request,
-        "delivery_notes/partials/delivery_note_delete.html",
-        {
-            "delivery_note": delivery_note,
-        },
-    )
-
-
-# =========================================
-# DELIVERY NOTE TABLE
-# =========================================
-
-def delivery_note_table(request):
-
-    delivery_notes = (
-        DeliveryNote.objects
-        .select_related(
-            "quotation",
-            "quotation__customer",
-        )
-        .all()
-    )
-
-    return render(
-        request,
-        "delivery_notes/partials/delivery_note_table.html",
-        {
-            "delivery_notes": delivery_notes,
-        },
-    )
-
-
-# =====================================================
-# DOWNLOAD
-# =====================================================
-
-def download_delivery_note_pdf(request, pk):
-
-    delivery_note = get_object_or_404(
-        DeliveryNote,
-        pk=pk,
-    )
-
-    bg_image = request.build_absolute_uri(
-        static("images/delivery_note.png")
-    )
-
     context = {
         "delivery_note": delivery_note,
-        "delivery_number": delivery_note.delivery_number,
-        "bg_image": bg_image,
     }
 
-    pdf = render_to_pdf(
-        "delivery_notes/delivery_note_pdf.html",
-        context,
-    )
-
-    if pdf:
-
-        customer_name = slugify(
-            delivery_note.customer.customer_name
-        )
-
-        filename = (
-            f"{delivery_note.delivery_number}-"
-            f"{customer_name}.pdf"
-        )
-
-        response = HttpResponse(
-            pdf,
-            content_type="application/pdf",
-        )
-
-        response["Content-Disposition"] = (
-            f'attachment; filename="{filename}"'
-        )
-
-        return response
-
-    return HttpResponse(
-        "Error generating PDF",
-        status=400,
-    )
-
-
-# =========================================
-# DETAIL
-# =========================================
-
-def delivery_note_detail(request, pk):
-
-    delivery_note = get_object_or_404(
-        DeliveryNote.objects
-        .select_related(
-            "quotation",
-            "quotation__customer",
-        )
-        .prefetch_related(
-            "items",
-            "items__quotation_item",
+    return render(
+        request,
+        (
+            "delivery_notes/partials/"
+            "delivery_note_delete.html"
         ),
-        pk=pk,
-    )
-
-    return render(
-        request,
-        "delivery_notes/partials/delivery_note_detail.html",
-        {
-            "delivery_note": delivery_note,
-        },
-    )
-    
-def quotation_items(request, quotation_id):
-
-    quotation = get_object_or_404(
-        Quotation.objects.prefetch_related("items"),
-        pk=quotation_id,
-    )
-
-    return render(
-        request,
-        "delivery_notes/partials/quotation_items_rows.html",
-        {
-            "quotation": quotation,
-        },
+        context,
     )

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'search',
     'vouchers',
     'deliverynotes',
+    'receipts',
 ]
 
 MIDDLEWARE = [

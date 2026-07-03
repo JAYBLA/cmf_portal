@@ -1,4 +1,7 @@
+from decimal import Decimal
+
 from django.db import models
+from django.db.models import Sum
 
 from customers.models import *
 from products.models import *
@@ -17,12 +20,17 @@ class Invoice(models.Model):
         ("paid", "Paid"),
         ("cancelled", "Cancelled"),
     )
+    INVOICE_TYPES = (
+        ("invoice", "Invoice"),
+        ("proforma", "Proforma"),
+    )
 
     invoice_number = models.CharField(max_length=30, unique=True, blank=True, null=True)
 
     customer = models.ForeignKey(
         Customer, on_delete=models.PROTECT, related_name="invoices"
     )
+    invoice_type = models.CharField(max_length=20, choices=INVOICE_TYPES, default="invoice")
     invoice_date = models.DateField()
 
     due_date = models.DateField(blank=True, null=True)
@@ -72,6 +80,71 @@ class Invoice(models.Model):
             self.invoice_number = f"INV-{next_id:05d}"
 
         super().save(*args, **kwargs)
+    def update_payment_status(self):
+
+        amount_paid = (
+            self.receipts.aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        self.amount_paid = amount_paid
+
+        self.balance = (
+            self.total_amount
+            - amount_paid
+        )
+
+
+        # =====================================
+        # CONVERT PROFORMA TO INVOICE
+        # =====================================
+
+        if (
+            amount_paid > Decimal("0.00")
+            and self.invoice_type == "proforma"
+        ):
+
+            self.invoice_type = "invoice"
+
+
+        # =====================================
+        # UPDATE PAYMENT STATUS
+        # =====================================
+
+        if (
+            self.total_amount > 0
+            and self.balance <= 0
+        ):
+
+            self.status = "paid"
+
+        elif amount_paid > 0:
+
+            self.status = "partial"
+
+        elif self.total_amount > 0:
+
+            self.status = "unpaid"
+
+        else:
+
+            self.status = "draft"
+
+
+        # =====================================
+        # SAVE INVOICE
+        # =====================================
+
+        self.save(
+            update_fields=[
+                "amount_paid",
+                "balance",
+                "status",
+                "invoice_type",
+            ]
+        )
 
     def __str__(self):
 

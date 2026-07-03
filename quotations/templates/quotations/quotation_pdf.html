@@ -157,6 +157,13 @@ h4{
             <li>No payment terms specified.</li>
 
         {% endfor %}
+        <li>
+            {% if quotation.additional_terms %}
+                {{ quotation.additional_terms }}
+            {% else %}
+                No additional terms specified.
+            {% endif %}
+        </li>       
 
     </ul>
 

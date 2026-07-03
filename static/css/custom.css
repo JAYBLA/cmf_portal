@@ -248,3 +248,19 @@ input[type="checkbox"] {
 
     position: static !important;
 }
+
+/* =========================================
+   SIDEBAR MENU ICONS
+========================================= */
+
+.sidebar-menu li > a {
+    color: inherit;
+}
+
+.sidebar-menu li > a .menu-icon {
+    color: currentColor !important;
+    font-size: 18px;
+    width: 20px;
+    min-width: 20px;
+    text-align: center;
+}

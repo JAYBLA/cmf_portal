@@ -347,9 +347,9 @@ def download_quotation_pdf(request, pk):
 
         response = HttpResponse(pdf, content_type="application/pdf")
         # below code is for pdf download
-        #response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
         # below code is for pdf browser preview
-        response["Content-Disposition"] = f'inline; filename="{filename}"'
+        #response["Content-Disposition"] = f'inline; filename="{filename}"'
 
         return response
 

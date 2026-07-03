@@ -144,24 +144,6 @@ h4{
 
 </div>
 
-
-<!-- INVOICE DESCRIPTION -->
-
-<div id="invoice_description" style="text-align:center;">
-
-    <strong>
-        INVOICE
-    </strong>
-
-    <br>
-
-    {% if invoice.notes %}
-        {{ invoice.notes }}
-    {% endif %}
-
-</div>
-
-
 <!-- ITEMS TABLE -->
 
 <div class="table" id="content_frame">
@@ -211,7 +193,7 @@ h4{
                     {% if item.description %}
                         {{ item.description }}
                     {% elif item.product %}
-                        {{ item.product.name }}
+                        {{ item.product.product_name }}
                     {% endif %}
 
                 </td>

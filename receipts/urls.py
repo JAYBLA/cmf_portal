@@ -2,61 +2,64 @@ from django.urls import path
 
 from . import views
 
-app_name = "delivery_notes"
+app_name = "receipts"
 
 
 urlpatterns = [
     # =========================================
-    # LIST
+    # RECEIPT LIST
     # =========================================
     path(
         "",
-        views.delivery_note_list,
-        name="delivery_note_list",
+        views.receipt_list,
+        name="receipt_list",
     ),
     # =========================================
-    # TABLE
+    # RECEIPT TABLE
     # =========================================
     path(
         "table/",
-        views.delivery_note_table,
-        name="delivery_note_table",
+        views.receipt_table,
+        name="receipt_table",
     ),
     # =========================================
-    # CREATE
+    # CREATE RECEIPT
     # =========================================
     path(
         "create/",
-        views.delivery_note_create,
-        name="delivery_note_create",
+        views.receipt_create,
+        name="receipt_create",
     ),
     # =========================================
-    # UPDATE
+    # UPDATE RECEIPT
     # =========================================
     path(
         "update/<int:pk>/",
-        views.delivery_note_update,
-        name="delivery_note_update",
+        views.receipt_update,
+        name="receipt_update",
     ),
     # =========================================
-    # QUOTATION ITEMS
+    # DELETE RECEIPT
     # =========================================
     path(
-        "quotation/<int:quotation_id>/items/",
-        views.quotation_items,
-        name="quotation_items",
+        "delete/<int:pk>/",
+        views.receipt_delete,
+        name="receipt_delete",
     ),
     # =========================================
-    # DETAIL
+    # RECEIPT DETAIL
     # =========================================
     path(
         "detail/<int:pk>/",
-        views.delivery_note_detail,
-        name="delivery_note_detail",
+        views.receipt_detail,
+        name="receipt_detail",
     ),
+    # =========================================
+    # DOWNLOAD RECEIPT PDF
+    # =========================================
     path(
-        "delete/<int:pk>/",
-        views.delivery_note_delete,
-        name="delivery_note_delete",
+        "download/<int:pk>/",
+        views.download_receipt_pdf,
+        name="download_receipt_pdf",
     ),
 ]

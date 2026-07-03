@@ -1,71 +1,127 @@
-{% load humanize %}
+{{ formset.management_form }}
 
-{% if delivery_note %}
-  {# =========================================
-       EDIT MODE
-    ========================================== #}
 
-  {% for item in delivery_note.items.all %}
-    <tr>
-      <td>
-        {{ item.item_name }}
+<div class="table-responsive">
 
-        <input type="hidden" name="quotation_item" value="{{ item.quotation_item.id }}" />
-      </td>
+    <table
+        class="
+            table
+            table-sm
+            table-bordered
+            mb-0
+            align-middle
+        "
+    >
 
-      <td class="text-center">{{ item.quoted_quantity|floatformat:0 }}</td>
+        <thead class="table-light">
 
-      <td class="text-end">{{ item.unit_price|floatformat:2|intcomma }}</td>
+            <tr>
 
-      <td>
-        <input type="number" name="quantity" value="{{ item.quantity }}" min="0" step="0.01" class="form-control form-control-sm text-end" />
-      </td>
+                <th style="width: 35%;">
+                    Item
+                </th>
 
-      <td>
-        <input type="text" name="remarks" value="{{ item.remarks }}" class="form-control form-control-sm" placeholder="Remarks" />
-      </td>
+                <th
+                    style="width: 12%;"
+                    class="text-center"
+                >
+                    Quoted
+                </th>
 
-      <td class="text-center">
-        <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button>
-      </td>
-    </tr>
-  {% endfor %}
-{% elif quotation %}
-  {# =========================================
-       CREATE MODE
-    ========================================== #}
+                <th style="width: 15%;">
+                    Deliver Qty
+                </th>
 
-  {% for item in quotation.items.all %}
-    <tr>
-      <td>
-        {{ item.item_name }}
+                <th style="width: 30%;">
+                    Remarks
+                </th>
 
-        <input type="hidden" name="quotation_item" value="{{ item.id }}" />
-      </td>
+                <th
+                    style="width: 8%;"
+                    class="text-center"
+                >
+                    Del
+                </th>
 
-      <td class="text-center">{{ item.quantity|floatformat:0 }}</td>
+            </tr>
 
-      <td class="text-end">{{ item.unit_price|floatformat:2|intcomma }}</td>
+        </thead>
 
-      <td>
-        <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.quantity }}" step="0.01" class="form-control form-control-sm text-end" />
-      </td>
 
-      <td>
-        <input type="text" name="remarks" class="form-control form-control-sm" placeholder="Remarks" />
-      </td>
+        <tbody>
 
-      <td class="text-center">
-        <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button>
-      </td>
-    </tr>
-  {% empty %}
-    <tr>
-      <td colspan="6" class="text-center text-muted py-4">No quotation items found.</td>
-    </tr>
-  {% endfor %}
-{% else %}
-  <tr>
-    <td colspan="6" class="text-center text-muted py-4">Select a quotation to load its items.</td>
-  </tr>
-{% endif %}
+            {% for form in formset %}
+
+                {% include "delivery_notes/partials/item_row.html" with form=form %}
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="
+                            text-center
+                            text-muted
+                            py-4
+                        "
+                    >
+
+                        No remaining items
+                        available for delivery.
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+<script>
+
+;(function () {
+
+    document
+        .querySelectorAll(
+            ".remove-delivery-row"
+        )
+        .forEach(function (button) {
+
+            if (
+                button.dataset.bound === "true"
+            ) {
+                return;
+            }
+
+
+            button.dataset.bound = "true";
+
+
+            button.addEventListener(
+                "click",
+
+                function () {
+
+                    const row =
+                        this.closest("tr");
+
+
+                    if (row) {
+
+                        row.remove();
+
+                    }
+
+                }
+
+            );
+
+        });
+
+})();
+
+</script>
