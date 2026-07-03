@@ -20,7 +20,7 @@ from .forms import SupplierForm
 
 def supplier_list(request):
 
-    suppliers = Supplier.objects.all()
+    suppliers = Supplier.objects.all().order_by('-created_at')
 
     context = {
         "suppliers": suppliers
@@ -32,24 +32,6 @@ def supplier_list(request):
         context
     )
 
-
-# =========================================
-# TABLE
-# =========================================
-
-def supplier_table(request):
-
-    suppliers = Supplier.objects.all()
-
-    context = {
-        "suppliers": suppliers
-    }
-
-    return render(
-        request,
-        "suppliers/table.html",
-        context
-    )
 
 
 # =========================================
@@ -235,7 +217,7 @@ def supplier_delete(request, pk):
 
 def supplier_table(request):
 
-    suppliers = Supplier.objects.all()
+    suppliers = Supplier.objects.all().order_by('-created_at')
 
     context = {
 

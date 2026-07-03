@@ -15,25 +15,13 @@ from django.db.models import ProtectedError
 
 def product_list(request):
 
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('-created_at')
 
     context = {"products": products}
 
     return render(request, "products/product_list.html", context)
 
 
-# =========================================
-# PRODUCT TABLE PARTIAL
-# =========================================
-
-
-def product_table(request):
-
-    products = Product.objects.all()
-
-    context = {"products": products}
-
-    return render(request, "products/partials/product_table.html", context)
 
 
 # =========================================
@@ -161,7 +149,7 @@ def product_delete(request, pk):
 
 def product_table(request):
 
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('-created_at')
 
     context = {"products": products}
 

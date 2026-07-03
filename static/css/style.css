@@ -602,7 +602,7 @@ iframe {
 }
 
 button,
-input:not([type="checkbox"]):not([type="radio"]),
+input,
 optgroup,
 select,
 textarea {
