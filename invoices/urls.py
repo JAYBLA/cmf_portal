@@ -87,5 +87,10 @@ urlpatterns = [
         views.download_invoice_pdf,
         name="download_invoice_pdf",
     ),
+    path(
+    "product/<int:product_id>/price/",
+    views.product_price,
+    name="product_price",
+),
 
 ]

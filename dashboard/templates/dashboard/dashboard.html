@@ -322,7 +322,7 @@
                         </div>
                       </div>
                     </td>
-                    <td>TZS {{ product.unit_price|floatformat:0 }}</td>
+                    <td>TZS {{ product.unit_price|floatformat:0|intcomma }}</td>
                     <td>—</td>
                     <td>{{ product.total_sold|floatformat:0 }}</td>
                     <td class="text-center">
@@ -380,7 +380,7 @@
 
                     <td>
                       {% if product.sales_pricing %}
-                        TZS {{ product.sales_pricing.selling_price|floatformat:0 }}
+                        TZS {{ product.sales_pricing.selling_price|floatformat:0|intcomma }}
                       {% else %}
                         —
                       {% endif %}

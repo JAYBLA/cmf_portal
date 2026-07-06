@@ -84,7 +84,7 @@
 
             <!-- PRODUCT TYPE -->
 
-            <div class="col-md-4 mb-3">
+            <div class="col-md-3 mb-3">
                 <label class="form-label">
                     Product Type
                 </label>
@@ -98,7 +98,7 @@
 
             <!-- MINIMUM STOCK -->
 
-            <div class="col-md-4 mb-3">
+            <div class="col-md-3 mb-3">
                 <label class="form-label">
                     Minimum Stock
                 </label>
@@ -116,7 +116,7 @@
 
             <!-- STATUS -->
 
-            <div class="col-md-4 mb-3">
+            <div class="col-md-3 mb-3">
                 <label class="form-label">
                     Status
                 </label>
@@ -125,6 +125,19 @@
 
                 <div class="text-danger small">
                     {{ form.status.errors }}
+                </div>
+            </div>
+            <!-- IS TANGIBLE -->
+
+            <div class="col-md-3 mb-3">
+                <label class="form-label">
+                    Is Tangible
+                </label>
+
+                {{ form.is_tangible }}
+
+                <div class="text-danger small">
+                    {{ form.is_tangible.errors }}
                 </div>
             </div>
 

@@ -5,6 +5,19 @@ from .models import Product
 class ProductForm(forms.ModelForm):
 
     use_required_attribute = False
+    is_tangible = forms.TypedChoiceField(
+        choices=(
+            (True, "Yes"),
+            (False, "No"),
+        ),
+        coerce=lambda value: value == "True",
+        widget=forms.Select(
+            attrs={
+                "class": "form-select",
+            }
+        ),
+    )
+
 
     class Meta:
 
@@ -72,7 +85,7 @@ class ProductForm(forms.ModelForm):
                     "class": "form-select choices-select",
                     "data-placeholder": "Select status",
                 }
-            ),
+            ), 
         }
 
     def clean_product_name(self):

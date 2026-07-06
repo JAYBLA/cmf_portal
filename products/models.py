@@ -6,10 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 
 class ProductCategory(models.Model):
 
-    name = models.CharField(
-        max_length=100,
-        unique=True
-    )
+    name = models.CharField(max_length=100, unique=True)
 
     class Meta:
         verbose_name_plural = "Product Categories"
@@ -21,15 +18,9 @@ class ProductCategory(models.Model):
 
 class ProductUnit(models.Model):
 
-    name = models.CharField(
-        max_length=50,
-        unique=True
-    )
+    name = models.CharField(max_length=50, unique=True)
 
-    abbreviation = models.CharField(
-        max_length=20,
-        blank=True
-    )
+    abbreviation = models.CharField(max_length=20, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -91,6 +82,9 @@ class Product(models.Model):
         max_length=10,
         choices=STATUS_CHOICES,
         default="active",
+    )
+    is_tangible = models.BooleanField(
+        default=True,
     )
 
     # =====================================
@@ -161,10 +155,7 @@ class Product(models.Model):
 
     @property
     def is_low_stock(self):
-        return (
-            self.current_stock > 0
-            and self.current_stock <= self.minimum_stock
-        )
+        return self.current_stock > 0 and self.current_stock <= self.minimum_stock
 
     @property
     def is_out_of_stock(self):
@@ -172,6 +163,8 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.product_name} ({self.sku_code})"
+
+
 class StockMovement(models.Model):
 
     MOVEMENT_TYPES = (

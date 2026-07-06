@@ -106,6 +106,13 @@
           <span>Sales</span>
         </a>
       </li>
+      <li>
+        <a href="{% url 'sales:declared_price_list' %}" class="{% if request.resolver_match.url_name == 'declared_price_list' %}active-page{% endif %}">
+          <i class="fa-solid fa-file-invoice menu-icon"></i>
+
+          <span>Declare Sales Prices</span>
+        </a>
+      </li>
 
       <!-- QUOTATIONS -->
 

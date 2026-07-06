@@ -47,20 +47,8 @@
         ======================================  -->
 
     <div class="card">
-      <div class="card-header">Receipt Details</div>
-
       <div class="card-body">
         <div class="row g-3">
-            <!--  =================================
-                         TITLE
-                    ==================================  -->
-            <div class="col-md-12">
-                <label class="form-label">Title</label>
-
-                {{ form.title }}
-
-                <div class="text-danger small">{{ form.title.errors }}</div>
-            </div>
           <!--  =================================
                          INVOICE
                     ==================================  -->
@@ -77,7 +65,7 @@
                          RECEIPT DATE
                     ==================================  -->
 
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label class="form-label">Receipt Date</label>
 
             {{ form.receipt_date }}
@@ -89,7 +77,7 @@
                          AMOUNT
                     ==================================  -->
 
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label class="form-label">Amount Received</label>
 
             {{ form.amount }}
@@ -101,7 +89,7 @@
                          PAYMENT METHOD
                     ==================================  -->
 
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label class="form-label">Payment Method</label>
 
             {{ form.payment_method }}
@@ -113,7 +101,7 @@
                          PAYMENT REFERENCE
                     ==================================  -->
 
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label class="form-label">Payment Reference</label>
 
             {{ form.payment_reference }}

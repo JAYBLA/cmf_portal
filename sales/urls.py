@@ -50,4 +50,37 @@ urlpatterns = [
         name="product_price",
     ),
     path("sale/<int:pk>/detail/", views.sale_detail, name="sales_detail"),
+    # =========================================
+    # DECLARED PRICES
+    # =========================================
+
+    path(
+        "pricing/",
+        views.declared_price_list,
+        name="declared_price_list",
+    ),
+
+    path(
+        "pricing/table/",
+        views.declared_price_table,
+        name="declared_price_table",
+    ),
+
+    path(
+        "pricing/create/",
+        views.declared_price_create,
+        name="declared_price_create",
+    ),
+
+    path(
+        "pricing/<int:pk>/update/",
+        views.declared_price_update,
+        name="declared_price_update",
+    ),
+
+    path(
+        "pricing/<int:pk>/delete/",
+        views.declared_price_delete,
+        name="declared_price_delete",
+    ),
 ]

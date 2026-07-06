@@ -68,7 +68,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Product</th>
-                            <th>Description</th>
+                            <th>Item Name</th>
                             <th width="100">Qty</th>
                             <th width="130">Unit Price</th>
                             <th width="60">Del</th>
@@ -92,10 +92,12 @@
 ;(function () {
 
     /* =========================================
-       INITIALIZE AUTO ROWS
+       INITIALIZE INVOICE ROWS
     ========================================= */
 
-    function initializeInvoiceAutoRows(container = document) {
+    function initializeInvoiceRows(
+        container = document
+    ) {
 
         const rows =
             container.querySelectorAll(
@@ -105,71 +107,164 @@
 
         rows.forEach(function (row) {
 
-            const productInput =
-                row.querySelector(
-                    'select[name$="product"]'
-                );
-
-
-            if (!productInput) {
-                return;
-            }
-
-
             if (
-                productInput.dataset.invoiceAutoRowBound
+                row.dataset.invoiceRowBound
                 === "true"
             ) {
                 return;
             }
 
 
-            productInput.dataset.invoiceAutoRowBound =
+            row.dataset.invoiceRowBound =
                 "true";
 
 
-            productInput.addEventListener(
-                "change",
-
-                function () {
-
-                    if (!this.value) {
-                        return;
-                    }
+            const productInput =
+                row.querySelector(
+                    'select[name$="-product"]'
+                );
 
 
-                    const allRows =
-                        document.querySelectorAll(
-                            "#items-container tr"
-                        );
+            const descriptionInput =
+                row.querySelector(
+                    'input[name$="-description"]'
+                );
 
 
-                    const lastRow =
-                        allRows[
-                            allRows.length - 1
-                        ];
+            const unitPriceInput =
+                row.querySelector(
+                    'input[name$="-unit_price"]'
+                );
 
 
-                    if (!lastRow) {
-                        return;
-                    }
+            /* =========================================
+               INITIAL ROW STATE
+            ========================================= */
 
-
-                    const lastInput =
-                        lastRow.querySelector(
-                            'select[name$="product"]'
-                        );
-
-
-                    if (this !== lastInput) {
-                        return;
-                    }
-
-
-                    appendInvoiceRow();
-
-                }
+            updateRowState(
+                row
             );
+
+
+            /* =========================================
+               PRODUCT CHANGE
+            ========================================= */
+
+            if (productInput) {
+
+                productInput.addEventListener(
+                    "change",
+
+                    async function () {
+
+                        /* =================================
+                           PRODUCT SELECTED
+                        ================================= */
+
+                        if (this.value) {
+
+                            if (descriptionInput) {
+
+                                descriptionInput.value = "";
+
+                            }
+
+
+                            updateRowState(
+                                row
+                            );
+
+
+                            if (unitPriceInput) {
+
+                                await loadProductPrice(
+                                    this.value,
+                                    unitPriceInput
+                                );
+
+                            }
+
+
+                            ensureInvoiceEmptyRow();
+
+                        }
+
+                        /* =================================
+                           PRODUCT CLEARED
+                        ================================= */
+
+                        else {
+
+                            updateRowState(
+                                row
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            /* =========================================
+               DESCRIPTION INPUT
+            ========================================= */
+
+            if (descriptionInput) {
+
+                descriptionInput.addEventListener(
+                    "input",
+
+                    function () {
+
+                        const hasDescription =
+                            this.value.trim() !== "";
+
+
+                        if (hasDescription) {
+
+                            if (
+                                productInput
+                                &&
+                                productInput.value
+                            ) {
+
+                                productInput.value = "";
+
+                                productInput.dispatchEvent(
+                                    new Event(
+                                        "change",
+                                        {
+                                            bubbles: true,
+                                        }
+                                    )
+                                );
+
+                            }
+
+
+                            updateRowState(
+                                row
+                            );
+
+
+                            ensureInvoiceEmptyRow();
+
+                        }
+
+                        else {
+
+                            updateRowState(
+                                row
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
 
         });
 
@@ -177,7 +272,235 @@
 
 
     /* =========================================
-       APPEND NEW ROW
+       UPDATE ROW STATE
+    ========================================= */
+
+    function updateRowState(row) {
+
+        const productInput =
+            row.querySelector(
+                'select[name$="-product"]'
+            );
+
+
+        const descriptionInput =
+            row.querySelector(
+                'input[name$="-description"]'
+            );
+
+
+        if (
+            !productInput
+            ||
+            !descriptionInput
+        ) {
+            return;
+        }
+
+
+        const hasProduct =
+            productInput.value !== "";
+
+
+        const hasDescription =
+            descriptionInput.value
+                .trim() !== "";
+
+
+        /* =========================================
+           PRODUCT SELECTED
+        ========================================= */
+
+        if (hasProduct) {
+
+            descriptionInput.disabled = true;
+
+            productInput.disabled = false;
+
+            return;
+
+        }
+
+
+        /* =========================================
+           DESCRIPTION ENTERED
+        ========================================= */
+
+        if (hasDescription) {
+
+            productInput.disabled = true;
+
+            descriptionInput.disabled = false;
+
+            return;
+
+        }
+
+
+        /* =========================================
+           EMPTY ROW
+        ========================================= */
+
+        productInput.disabled = false;
+
+        descriptionInput.disabled = false;
+
+    }
+
+
+    /* =========================================
+       ENSURE ONE EMPTY ROW
+    ========================================= */
+
+    function ensureInvoiceEmptyRow() {
+
+        const rows =
+            document.querySelectorAll(
+                "#items-container tr"
+            );
+
+
+        if (!rows.length) {
+            return;
+        }
+
+
+        const lastRow =
+            rows[
+                rows.length - 1
+            ];
+
+
+        const productInput =
+            lastRow.querySelector(
+                'select[name$="-product"]'
+            );
+
+
+        const descriptionInput =
+            lastRow.querySelector(
+                'input[name$="-description"]'
+            );
+
+
+        if (
+            !productInput
+            ||
+            !descriptionInput
+        ) {
+            return;
+        }
+
+
+        const hasProduct =
+            productInput.value !== "";
+
+
+        const hasDescription =
+            descriptionInput.value
+                .trim() !== "";
+
+
+        /* =========================================
+           LAST ROW CONTAINS DATA
+        ========================================= */
+
+        if (
+            hasProduct
+            ||
+            hasDescription
+        ) {
+
+            appendInvoiceRow();
+
+        }
+
+    }
+
+
+    /* =========================================
+       LOAD PRODUCT EFFECTIVE PRICE
+    ========================================= */
+
+    async function loadProductPrice(
+        productId,
+        unitPriceInput
+    ) {
+
+        try {
+
+            const url =
+                "{% url 'invoices:product_price' 0 %}"
+                .replace(
+                    "/0/",
+                    "/" + productId + "/"
+                );
+
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+                        },
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load product price."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            unitPriceInput.value =
+                data.selling_price || "";
+
+
+            unitPriceInput.dispatchEvent(
+                new Event(
+                    "input",
+                    {
+                        bubbles: true,
+                    }
+                )
+            );
+
+
+            unitPriceInput.dispatchEvent(
+                new Event(
+                    "change",
+                    {
+                        bubbles: true,
+                    }
+                )
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Product price error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =========================================
+       APPEND NEW INVOICE ROW
     ========================================= */
 
     function appendInvoiceRow() {
@@ -203,12 +526,12 @@
         htmx.ajax(
             "GET",
 
-            "{% url 'invoices:invoice_item_empty_row' %}?total_forms="
+            "{% url 'invoices:invoice_item_empty_row' %}"
+            + "?total_forms="
             + current,
 
             {
                 target: "#items-container",
-
                 swap: "beforeend",
             }
         );
@@ -221,14 +544,16 @@
 
 
     /* =========================================
-       INITIALIZE CURRENT FORM
+       INITIALIZE CURRENT ROWS
     ========================================= */
 
-    initializeInvoiceAutoRows(document);
+    initializeInvoiceRows(
+        document
+    );
 
 
     /* =========================================
-       HTMX ROW SWAP
+       INITIALIZE HTMX ADDED ROWS
     ========================================= */
 
     document.body.addEventListener(
@@ -248,10 +573,12 @@
             if (
                 target.id === "items-container"
                 ||
-                target.closest("#items-container")
+                target.closest(
+                    "#items-container"
+                )
             ) {
 
-                initializeInvoiceAutoRows(
+                initializeInvoiceRows(
                     document
                 );
 
@@ -262,3 +589,4 @@
 
 })();
 </script>
+

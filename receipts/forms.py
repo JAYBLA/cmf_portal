@@ -1,9 +1,34 @@
 from decimal import Decimal
 
 from django import forms
-from django.db.models import Sum
+from django.db.models import Q, Sum
+
+from invoices.models import Invoice
 
 from .models import Receipt
+
+
+# =========================================
+# INVOICE CHOICE FIELD
+# =========================================
+
+
+class InvoiceChoiceField(
+    forms.ModelChoiceField
+):
+
+    def label_from_instance(
+        self,
+        invoice,
+    ):
+
+        return (
+            f"{invoice.invoice_number}"
+            f" — "
+            f"{invoice.customer.customer_name}"
+            f" — Balance: "
+            f"TZS {invoice.balance:,.2f}"
+        )
 
 
 # =========================================
@@ -16,6 +41,23 @@ class ReceiptForm(forms.ModelForm):
     use_required_attribute = False
 
 
+    # =========================================
+    # INVOICE FIELD
+    # =========================================
+
+    invoice = InvoiceChoiceField(
+        queryset=Invoice.objects.none(),
+        empty_label="Select Invoice",
+        widget=forms.Select(
+            attrs={
+                "class": (
+                    "form-select choices-select"
+                ),
+            }
+        ),
+    )
+
+
     class Meta:
 
         model = Receipt
@@ -26,24 +68,19 @@ class ReceiptForm(forms.ModelForm):
             "amount",
             "payment_method",
             "payment_reference",
-            "notes",           
+            "notes",
         ]
 
 
         widgets = {
 
-            "invoice": forms.Select(
-                attrs={
-                    "class": "form-select choices-select",
-                }
-            ),
-
-
             "receipt_date": forms.DateInput(
                 attrs={
                     "class": "form-control flatpickr",
                     "autocomplete": "off",
-                    "placeholder": "Select receipt date",
+                    "placeholder": (
+                        "Select receipt date"
+                    ),
                 }
             ),
 
@@ -53,7 +90,9 @@ class ReceiptForm(forms.ModelForm):
                     "class": "form-control text-end",
                     "step": "0.01",
                     "min": "0.01",
-                    "placeholder": "Enter amount received",
+                    "placeholder": (
+                        "Enter amount received"
+                    ),
                 }
             ),
 
@@ -68,7 +107,9 @@ class ReceiptForm(forms.ModelForm):
             "payment_reference": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Payment reference",
+                    "placeholder": (
+                        "Payment reference"
+                    ),
                 }
             ),
 
@@ -77,20 +118,92 @@ class ReceiptForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Receipt Description / Notes",
+                    "placeholder": (
+                        "Receipt Description / Notes"
+                    ),
                 }
-            ),          
+            ),
 
         }
 
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        **kwargs,
+    ):
 
-        super().__init__(*args, **kwargs)
-
-        self.fields["invoice"].empty_label = (
-            "Select Invoice"
+        super().__init__(
+            *args,
+            **kwargs,
         )
+
+
+        # =========================================
+        # BASE INVOICE QUERYSET
+        # =========================================
+
+        invoices = (
+            Invoice.objects
+            .select_related(
+                "customer"
+            )
+        )
+
+
+        # =========================================
+        # CREATE MODE
+        # =========================================
+
+        if not self.instance.pk:
+
+            invoices = (
+                invoices
+                .exclude(
+                    status__in=[
+                        "paid",
+                        "cancelled",
+                    ]
+                )
+                .order_by(
+                    "-id"
+                )
+            )
+
+
+        # =========================================
+        # UPDATE MODE
+        # =========================================
+
+        else:
+
+            invoices = (
+                invoices
+                .exclude(
+                    status="cancelled"
+                )
+                .filter(
+                    models.Q(
+                        status__in=[
+                            "draft",
+                            "unpaid",
+                            "partial",
+                        ]
+                    )
+                    |
+                    models.Q(
+                        pk=self.instance.invoice_id
+                    )
+                )
+                .order_by(
+                    "-id"
+                )
+            )
+
+
+        self.fields[
+            "invoice"
+        ].queryset = invoices
 
 
     # =========================================
@@ -101,12 +214,19 @@ class ReceiptForm(forms.ModelForm):
 
         cleaned_data = super().clean()
 
-        invoice = cleaned_data.get("invoice")
+        invoice = cleaned_data.get(
+            "invoice"
+        )
 
-        amount = cleaned_data.get("amount")
+        amount = cleaned_data.get(
+            "amount"
+        )
 
 
-        if not invoice or amount is None:
+        if (
+            not invoice
+            or amount is None
+        ):
 
             return cleaned_data
 
@@ -119,7 +239,10 @@ class ReceiptForm(forms.ModelForm):
 
             self.add_error(
                 "amount",
-                "Receipt amount must be greater than zero.",
+                (
+                    "Receipt amount must be "
+                    "greater than zero."
+                ),
             )
 
             return cleaned_data
@@ -169,10 +292,9 @@ class ReceiptForm(forms.ModelForm):
 
             self.add_error(
                 "amount",
-
                 (
                     "Receipt amount cannot exceed "
-                    f"the remaining invoice balance of "
+                    "the remaining invoice balance of "
                     f"TZS {available_balance:,.2f}."
                 ),
             )

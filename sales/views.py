@@ -355,24 +355,254 @@ def sale_payment_create(request, sale_id):
 
 def product_price(request, product_id):
 
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(
+        Product,
+        pk=product_id,
+    )
 
-    selling_price = Decimal("0.00")
+    calculated_price = Decimal("0.00")
+    declared_price = None
+    effective_price = Decimal("0.00")
 
     if hasattr(product, "sales_pricing"):
 
-        selling_price = product.sales_pricing.selling_price
+        pricing = product.sales_pricing
+
+        calculated_price = pricing.selling_price
+        declared_price = pricing.declared_price
+        effective_price = pricing.effective_selling_price
 
     return JsonResponse(
-        {"product_id": product.id, "selling_price": float(selling_price)}
+        {
+            "product_id": product.id,
+            "calculated_price": float(calculated_price),
+            "declared_price": (
+                float(declared_price) if declared_price is not None else None
+            ),
+            "selling_price": float(effective_price),
+        }
     )
-    
+
+
 def sale_detail(request, pk):
-    sale = get_object_or_404(Sale.objects.prefetch_related('items__product', 'payments'), pk=pk)
+    sale = get_object_or_404(
+        Sale.objects.prefetch_related("items__product", "payments"), pk=pk
+    )
     return render(
         request,
         "sales/partials/sale_detail.html",
         {
             "sale": sale,
         },
+    )
+
+
+# =========================================
+# DECLARED PRICE LIST
+# =========================================
+
+
+def declared_price_list(request):
+
+    prices = SalesProductPricing.objects.select_related(
+        "product",
+        "purchase_pricing",
+    ).filter(
+        declared_price__isnull=False,
+    )
+
+    context = {
+        "prices": prices,
+    }
+
+    return render(
+        request,
+        "sales/pricing/list.html",
+        context,
+    )
+
+
+# =========================================
+# DECLARED PRICE TABLE
+# =========================================
+
+
+def declared_price_table(request):
+
+    prices = SalesProductPricing.objects.select_related(
+        "product",
+        "purchase_pricing",
+    ).filter(
+        declared_price__isnull=False,
+    )
+
+    context = {
+        "prices": prices,
+    }
+
+    return render(
+        request,
+        "sales/pricing/table.html",
+        context,
+    )
+
+
+# =========================================
+# CREATE DECLARED PRICE
+# =========================================
+
+
+def declared_price_create(request):
+
+    form = DeclaredPriceForm(
+        request.POST or None,
+    )
+
+    if request.method == "POST":
+
+        if form.is_valid():
+
+            product = form.cleaned_data[
+                "product"
+            ]
+
+            declared_price = form.cleaned_data[
+                "declared_price"
+            ]
+
+            pricing = get_object_or_404(
+                SalesProductPricing,
+                product=product,
+            )
+
+            pricing.declared_price = declared_price
+
+            pricing.save()
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": (
+                            "Declared price added "
+                            "successfully."
+                        ),
+                    },
+                }
+            )
+
+            return response
+
+    context = {
+        "form": form,
+    }
+
+    return render(
+        request,
+        "sales/pricing/form.html",
+        context,
+    )
+
+
+# =========================================
+# UPDATE DECLARED PRICE
+# =========================================
+
+
+def declared_price_update(request, pk):
+
+    pricing = get_object_or_404(
+        SalesProductPricing,
+        pk=pk,
+    )
+
+    form = DeclaredPriceForm(
+        request.POST or None,
+        pricing=pricing,
+    )
+
+    if request.method == "POST":
+
+        if form.is_valid():
+
+            pricing.declared_price = (
+                form.cleaned_data["declared_price"]
+            )
+
+            pricing.save()
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "recordSaved": True,
+                    "refreshTable": True,
+                    "showMessage": {
+                        "type": "success",
+                        "message": (
+                            "Declared price updated "
+                            "successfully."
+                        ),
+                    },
+                }
+            )
+
+            return response
+
+    context = {
+        "form": form,
+        "pricing": pricing,
+    }
+
+    return render(
+        request,
+        "sales/pricing/form.html",
+        context,
+    )
+
+# =========================================
+# DELETE DECLARED PRICE
+# =========================================
+
+
+def declared_price_delete(request, pk):
+
+    pricing = get_object_or_404(
+        SalesProductPricing,
+        pk=pk,
+    )
+
+    if request.method == "POST":
+
+        pricing.declared_price = None
+
+        pricing.save()
+
+        response = HttpResponse("")
+
+        response["HX-Trigger"] = json.dumps(
+            {
+                "recordSaved": True,
+                "refreshTable": True,
+                "showMessage": {
+                    "type": "success",
+                    "message": ("Declared price removed " "successfully."),
+                },
+            }
+        )
+
+        return response
+
+    context = {
+        "pricing": pricing,
+    }
+
+    return render(
+        request,
+        "sales/pricing/delete.html",
+        context,
     )

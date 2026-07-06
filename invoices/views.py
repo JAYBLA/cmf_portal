@@ -16,21 +16,18 @@ from django.templatetags.static import static
 
 from django.utils.text import slugify
 
-from .models import (
-    Invoice,
-    InvoiceItem,
-)
+from .models import *
 
-from .forms import (
-    InvoiceForm,
-    InvoiceItemFormSet,
-)
+from .forms import *
+from django.http import JsonResponse
 
 from customers.models import (
     Customer,
 )
 
 from utils import render_to_pdf
+from products.models import Product
+from sales.models import SalesProductPricing
 
 
 # =====================================================
@@ -147,22 +144,56 @@ def invoice_create(request):
 
     if request.method == "POST":
 
-        if form.is_valid() and formset.is_valid():
+        form_valid = form.is_valid()
+        formset_valid = formset.is_valid()
+
+        print(
+            "FORM VALID:",
+            form_valid,
+        )
+
+        print(
+            "FORM ERRORS:",
+            form.errors,
+        )
+
+        print(
+            "FORMSET VALID:",
+            formset_valid,
+        )
+
+        print(
+            "FORMSET ERRORS:",
+            formset.errors,
+        )
+
+        print(
+            "FORMSET NON FORM ERRORS:",
+            formset.non_form_errors(),
+        )
+
+
+        if form_valid and formset_valid:
 
             # ---------------------------------
             # Save invoice
             # ---------------------------------
 
-            invoice = form.save(commit=False)
+            invoice = form.save(
+                commit=False
+            )
 
             # ---------------------------------
             # Customer
             # ---------------------------------
 
             customer_value = (
-                form.cleaned_data["customer_text"]
+                form.cleaned_data[
+                    "customer_text"
+                ]
                 .strip()
             )
+
 
             try:
 
@@ -177,14 +208,17 @@ def invoice_create(request):
             ):
 
                 customer, _ = (
-                    Customer.objects.get_or_create(
+                    Customer.objects
+                    .get_or_create(
                         customer_name=customer_value
                     )
                 )
 
+
             invoice.customer = customer
 
             invoice.save()
+
 
             # ---------------------------------
             # Save items
@@ -196,11 +230,13 @@ def invoice_create(request):
                 commit=False
             )
 
+
             for item in items:
 
                 item.invoice = invoice
 
                 item.save()
+
 
             # ---------------------------------
             # Delete removed items
@@ -210,44 +246,54 @@ def invoice_create(request):
 
                 obj.delete()
 
+
             # ---------------------------------
             # Update totals
             # ---------------------------------
 
-            update_invoice_totals(invoice)
+            update_invoice_totals(
+                invoice
+            )
+
 
             # ---------------------------------
             # Response
             # ---------------------------------
 
-            response = HttpResponse()
+            response = HttpResponse("")
 
-            response["HX-Trigger"] = json.dumps(
-                {
-                    "recordSaved": True,
-                    "refreshTable": True,
-                    "showMessage": {
-                        "type": "success",
-                        "message": (
-                            "Invoice created successfully."
-                        ),
-                    },
-                }
+
+            response["HX-Trigger"] = (
+                json.dumps(
+                    {
+                        "recordSaved": True,
+                        "refreshTable": True,
+                        "showMessage": {
+                            "type": "success",
+                            "message": (
+                                "Invoice created "
+                                "successfully."
+                            ),
+                        },
+                    }
+                )
             )
 
+
             return response
+
 
     context = {
         "form": form,
         "formset": formset,
     }
 
+
     return render(
         request,
         "invoices/partials/invoice_form.html",
         context,
     )
-
 
 # =====================================================
 # UPDATE INVOICE
@@ -383,7 +429,6 @@ def invoice_update(request, pk):
 # =====================================================
 
 
-@transaction.atomic
 def invoice_delete(request, pk):
 
     invoice = get_object_or_404(
@@ -391,11 +436,68 @@ def invoice_delete(request, pk):
         pk=pk,
     )
 
+
     if request.method == "POST":
 
-        invoice.delete()
+        # =========================================
+        # PREVENT DELETE IF RECEIPTS EXIST
+        # =========================================
 
-        response = HttpResponse()
+        if invoice.receipts.exists():
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "showMessage": {
+                        "type": "error",
+                        "message": (
+                            f"{invoice.invoice_number} "
+                            "cannot be deleted because "
+                            "it already has recorded "
+                            "receipts."
+                        ),
+                    },
+                }
+            )
+
+            return response
+
+
+        # =========================================
+        # DELETE INVOICE
+        # =========================================
+
+        try:
+
+            invoice.delete()
+
+
+        except ProtectedError:
+
+            response = HttpResponse("")
+
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "showMessage": {
+                        "type": "error",
+                        "message": (
+                            "This invoice is already "
+                            "referenced by another record "
+                            "and cannot be deleted."
+                        ),
+                    },
+                }
+            )
+
+            return response
+
+
+        # =========================================
+        # SUCCESS RESPONSE
+        # =========================================
+
+        response = HttpResponse("")
 
         response["HX-Trigger"] = json.dumps(
             {
@@ -412,9 +514,11 @@ def invoice_delete(request, pk):
 
         return response
 
+
     context = {
         "invoice": invoice,
     }
+
 
     return render(
         request,
@@ -543,4 +647,74 @@ def download_invoice_pdf(request, pk):
     return HttpResponse(
         "Error generating PDF",
         status=400,
+    )
+    
+# =========================================
+# PRODUCT EFFECTIVE SELLING PRICE
+# =========================================
+
+
+def product_price(request, product_id):
+
+    product = get_object_or_404(
+        Product,
+        pk=product_id,
+    )
+
+    try:
+
+        pricing = SalesProductPricing.objects.get(
+            product=product,
+        )
+
+    except SalesProductPricing.DoesNotExist:
+
+        return JsonResponse(
+            {
+                "product_id": product.id,
+                "selling_price": "0.00",
+                "calculated_price": "0.00",
+                "declared_price": None,
+                "price_source": "none",
+            }
+        )
+
+
+    # =========================================
+    # DETERMINE EFFECTIVE PRICE
+    # =========================================
+
+    if pricing.declared_price is not None:
+
+        effective_price = pricing.declared_price
+
+        price_source = "declared"
+
+    else:
+
+        effective_price = pricing.selling_price
+
+        price_source = "calculated"
+
+
+    return JsonResponse(
+        {
+            "product_id": product.id,
+
+            "selling_price": str(
+                effective_price
+            ),
+
+            "calculated_price": str(
+                pricing.selling_price
+            ),
+
+            "declared_price": (
+                str(pricing.declared_price)
+                if pricing.declared_price is not None
+                else None
+            ),
+
+            "price_source": price_source,
+        }
     )

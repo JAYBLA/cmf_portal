@@ -1,0 +1,107 @@
+{% load humanize %}
+<div class="table-responsive">
+
+  <table class="table table-sm table-hover align-middle data-table mb-0" id="dataTable" data-page-length="10">
+
+    <thead class="table-light">
+      <tr>
+        <th style="width: 8%;">S/N</th>
+        <th>Declared Product Prices Details</th>
+        <th style="width: 18%;" class="text-center">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for pricing in prices %}
+
+        <tr>
+          <!-- Serial Number -->
+          <td class="py-1">
+            <strong class="small">{{ forloop.counter }}</strong>
+          </td>
+
+          <!-- All Details in a single flex line -->
+          <td class="py-1">
+            <div class="d-flex flex-wrap align-items-center gap-1">
+
+              <!-- Product -->
+              <span class="fw-semibold small me-1">{{ pricing.product }}</span>
+
+              <!-- Separator -->
+              <span class="text-muted mx-1">|</span>
+
+              <!-- Landed Cost -->
+              <span class="text-muted small">
+                <strong>Unit Purchase Cost:</strong> {{ pricing.landed_unit_cost|floatformat:0|intcomma }}
+              </span>
+              <!-- Separator -->
+              <span class="text-muted mx-1">|</span>
+
+              <!-- Calculated Price -->
+              <span class="text-muted small">
+                <strong>Formula Calculated Price:</strong> {{ pricing.selling_price|floatformat:0|intcomma }}
+              </span>
+
+              <!-- Separator -->
+              <span class="text-muted mx-1">|</span>
+
+              <!-- Declared Price -->
+              {% if pricing.declared_price is not None %}
+                <span class="text-success small">
+                  <strong>Declared:</strong> {{ pricing.declared_price|floatformat:0|intcomma }}
+                </span>
+              {% else %}
+                <span class="text-muted small">
+                  <strong>Declared:</strong> Not Set
+                </span>
+              {% endif %}
+            </div>
+          </td>
+
+          <!-- Actions -->
+          <td class="text-center py-1">
+            <div class="d-flex align-items-center justify-content-center gap-1">
+
+              <!-- Update Declared Price -->
+              <button type="button"
+                      class="btn btn-sm btn-warning"
+                      hx-get="{% url 'sales:declared_price_update' pricing.pk %}"
+                      hx-target="#modal-body"
+                      hx-swap="innerHTML"
+                      data-bs-toggle="modal"
+                      data-bs-target="#globalModal"
+                      title="Update Declared Price">
+                <i class="ri-edit-line"></i>
+              </button>
+
+              <!-- Delete Declared Price (only if exists) -->
+              {% if pricing.declared_price is not None %}
+                <button type="button"
+                        class="btn btn-sm btn-danger"
+                        hx-get="{% url 'sales:declared_price_delete' pricing.pk %}"
+                        hx-target="#modal-body"
+                        hx-swap="innerHTML"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalModal"
+                        title="Remove Declared Price">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              {% endif %}
+
+            </div>
+          </td>
+        </tr>
+
+      {% empty %}
+        <tr>
+          <td colspan="3" class="text-center text-muted py-4">
+            <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+            No Declared Pricing records found.
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+
+</div>

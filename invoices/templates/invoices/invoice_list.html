@@ -1,58 +1,32 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-
-<div class="col-12">
-
+  <div class="col-12">
     <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Invoices</h4>
 
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <button class="btn btn-primary" hx-get="{% url 'invoices:invoice_create' %}" hx-target="#modal-body" hx-swap="innerHTML">Add Invoice</button>
+      </div>
 
-            <h4 class="card-title mb-0">
-                Invoices
-            </h4>
+      <div class="card-body p-1">
+        <table id="responsiveTable" class="table table-sm table-hover align-middle" style="width:100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width:50px;" class="text-center">#</th>
+              <th scope="col">Invoice Details</th>
+              <th scope="col" style="width:140px;" class="text-end">Actions</th>
+            </tr>
+          </thead>
 
-            <button
-                class="btn btn-primary"
-                hx-get="{% url 'invoices:invoice_create' %}"
-                hx-target="#modal-body"
-                hx-swap="innerHTML">
-
-                Add Invoice
-
-            </button>
-
-        </div>
-
-        <div class="card-body p-1">
-
-            <table
-                id="responsiveTable"
-                class="table table-sm table-hover align-middle"
-                style="width:100%;">
-
-                <thead class="table-light">
-                    <tr>
-                        <th scope="col" style="width:50px;" class="text-center">#</th>
-                        <th scope="col">Invoice Details</th>
-                        <th scope="col" style="width:140px;" class="text-end">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody
-                    id="table-container"
-                    data-refresh-url="{% url 'invoices:invoice_table' %}">
-
-                    {% include "invoices/partials/invoice_table.html" %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
+          <tbody id="table-container" data-refresh-url="{% url 'invoices:invoice_table' %}">
+            {% include 'invoices/partials/invoice_table.html' %}
+          </tbody>
+        </table>
+      </div>
     </div>
-
-</div>
+  </div>
+{% endblock %}
+{% block scripts %}
 
 {% endblock %}
