@@ -15,6 +15,11 @@ from quotations.models import (
 # =========================================
 
 
+# =========================================
+# DELIVERY NOTE
+# =========================================
+
+
 class DeliveryNote(models.Model):
 
     STATUS_CHOICES = (
@@ -103,14 +108,30 @@ class DeliveryNote(models.Model):
 
 
     # =========================================
-    # QUOTED QUANTITY
+    # DELIVERABLE QUOTATION ITEMS
+    # =========================================
+
+    @property
+    def deliverable_quotation_items(self):
+
+        return (
+            self.quotation.items
+            .filter(
+                product__is_tangible=True,
+            )
+        )
+
+
+    # =========================================
+    # QUOTED DELIVERABLE QUANTITY
     # =========================================
 
     @property
     def quoted_quantity(self):
 
         return (
-            self.quotation.items.aggregate(
+            self.deliverable_quotation_items
+            .aggregate(
                 total=Sum("quantity")
             )["total"]
             or Decimal("0")
@@ -125,7 +146,11 @@ class DeliveryNote(models.Model):
     def delivered_quantity(self):
 
         return (
-            self.items.aggregate(
+            self.items
+            .filter(
+                quotation_item__product__is_tangible=True,
+            )
+            .aggregate(
                 total=Sum("quantity")
             )["total"]
             or Decimal("0")
@@ -133,13 +158,19 @@ class DeliveryNote(models.Model):
 
 
     # =========================================
-    # TOTAL ITEMS
+    # TOTAL DELIVERABLE ITEMS
     # =========================================
 
     @property
     def total_items(self):
 
-        return self.items.count()
+        return (
+            self.items
+            .filter(
+                quotation_item__product__is_tangible=True,
+            )
+            .count()
+        )
 
 
     # =========================================
@@ -152,7 +183,9 @@ class DeliveryNote(models.Model):
         return sum(
             (
                 item.total_price
-                for item in self.items.all()
+                for item in self.items.filter(
+                    quotation_item__product__is_tangible=True,
+                )
             ),
             Decimal("0"),
         )
@@ -164,9 +197,18 @@ class DeliveryNote(models.Model):
 
     def update_delivery_status(self):
 
+        # =====================================
+        # TANGIBLE PRODUCTS ONLY
+        # =====================================
+
         quotation_items = (
-            self.quotation.items.all()
+            self.deliverable_quotation_items
         )
+
+
+        # =====================================
+        # NO DELIVERABLE ITEMS
+        # =====================================
 
         if not quotation_items.exists():
 
@@ -186,6 +228,10 @@ class DeliveryNote(models.Model):
         fully_delivered = True
 
 
+        # =====================================
+        # CHECK EACH TANGIBLE PRODUCT
+        # =====================================
+
         for quotation_item in quotation_items:
 
             delivered = (
@@ -198,7 +244,7 @@ class DeliveryNote(models.Model):
             )
 
 
-            if delivered > 0:
+            if delivered > Decimal("0"):
 
                 has_delivery = True
 
@@ -207,6 +253,10 @@ class DeliveryNote(models.Model):
 
                 fully_delivered = False
 
+
+        # =====================================
+        # DETERMINE STATUS
+        # =====================================
 
         if fully_delivered:
 
@@ -220,6 +270,10 @@ class DeliveryNote(models.Model):
 
             self.status = "pending"
 
+
+        # =====================================
+        # SAVE STATUS
+        # =====================================
 
         self.save(
             update_fields=[

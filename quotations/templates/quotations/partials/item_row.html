@@ -1,0 +1,262 @@
+<tr>
+
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+
+
+    <!-- =========================================
+         PRODUCT
+    ========================================== -->
+
+    <td>
+
+        {{ form.product }}
+
+        <div class="text-danger small">
+            {{ form.product.errors }}
+        </div>
+
+    </td>
+
+
+    <!-- =========================================
+         CUSTOM ITEM / DESCRIPTION
+    ========================================== -->
+
+    <td>
+
+        {{ form.description }}
+
+        <div class="text-danger small">
+            {{ form.description.errors }}
+        </div>
+
+    </td>
+
+
+    <!-- =========================================
+         QUANTITY
+    ========================================== -->
+
+    <td>
+
+        {{ form.quantity }}
+
+        <div class="text-danger small">
+            {{ form.quantity.errors }}
+        </div>
+
+    </td>
+
+
+    <!-- =========================================
+         UNIT PRICE
+    ========================================== -->
+
+    <td>
+
+        {{ form.unit_price }}
+
+        <div class="text-danger small">
+            {{ form.unit_price.errors }}
+        </div>
+
+    </td>
+
+
+    <!-- =========================================
+         TANGIBLE
+    ========================================== -->
+
+    <td>
+
+        {{ form.is_tangible }}
+
+        <div class="text-danger small">
+            {{ form.is_tangible.errors }}
+        </div>
+
+    </td>
+
+
+    <!-- =========================================
+         DELETE
+    ========================================== -->
+
+    <td class="text-center">
+
+        {% if form.DELETE %}
+
+            <div class="d-none">
+
+                {{ form.DELETE }}
+
+            </div>
+
+        {% endif %}
+
+
+        <button
+            type="button"
+            class="
+                btn
+                btn-sm
+                btn-outline-danger
+                delete-quotation-row
+            "
+        >
+
+            ×
+
+        </button>
+
+    </td>
+
+
+    <!-- =========================================
+         NON FIELD ERRORS
+    ========================================== -->
+
+    {% if form.non_field_errors %}
+
+        <td class="d-none">
+
+            {{ form.non_field_errors }}
+
+        </td>
+
+    {% endif %}
+
+</tr>
+
+
+<script>
+
+;(function () {
+
+
+    /* =========================================
+       PREVENT DUPLICATE DELETE LISTENER
+    ========================================= */
+
+    if (
+        window.quotationDeleteRowBound
+        === true
+    ) {
+
+        return;
+
+    }
+
+
+    window.quotationDeleteRowBound =
+        true;
+
+
+    /* =========================================
+       DELETE QUOTATION ROW
+    ========================================= */
+
+    document.addEventListener(
+        "click",
+
+        function (event) {
+
+
+            const deleteButton =
+                event.target.closest(
+                    ".delete-quotation-row"
+                );
+
+
+            if (!deleteButton) {
+
+                return;
+
+            }
+
+
+            const row =
+                deleteButton.closest(
+                    "tr"
+                );
+
+
+            if (!row) {
+
+                return;
+
+            }
+
+
+            const deleteCheckbox =
+                row.querySelector(
+                    'input[name$="-DELETE"]'
+                );
+
+
+            /* =========================================
+               EXISTING OR FORMSET ROW
+            ========================================= */
+
+            if (deleteCheckbox) {
+
+
+                deleteCheckbox.checked =
+                    true;
+
+
+                row.style.display =
+                    "none";
+
+
+            }
+
+
+            /* =========================================
+               UNSAVED ROW WITHOUT DELETE FIELD
+            ========================================= */
+
+            else {
+
+
+                row.remove();
+
+
+                const totalForms =
+                    document.getElementById(
+                        "id_items-TOTAL_FORMS"
+                    );
+
+
+                if (totalForms) {
+
+
+                    const current =
+                        parseInt(
+                            totalForms.value,
+                            10
+                        );
+
+
+                    totalForms.value =
+                        Math.max(
+                            current - 1,
+                            0
+                        );
+
+
+                }
+
+
+            }
+
+
+        }
+    );
+
+
+})();
+
+</script>

@@ -1,81 +1,393 @@
 {% load humanize %}
-{% for quotation in quotations %}
-<tr id="quotation-{{ quotation.id }}" class="align-middle">
 
-    <!-- S/N -->
+{% for quotation in quotations %}
+
+<tr
+    id="quotation-{{ quotation.id }}"
+    class="align-middle"
+>
+
+    <!-- =========================================
+         S/N
+    ========================================== -->
+
     <td class="text-center fw-semibold text-muted">
+
         {{ forloop.counter }}
+
     </td>
 
-    <!-- QUOTATION DETAILS (two horizontal lines) -->
+
+    <!-- =========================================
+         QUOTATION DETAILS
+    ========================================== -->
+
     <td>
 
-        <!-- LINE 1: Title + Customer + Total -->
-        <div class="d-flex flex-wrap align-items-center gap-1 small">
-            <span class="fw-bold text-primary">{{ quotation.title }}</span>
-            <span class="text-muted">|</span>
-            <span>
-                <span class="fw-light">Customer:</span> {{ quotation.customer.customer_name }}
+        <!-- =====================================
+             LINE 1
+             Title + Customer + Total + Delivery
+        ====================================== -->
+
+        <div
+            class="
+                d-flex
+                flex-wrap
+                align-items-center
+                gap-1
+                small
+            "
+        >
+
+            <span class="fw-bold text-primary">
+
+                {{ quotation.title }}
+
             </span>
-            <span class="text-muted">|</span>
-            <span>
-                <span class="fw-light">Total:</span>
-                <span class="fw-semibold text-success">{{ quotation.total_amount|floatformat:2|intcomma }}</span>
+
+
+            <span class="text-muted">
+
+                |
+
             </span>
+
+
+            <span>
+
+                <span class="fw-light">
+
+                    Customer:
+
+                </span>
+
+                {{ quotation.customer.customer_name }}
+
+            </span>
+
+
+            <span class="text-muted">
+
+                |
+
+            </span>
+
+
+            <span>
+
+                <span class="fw-light">
+
+                    Total:
+
+                </span>
+
+                <span class="fw-semibold text-primary">
+
+                    {{ quotation.total_amount|floatformat:2|intcomma }}
+
+                </span>
+
+            </span>
+
+
+            <span class="text-muted">
+
+                |
+
+            </span>
+
+
+            <span>
+
+                {% if quotation.delivery_status == "Completed" %}
+
+                    <span class="badge bg-success">
+
+                        Completed
+
+                    </span>
+
+                {% elif quotation.delivery_status == "Partial" %}
+
+                    <span class="badge bg-warning text-dark">
+
+                        Partial
+
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-secondary">
+
+                        Pending
+
+                    </span>
+
+                {% endif %}
+
+            </span>
+
         </div>
 
-        <!-- LINE 2: Quote Date, Due Date, Description (truncated), Created -->
-        <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+
+        <!-- =====================================
+             LINE 2
+             Dates + Delivery + Created
+        ====================================== -->
+
+        <div
+            class="
+                d-flex
+                flex-wrap
+                align-items-center
+                gap-1
+                small
+                text-muted
+            "
+        >
+
             <span>
-                <span class="fw-light">Quote Date:</span> {{ quotation.quote_date|date:"Y-m-d" }}
+
+                <span class="fw-light">
+
+                    Quote Date:
+
+                </span>
+
+                {{ quotation.quote_date|date:"Y-m-d" }}
+
             </span>
-            <span>|</span>
+
+
             <span>
-                <span class="fw-light">Due Date:</span> {{ quotation.due_date|date:"Y-m-d" }}
+
+                |
+
             </span>
-            <span>|</span>
+
+
             <span>
-                <span class="fw-light">Description:</span>
-                {{ quotation.description|default:"—"|truncatechars:30 }}
+
+                <span class="fw-light">
+
+                    Due Date:
+
+                </span>
+
+                {{ quotation.due_date|date:"Y-m-d"|default:"—" }}
+
             </span>
-            <span>|</span>
+
+
             <span>
-                <span class="fw-light">Created:</span> {{ quotation.created_at|date:"Y-m-d H:i" }}
+
+                |
+
             </span>
+
+
+            <span>
+
+                <span class="fw-light">
+
+                    Delivered Items:
+
+                </span>
+
+                <span class="fw-semibold">
+
+                    {{ quotation.delivered_quantity|floatformat:0|intcomma }}
+
+                    /
+
+                    {{ quotation.quoted_quantity|floatformat:0|intcomma }}
+
+                </span>
+
+            </span>
+
+
+            <span>
+
+                |
+
+            </span>
+
+
+            <span>
+
+                <span class="fw-light">
+
+                    Delivery Percentage:
+
+                </span>
+
+
+                {% if quotation.delivery_status == "Completed" %}
+
+                    <span class="text-success fw-semibold">
+
+                        {{ quotation.delivery_percentage }}%
+
+                    </span>
+
+                {% elif quotation.delivery_status == "Partial" %}
+
+                    <span class="text-warning fw-semibold">
+
+                        {{ quotation.delivery_percentage }}%
+
+                    </span>
+
+                {% else %}
+
+                    <span class="text-muted fw-semibold">
+
+                        {{ quotation.delivery_percentage }}%
+
+                    </span>
+
+                {% endif %}
+
+            </span>
+
+
+            <span>
+
+                |
+
+            </span>
+
+
+            <span>
+
+                <span class="fw-light">
+
+                    Created:
+
+                </span>
+
+                {{ quotation.created_at|date:"Y-m-d H:i" }}
+
+            </span>
+
         </div>
+
     </td>
 
-    <!-- ACTIONS (icon buttons) -->
+
+    <!-- =========================================
+         ACTIONS
+    ========================================== -->
+
     <td class="text-end">
-        <div class="d-flex justify-content-end gap-1">
-            <!-- Edit -->
-            <button type="button"
-                    class="btn btn-warning btn-sm"
-                    hx-get="{% url 'quotations:quotation_update' quotation.id %}"
-                    hx-target="#modal-body"
-                    hx-swap="innerHTML"
-                    title="Edit Quotation">
+
+        <div
+            class="
+                d-flex
+                justify-content-end
+                gap-1
+            "
+        >
+
+            <!-- =================================
+                 DETAILS
+            ================================== -->
+
+            <button
+                type="button"
+                class="btn btn-info btn-sm"
+                hx-get="
+                    {% url 'quotations:quotation_detail' quotation.id %}
+                "
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="View Quotation"
+            >
+
+                <i class="fa-solid fa-eye"></i>
+
+            </button>
+
+
+            <!-- =================================
+                 EDIT
+            ================================== -->
+
+            <button
+                type="button"
+                class="btn btn-warning btn-sm"
+                hx-get="
+                    {% url 'quotations:quotation_update' quotation.id %}
+                "
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="Edit Quotation"
+            >
+
                 <i class="fa-solid fa-pen-to-square"></i>
+
             </button>
-            <!-- Delete -->
-            <button type="button"
-                    class="btn btn-danger btn-sm"
-                    hx-get="{% url 'quotations:quotation_delete' quotation.id %}"
-                    hx-target="#modal-body"
-                    hx-swap="innerHTML"
-                    title="Delete Quotation">
+
+
+            <!-- =================================
+                 DELETE
+            ================================== -->
+
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                hx-get="
+                    {% url 'quotations:quotation_delete' quotation.id %}
+                "
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                title="Delete Quotation"
+            >
+
                 <i class="fa-solid fa-trash-can"></i>
+
             </button>
-            <!-- Download PDF -->
-<a href="{% url 'quotations:download_quotation_pdf' quotation.id %}"
-   class="btn btn-success btn-sm"
-   title="Download Quotation PDF">
 
-    <i class="fa-solid fa-file-pdf"></i>
 
-</a>            
+            <!-- =================================
+                 DOWNLOAD PDF
+            ================================== -->
+
+            <a
+                href="
+                    {% url 'quotations:download_quotation_pdf' quotation.id %}
+                "
+                class="btn btn-success btn-sm"
+                title="Download PDF"
+            >
+
+                <i class="fa-solid fa-file-pdf"></i>
+
+            </a>
+
         </div>
+
     </td>
 
 </tr>
+
+
+{% empty %}
+
+
+<tr>
+
+    <td
+        colspan="3"
+        class="text-center text-muted py-3"
+    >
+
+        No quotations found.
+
+    </td>
+
+</tr>
+
+
 {% endfor %}

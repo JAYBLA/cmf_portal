@@ -1,285 +1,685 @@
 <!doctype html>
+
 <html>
+
 {% load humanize %}
 
 <head>
+
 <meta charset="utf-8">
+
 
 <style>
 
+
+/* =========================================
+   FONT
+========================================= */
+
+
 @font-face {
-    font-family: 'Poppins';
-    src: url('/static/fonts/Poppins-Regular.ttf');
+
+    font-family: "Poppins";
+
+    src: url(
+        "{{ poppins_font }}"
+    );
+
 }
+
+
+* {
+
+    box-sizing: border-box;
+
+}
+
+
+body {
+
+    margin: 0;
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: 9px;
+
+    color: #222;
+
+}
+
+
+/* =========================================
+   SINGLE PAGE QUOTATION
+========================================= */
+
+
+{% if page_count == 1 %}
+
 
 @page {
 
     size: A4 portrait;
 
-    background-image: url("{{ bg_image }}");
+    margin:
+        70mm
+        14mm
+        55mm
+        14mm;
 
-    @frame quotation_info_frame {
-        -pdf-frame-content: quotation_info;
-        left: 485pt;
-        width: 200pt;
-        top: 86pt;
-        height: 70pt;
-    }
+    background-image: url(
+        "{{ single_bg }}"
+    );
 
-    @frame customer_info_frame {
-        -pdf-frame-content: customer_info;
-        left: 105pt;
-        width: 250pt;
-        top: 178pt;
-        height: 100pt;
-    }
+    background-size: 210mm 297mm;
 
-    @frame payment_terms_frame {
-        -pdf-frame-content: payment_terms;
-        left:30pt;
-        width:300pt;
-        top:690pt;
-        height:180pt;
-    }
-        @frame quotation_description_frame {
-        -pdf-frame-content: quotation_description;
-        left: 320pt;
-        width: 270pt;
-        top: 174pt;
-        height: 200pt;
-    }
+    background-position: center;
 
-    @frame total_due_frame {
-        -pdf-frame-content: total_due;
-        left: 416pt;
-        width: 150pt;
-        top: 622pt;
-        height: 100pt;
-    }
+    background-repeat: no-repeat;
 
-    @frame content_frame {
-        left: 55pt;
-        width: 550pt;
-        top: 253pt;
-        height: 550pt;
-    }
 }
 
-body{
-    font-size:12px;
-    font-family:'Poppins';
+
+{% else %}
+
+
+/* =========================================
+   DEFAULT MIDDLE PAGES
+========================================= */
+
+
+@page {
+
+    size: A4 portrait;
+
+    margin:
+        15mm
+        14mm
+        15mm
+        14mm;
+
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:12px;
+
+/* =========================================
+   FIRST PAGE
+========================================= */
+
+
+@page :first {
+
+    margin:
+        70mm
+        14mm
+        15mm
+        14mm;
+
+    background-image: url(
+        "{{ header_bg }}"
+    );
+
+    background-size: 210mm 297mm;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
 }
 
-.table thead tr{
-    background:#ee7623;
-    color:#ffffff;
-    text-align:left;    
+
+/* =========================================
+   LAST PAGE
+========================================= */
+
+
+@page :nth({{ page_count }}) {
+
+    margin:
+        15mm
+        14mm
+        55mm
+        14mm;
+
+    background-image: url(
+        "{{ footer_bg }}"
+    );
+
+    background-size: 210mm 297mm;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
 }
 
-td,
-th{
-    border:1px solid #dddddd;
-    text-align:left;
+
+{% endif %}
+
+
+/* =========================================
+   QUOTATION HEADER INFORMATION
+========================================= */
+
+
+.quotation-header {
+
+    position: fixed;
+
+    top: -53mm;
+
+    left: 0;
+
+    right: 0;
+
+    height: 45mm;
+
 }
 
-tr:nth-child(even){
-    background:#f5f5f5;
+
+.customer-info {
+
+    position: absolute;
+
+    left: 15mm;
+
+    top: 12mm;
+
+    width: 75mm;
+
 }
 
-h1{
-    font-size:38px;
+
+.quotation-description {
+
+    position: absolute;
+
+    right: 10mm;
+
+    top: 12mm;
+
+    width: 75mm;
+
+    text-align: center;
+
 }
 
-h4{
-    font-size:18px;
-    color:#333;
+
+.quotation-info {
+
+    position: absolute;
+
+    right: 0;
+
+    top: -12mm;
+
+    width: 45mm;
+
+    color: white;
+
 }
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+
+.items-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 9px;
+
+}
+
+
+.items-table thead {
+
+    display: table-header-group;
+
+}
+
+
+.items-table tr {
+
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+
+}
+
+
+.items-table th {
+
+    background: #ee7623;
+
+    color: #ffffff;
+
+    border: 1px solid #dddddd;
+
+    padding: 3px;
+
+    text-align: left;
+
+}
+
+
+.items-table td {
+
+    border: 1px solid #dddddd;
+
+    padding: 3px;
+
+}
+
+
+.items-table tbody tr:nth-child(even) {
+
+    background: #f5f5f5;
+
+}
+
+
+.text-center {
+
+    text-align: center;
+
+}
+
+
+.text-right {
+
+    text-align: right;
+
+}
+
+
+/* =========================================
+   TOTAL
+========================================= */
+
+
+.total-label {
+
+    font-weight: bold;
+
+    text-align: right;
+
+}
+
+
+.total-value {
+
+    font-weight: bold;
+
+    text-align: right;
+
+}
+
+
+/* =========================================
+   TERMS
+========================================= */
+
+
+.terms {
+
+    margin-top: 8mm;
+
+    font-size: 8px;
+
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+
+}
+
+
+.terms-title {
+
+    font-weight: bold;
+
+    margin-bottom: 2mm;
+
+}
+
+
+.terms ul {
+
+    margin-top: 2mm;
+
+    padding-left: 5mm;
+
+}
+
+
+.terms li {
+
+    margin-bottom: 1mm;
+
+}
+
 
 </style>
 
 </head>
 
+
 <body>
 
-<!-- QUOTATION INFO -->
 
-<div id="quotation_info" style="color: #ffffff;">
+<!-- =========================================
+     HEADER INFORMATION
+========================================= -->
 
-    <strong>{{ quotation_no }}</strong><br>
 
-    <strong>{{ quotation.quote_date|date:"d/m/Y" }}</strong><br>
-    
-    <strong>{{ quotation.due_date|date:"d/m/Y" }}</strong>
+<div class="quotation-header">
+
+
+    <div class="quotation-info">
+
+        <strong>
+            {{ quotation_no }}
+        </strong>
+
+        <br>
+
+        <strong>
+            {{ quotation.quote_date|date:"d/m/Y" }}
+        </strong>
+
+        <br>
+
+        <strong>
+            {{ quotation.due_date|date:"d/m/Y" }}
+        </strong>
+
+    </div>
+
+
+    <div class="customer-info">
+
+        <strong>
+
+            {{ quotation.customer.customer_name }}
+
+        </strong>
+
+        <br>
+
+
+        {% if quotation.customer.company_name %}
+
+            {{ quotation.customer.company_name }}
+
+            <br>
+
+        {% endif %}
+
+
+        {% if quotation.customer.phone_number %}
+
+            {{ quotation.customer.phone_number }}
+
+            <br>
+
+        {% endif %}
+
+
+        {% if quotation.customer.tin_number %}
+
+            {{ quotation.customer.tin_number }}
+
+            <br>
+
+        {% endif %}
+
+
+        {% if quotation.customer.address %}
+
+            {{ quotation.customer.address }}
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="quotation-description">
+
+        <strong>
+
+            {{ quotation.title }}
+
+        </strong>
+
+
+        {% if quotation.description %}
+
+            <br>
+
+            {{ quotation.description }}
+
+        {% endif %}
+
+    </div>
+
 
 </div>
 
 
-<!-- CUSTOMER INFO -->
+<!-- =========================================
+     ITEMS TABLE
+========================================= -->
 
-<div id="customer_info">
 
-    <strong>
-        {{ quotation.customer.customer_name }}
-    </strong>
+<table class="items-table">
 
-    <br>   
-    {{ quotation.customer.company_name }}<br>    
 
-    {{ quotation.customer.phone_number }}
+    <thead>
 
-    <br>    
-    {{ quotation.customer.tin_number }}<br>
-    
-    {{ quotation.customer.address }}   
 
-</div>
+        <tr>
 
-<!-- PAYMENT TERMS -->
 
-<div id="payment_terms">
+            <th style="width:7%;">
 
-    <strong>Terms &amp; Conditions</strong>
+                No.
+
+            </th>
+
+
+            <th style="width:43%;">
+
+                DESCRIPTION
+
+            </th>
+
+
+            <th style="width:10%;">
+
+                QTY
+
+            </th>
+
+
+            <th style="width:20%;">
+
+                UNIT PRICE
+
+            </th>
+
+
+            <th style="width:20%;">
+
+                AMOUNT
+
+            </th>
+
+
+        </tr>
+
+
+    </thead>
+
+
+    <tbody>
+
+
+        {% for item in quotation.items.all %}
+
+
+            <tr>
+
+
+                <td class="text-center">
+
+                    {{ forloop.counter }}
+
+                </td>
+
+
+                <td>
+
+                    {{ item.item_name }}
+
+                </td>
+
+
+                <td class="text-center">
+
+                    {{ item.quantity|floatformat:0 }}
+
+                </td>
+
+
+                <td class="text-right">
+
+                    {{ item.unit_price|floatformat:0|intcomma }} /=
+
+                </td>
+
+
+                <td class="text-right">
+
+                    {{ item.total|floatformat:0|intcomma }} /=
+
+                </td>
+
+
+            </tr>
+
+
+        {% endfor %}
+
+
+    </tbody>
+
+
+    <tfoot>
+
+
+        <tr>
+
+
+            <td style="border:none;">
+
+            </td>
+
+
+            <td style="border:none;">
+
+            </td>
+
+
+            <td style="border:none;">
+
+            </td>
+
+
+            <td class="total-label">
+
+                TOTAL
+
+            </td>
+
+
+            <td class="total-value">
+
+                {{ quotation.total_amount|floatformat:0|intcomma }} /=
+
+            </td>
+
+
+        </tr>
+
+
+    </tfoot>
+
+
+</table>
+
+
+<!-- =========================================
+     TERMS AND CONDITIONS
+========================================= -->
+
+
+<div class="terms">
+
+
+    <div class="terms-title">
+
+        Terms &amp; Conditions
+
+    </div>
+
 
     <ul>
 
+
         {% for term in quotation.payment_terms.all %}
 
-            <li>{{ term.term }}</li>
+
+            <li>
+
+                {{ term.term }}
+
+            </li>
+
 
         {% empty %}
 
-            <li>No payment terms specified.</li>
+
+            <li>
+
+                No payment terms specified.
+
+            </li>
+
 
         {% endfor %}
-        <li>
-            {% if quotation.additional_terms %}
+
+
+        {% if quotation.additional_terms %}
+
+
+            <li>
+
                 {{ quotation.additional_terms }}
-            {% else %}
-                No additional terms specified.
-            {% endif %}
-        </li>       
+
+            </li>
+
+
+        {% endif %}
+
 
     </ul>
 
-</div>
-
-<!-- QUOTATION DESCRIPTION -->
-
-<div id="quotation_description" style="text-align: center;">
-
-    <strong>
-        {{ quotation.title }}
-    </strong>
-
-    <br>
-
-    {% if quotation.description %}
-        {{ quotation.description }}
-    {% endif %}
 
 </div>
 
 
-<!-- ITEMS TABLE -->
-
-<div class="table" id="content_frame">
-
-    <table>
-
-        <thead>
-
-            <tr>
-
-                <th style="width:40px;padding:3px;">
-                    No.
-                </th>
-
-                <th style="width:320px;padding:3px;">
-                    DESCRIPTION
-                </th>
-
-                <th style="width:60px;padding:3px;">
-                    QTY
-                </th>
-
-                <th style="width:110px;padding:3px;">
-                    UNIT PRICE
-                </th>
-
-                <th style="width:110px;padding:3px;">
-                    AMOUNT
-                </th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            {% for item in quotation.items.all %}
-
-            <tr>
-
-                <td style="padding:3px;">
-                    {{ forloop.counter }}
-                </td>
-
-                <td style="padding:3px;">
-                    {{ item.item_name }}
-                </td>
-
-                <td style="padding:3px;text-align: center;">
-                    {{ item.quantity|floatformat:0 }}{{ item.unit }}
-                </td>
-
-                <td style="padding:3px; text-align: center;">
-                    {{ item.unit_price|floatformat:0|intcomma }} /=
-                </td>
-
-                <td style="padding:3px; text-align: center;">
-                    {{ item.total|floatformat:0|intcomma }} /=
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-        <tfoot>
-
-            <tr>
-
-                <td style="border:none;"></td>
-
-                <td style="border:none;"></td>
-
-                <td style="border:none;"></td>
-
-                <td style="padding:4px;">
-                    <strong>TOTAL</strong>
-                </td>
-
-                <td style="padding:4px;">
-
-                    <strong>
-                        {{ quotation.total_amount|floatformat:0|intcomma }} /=
-                    </strong>
-
-                </td>
-
-            </tr>
-
-        </tfoot>
-
-    </table>
-
-</div>
 </body>
+
 </html>

@@ -1,128 +1,226 @@
-<form method="POST"
-      hx-post="{% if quotation %}
-                  {% url 'quotations:quotation_update' quotation.id %}
-               {% else %}
-                  {% url 'quotations:quotation_create' %}
-               {% endif %}"
-      hx-swap="none">
+<form
+    hx-post="
+        {% if quotation %}
+            {% url 'quotations:quotation_update' quotation.id %}
+        {% else %}
+            {% url 'quotations:quotation_create' %}
+        {% endif %}
+    "
+    hx-swap="none"
+>
 
     {% csrf_token %}
 
     {{ formset.management_form }}
+
+
+    <!-- =========================================
+         MODAL HEADER
+    ========================================== -->
 
     <div class="modal-header">
 
         <h5 class="modal-title">
 
             {% if quotation %}
+
                 Edit Quotation
+
             {% else %}
+
                 New Quotation
+
             {% endif %}
 
         </h5>
 
+
         <button
             type="button"
             class="btn-close"
-            data-bs-dismiss="modal">
-        </button>
+            data-bs-dismiss="modal"
+        ></button>
 
     </div>
 
-    <div class="modal-body"
-         style="overflow-y:auto;max-height:calc(95vh - 180px);">
 
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
+    <!-- =========================================
+         MODAL BODY
+    ========================================== -->
 
-        {% if formset.non_form_errors %}
-            <div class="alert alert-danger">
-                {{ formset.non_form_errors }}
-            </div>
-        {% endif %}
+    <div
+        class="modal-body"
+        style="
+            overflow-y: auto;
+            max-height: calc(95vh - 180px);
+        "
+    >
 
-        <!-- ===================================== -->
-        <!-- QUOTATION DETAILS -->
-        <!-- ===================================== -->
+
+        <!-- =========================================
+             QUOTATION DETAILS
+        ========================================== -->
 
         <div class="card mb-4">
-
-            <div class="card-header">
-                Quotation Details
-            </div>
 
             <div class="card-body">
 
                 <div class="row g-3">
 
-                    <div class="col-md-4">
-                        <label class="form-label">Title</label>
-                        {{ form.title }}
-                        <div class="text-danger small">
-                            {{ form.title.errors }}
-                        </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">Customer</label>
-                        {{ form.customer }}
-                        <div class="text-danger small">
-                            {{ form.customer.errors }}
-                        </div>
-                    </div>
+                    <!-- CUSTOMER -->
 
-                    <div class="col-md-4">
-                        <label class="form-label">Quote Date</label>
-                        {{ form.quote_date }}
-                        <div class="text-danger small">
-                            {{ form.quote_date.errors }}
-                        </div>
-                    </div>
+                    <div class="col-md-12">
 
-                    <div class="col-md-3">
-                        <label class="form-label">Due Date</label>
-                        {{ form.due_date }}
-                        <div class="text-danger small">
-                            {{ form.due_date.errors }}
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
                         <label class="form-label">
-                            Completion From
+                            Customer
                         </label>
+
+                        {{ form.customer_text }}
+
+
+                        <div class="text-danger small">
+
+                            {{ form.customer_text.errors }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TITLE -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Quotation Title
+
+                        </label>
+
+
+                        {{ form.title }}
+
+
+                        <div class="text-danger small">
+
+                            {{ form.title.errors }}
+
+                        </div>
+
+                    </div>
+                    <!-- QUOTATION DATE -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Quotation Date
+
+                        </label>
+
+
+                        {{ form.quote_date }}
+
+
+                        <div class="text-danger small">
+
+                            {{ form.quote_date.errors }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DUE DATE -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Due Date
+
+                        </label>
+
+
+                        {{ form.due_date }}
+
+
+                        <div class="text-danger small">
+
+                            {{ form.due_date.errors }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- COMPLETION PERIOD FROM -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Completion From
+
+                        </label>
+
 
                         {{ form.completion_period_from }}
 
+
                         <div class="text-danger small">
+
                             {{ form.completion_period_from.errors }}
+
                         </div>
+
                     </div>
 
-                    <div class="col-md-3">
+
+                    <!-- COMPLETION PERIOD TO -->
+
+                    <div class="col-md-4">
+
                         <label class="form-label">
+
                             Completion To
+
                         </label>
+
 
                         {{ form.completion_period_to }}
 
+
                         <div class="text-danger small">
+
                             {{ form.completion_period_to.errors }}
+
                         </div>
+
                     </div>
 
-                    <div class="col-md-3">
-                        <label class="form-label">Unit</label>
+
+                    <!-- COMPLETION PERIOD UNIT -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Period Unit
+
+                        </label>
+
 
                         {{ form.completion_period_unit }}
 
+
                         <div class="text-danger small">
+
                             {{ form.completion_period_unit.errors }}
+
                         </div>
+
                     </div>
 
                     <div class="col-md-6">
@@ -142,31 +240,24 @@
                         </div>
 
                     </div>
+                                        <!-- DESCRIPTION -->
 
                     <div class="col-md-6">
 
                         <label class="form-label">
-                            Additional Terms
-                        </label>
 
-                        {{ form.additional_terms }}
-
-                        <div class="text-danger small">
-                            {{ form.additional_terms.errors }}
-                        </div>
-
-                    </div>
-
-                    <div class="col-12">
-
-                        <label class="form-label">
                             Description
+
                         </label>
+
 
                         {{ form.description }}
 
+
                         <div class="text-danger small">
+
                             {{ form.description.errors }}
+
                         </div>
 
                     </div>
@@ -177,193 +268,789 @@
 
         </div>
 
-        <!-- ===================================== -->
-        <!-- QUOTATION ITEMS -->
-        <!-- ===================================== -->
 
-        <div class="card border">
+        <!-- =========================================
+             QUOTATION ITEMS
+        ========================================== -->
 
-            <div class="card-header py-2">
+        <div class="card">
 
-                <div class="d-flex justify-content-between align-items-center">
+            <div class="card-header">
 
-                    <h6 class="mb-0">
-                        Quotation Items
-                    </h6>
-
-                    <button
-                        type="button"
-                        id="add-item-row"
-                        class="btn btn-primary btn-sm">
-
-                        <i class="fa-solid fa-plus"></i>
-
-                    </button>
-
-                </div>
+                Quotation Items
 
             </div>
 
-            <div class="card-body p-0 cmf-items-container">
 
-                <div class="table-responsive">
+            <div class="table-responsive">
 
-                    <table class="table table-bordered table-sm align-middle mb-0">
+                <table
+                    class="
+                        table
+                        table-sm
+                        table-bordered
+                        mb-0
+                        align-middle
+                    "
+                >
 
-                        <thead class="table-light">
+                    <thead class="table-light">
 
-                            <tr>
+                        <tr>
 
-                                <th width="55%">
-                                    Item Name
-                                </th>
+                            <th>
+                                Product
+                            </th>
 
-                                <th width="15%">
-                                    Qty
-                                </th>
+                            <th>
+                                Item Name
+                            </th>
 
-                                <th width="20%">
-                                    Unit Price
-                                </th>
+                            <th width="100">
+                                Qty
+                            </th>
 
-                                <th width="10%" class="text-center">
-                                    Del
-                                </th>
+                            <th width="130">
+                                Unit Price
+                            </th>
 
-                            </tr>
+                            <th width="100">
+                                Tangible
+                            </th>
 
-                        </thead>
+                            <th width="60">
+                                Del
+                            </th>
 
-                        <tbody>
+                        </tr>
 
-                            {% for item_form in formset %}
+                    </thead>
 
-                            <tr class="formset-row">
 
-                                {% for hidden in item_form.hidden_fields %}
-                                    {{ hidden }}
-                                {% endfor %}
+                    <tbody id="quotation-items-container">
 
-                                <td class="p-1">
-                                    {{ item_form.item_name }}
-                                    <div class="text-danger small">
-                                        {{ item_form.item_name.errors }}
-                                    </div>
-                                </td>
+                        {% for form in formset %}
 
-                                <td class="p-1">
-                                    {{ item_form.quantity }}
-                                    <div class="text-danger small">
-                                        {{ item_form.quantity.errors }}
-                                    </div>
-                                </td>
+                            {% include "quotations/partials/item_row.html" %}
 
-                                <td class="p-1">
-                                    {{ item_form.unit_price }}
-                                    <div class="text-danger small">
-                                        {{ item_form.unit_price.errors }}
-                                    </div>
-                                </td>
+                        {% endfor %}
 
-                                <td class="text-center p-1">
+                    </tbody>
 
-                                    <div style="display:none">
-
-                                        {{ item_form.DELETE }}
-
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-danger btn-sm remove-row">
-
-                                        <i class="fa-solid fa-trash"></i>
-
-                                    </button>
-
-                                </td>
-
-                            </tr>
-
-                            {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-                <!-- EMPTY ROW -->
-
-                <template id="empty-form-template">
-
-                    <tr class="formset-row">
-
-                        {% with item_form=formset.empty_form %}
-
-                            {% for hidden in item_form.hidden_fields %}
-                                {{ hidden }}
-                            {% endfor %}
-
-                            <td class="p-1">
-                                {{ item_form.item_name }}
-                            </td>
-
-                            <td class="p-1">
-                                {{ item_form.quantity }}
-                            </td>
-
-                            <td class="p-1">
-                                {{ item_form.unit_price }}
-                            </td>
-
-                            <td class="text-center p-1">
-
-                                <button
-                                    type="button"
-                                    class="btn btn-danger btn-sm remove-row">
-
-                                    <i class="fa-solid fa-trash"></i>
-
-                                </button>
-
-                            </td>
-
-                        {% endwith %}
-
-                    </tr>
-
-                </template>
+                </table>
 
             </div>
 
         </div>
 
+
     </div>
+
+
+    <!-- =========================================
+         MODAL FOOTER
+    ========================================== -->
 
     <div class="modal-footer">
 
         <button
             type="button"
             class="btn btn-secondary"
-            data-bs-dismiss="modal">
+            data-bs-dismiss="modal"
+        >
 
             Close
 
         </button>
 
+
         <button
             type="submit"
-            class="btn btn-success">
+            class="btn btn-success"
+        >
 
-            {% if quotation %}
-                Update Quotation
-            {% else %}
-                Save Quotation
-            {% endif %}
+            Save Quotation
 
         </button>
 
     </div>
 
 </form>
+
+
+<script>
+
+;(function () {
+
+
+    /* =========================================
+       INITIALIZE QUOTATION ROWS
+    ========================================= */
+
+    function initializeQuotationRows(
+        container = document
+    ) {
+
+        const rows =
+            container.querySelectorAll(
+                "#quotation-items-container tr"
+            );
+
+
+        rows.forEach(function (row) {
+
+
+            if (
+                row.dataset.quotationRowBound
+                === "true"
+            ) {
+
+                return;
+
+            }
+
+
+            row.dataset.quotationRowBound =
+                "true";
+
+
+            const productInput =
+                row.querySelector(
+                    'select[name$="-product"]'
+                );
+
+
+            const descriptionInput =
+                row.querySelector(
+                    'input[name$="-description"]'
+                );
+
+
+            const unitPriceInput =
+                row.querySelector(
+                    'input[name$="-unit_price"]'
+                );
+
+
+            const tangibleInput =
+                row.querySelector(
+                    'select[name$="-is_tangible"]'
+                );
+
+
+            /* =========================================
+               INITIAL ROW STATE
+            ========================================= */
+
+            updateQuotationRowState(
+                row
+            );
+
+
+            /* =========================================
+               PRODUCT CHANGE
+            ========================================= */
+
+            if (productInput) {
+
+                productInput.addEventListener(
+                    "change",
+
+                    async function () {
+
+
+                        /* =================================
+                           PRODUCT SELECTED
+                        ================================= */
+
+                        if (this.value) {
+
+
+                            if (descriptionInput) {
+
+                                descriptionInput.value = "";
+
+                            }
+
+
+                            updateQuotationRowState(
+                                row
+                            );
+
+
+                            /* =================================
+                               LOAD PRODUCT PRICE
+                            ================================= */
+
+                            if (unitPriceInput) {
+
+                                await loadQuotationProductPrice(
+                                    this.value,
+                                    unitPriceInput
+                                );
+
+                            }
+
+
+                            /* =================================
+                               LOAD PRODUCT TANGIBLE STATE
+                            ================================= */
+
+                            if (tangibleInput) {
+
+                                await loadProductTangibleState(
+                                    this.value,
+                                    tangibleInput
+                                );
+
+                            }
+
+
+                            ensureQuotationEmptyRow();
+
+                        }
+
+
+                        /* =================================
+                           PRODUCT CLEARED
+                        ================================= */
+
+                        else {
+
+                            updateQuotationRowState(
+                                row
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            /* =========================================
+               DESCRIPTION INPUT
+            ========================================= */
+
+            if (descriptionInput) {
+
+                descriptionInput.addEventListener(
+                    "input",
+
+                    function () {
+
+
+                        const hasDescription =
+                            this.value.trim() !== "";
+
+
+                        if (hasDescription) {
+
+
+                            if (
+                                productInput
+                                &&
+                                productInput.value
+                            ) {
+
+                                productInput.value = "";
+
+
+                                productInput.dispatchEvent(
+                                    new Event(
+                                        "change",
+                                        {
+                                            bubbles: true,
+                                        }
+                                    )
+                                );
+
+                            }
+
+
+                            updateQuotationRowState(
+                                row
+                            );
+
+
+                            ensureQuotationEmptyRow();
+
+                        }
+
+
+                        else {
+
+                            updateQuotationRowState(
+                                row
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+        });
+
+    }
+
+
+    /* =========================================
+       UPDATE QUOTATION ROW STATE
+    ========================================= */
+
+    function updateQuotationRowState(row) {
+
+
+        const productInput =
+            row.querySelector(
+                'select[name$="-product"]'
+            );
+
+
+        const descriptionInput =
+            row.querySelector(
+                'input[name$="-description"]'
+            );
+
+
+        const tangibleInput =
+            row.querySelector(
+                'select[name$="-is_tangible"]'
+            );
+
+
+        if (
+            !productInput
+            ||
+            !descriptionInput
+        ) {
+
+            return;
+
+        }
+
+
+        const hasProduct =
+            productInput.value !== "";
+
+
+        const hasDescription =
+            descriptionInput.value
+                .trim() !== "";
+
+
+        /* =========================================
+           PRODUCT SELECTED
+        ========================================= */
+
+        if (hasProduct) {
+
+
+            descriptionInput.disabled = true;
+
+            productInput.disabled = false;
+
+
+            if (tangibleInput) {
+
+                tangibleInput.disabled = true;
+
+            }
+
+
+            return;
+
+        }
+
+
+        /* =========================================
+           CUSTOM ITEM ENTERED
+        ========================================= */
+
+        if (hasDescription) {
+
+
+            productInput.disabled = true;
+
+            descriptionInput.disabled = false;
+
+
+            if (tangibleInput) {
+
+                tangibleInput.disabled = false;
+
+            }
+
+
+            return;
+
+        }
+
+
+        /* =========================================
+           EMPTY ROW
+        ========================================= */
+
+        productInput.disabled = false;
+
+        descriptionInput.disabled = false;
+
+
+        if (tangibleInput) {
+
+            tangibleInput.disabled = false;
+
+        }
+
+    }
+
+
+    /* =========================================
+       ENSURE ONE EMPTY ROW
+    ========================================= */
+
+    function ensureQuotationEmptyRow() {
+
+
+        const rows =
+            document.querySelectorAll(
+                "#quotation-items-container tr"
+            );
+
+
+        if (!rows.length) {
+
+            return;
+
+        }
+
+
+        const lastRow =
+            rows[
+                rows.length - 1
+            ];
+
+
+        const productInput =
+            lastRow.querySelector(
+                'select[name$="-product"]'
+            );
+
+
+        const descriptionInput =
+            lastRow.querySelector(
+                'input[name$="-description"]'
+            );
+
+
+        if (
+            !productInput
+            ||
+            !descriptionInput
+        ) {
+
+            return;
+
+        }
+
+
+        const hasProduct =
+            productInput.value !== "";
+
+
+        const hasDescription =
+            descriptionInput.value
+                .trim() !== "";
+
+
+        /* =========================================
+           LAST ROW CONTAINS DATA
+        ========================================= */
+
+        if (
+            hasProduct
+            ||
+            hasDescription
+        ) {
+
+            appendQuotationRow();
+
+        }
+
+    }
+
+
+    /* =========================================
+       LOAD PRODUCT EFFECTIVE PRICE
+    ========================================= */
+
+    async function loadQuotationProductPrice(
+        productId,
+        unitPriceInput
+    ) {
+
+
+        try {
+
+
+            const url =
+                "{% url 'invoices:product_price' 0 %}"
+                .replace(
+                    "/0/",
+                    "/" + productId + "/"
+                );
+
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+                        },
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load product price."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            unitPriceInput.value =
+                data.selling_price || "";
+
+
+            unitPriceInput.dispatchEvent(
+                new Event(
+                    "input",
+                    {
+                        bubbles: true,
+                    }
+                )
+            );
+
+
+            unitPriceInput.dispatchEvent(
+                new Event(
+                    "change",
+                    {
+                        bubbles: true,
+                    }
+                )
+            );
+
+
+        }
+
+        catch (error) {
+
+
+            console.error(
+                "Product price error:",
+                error
+            );
+
+
+        }
+
+    }
+
+
+    /* =========================================
+       LOAD PRODUCT TANGIBLE STATE
+    ========================================= */
+
+    async function loadProductTangibleState(
+        productId,
+        tangibleInput
+    ) {
+
+
+        try {
+
+
+            const url =
+                "{% url 'quotations:product_state' 0 %}"
+                .replace(
+                    "/0/",
+                    "/" + productId + "/"
+                );
+
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+                        },
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load product state."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            tangibleInput.value =
+                data.is_tangible
+                    ? "True"
+                    : "False";
+
+
+            tangibleInput.dispatchEvent(
+                new Event(
+                    "change",
+                    {
+                        bubbles: true,
+                    }
+                )
+            );
+
+
+        }
+
+        catch (error) {
+
+
+            console.error(
+                "Product tangible state error:",
+                error
+            );
+
+
+        }
+
+    }
+
+
+    /* =========================================
+       APPEND NEW QUOTATION ROW
+    ========================================= */
+
+    function appendQuotationRow() {
+
+
+        const totalForms =
+            document.getElementById(
+                "id_items-TOTAL_FORMS"
+            );
+
+
+        if (!totalForms) {
+
+            return;
+
+        }
+
+
+        const current =
+            parseInt(
+                totalForms.value,
+                10
+            );
+
+
+        htmx.ajax(
+            "GET",
+
+            "{% url 'quotations:quotation_item_empty_row' %}"
+            + "?total_forms="
+            + current,
+
+            {
+                target:
+                    "#quotation-items-container",
+
+                swap:
+                    "beforeend",
+            }
+        );
+
+
+        totalForms.value =
+            current + 1;
+
+    }
+
+
+    /* =========================================
+       INITIALIZE CURRENT ROWS
+    ========================================= */
+
+    initializeQuotationRows(
+        document
+    );
+
+
+    /* =========================================
+       INITIALIZE HTMX ADDED ROWS
+    ========================================= */
+
+    document.body.addEventListener(
+        "htmx:afterSettle",
+
+        function (event) {
+
+
+            const target =
+                event.detail.target;
+
+
+            if (!target) {
+
+                return;
+
+            }
+
+
+            if (
+                target.id
+                === "quotation-items-container"
+
+                ||
+
+                target.closest(
+                    "#quotation-items-container"
+                )
+            ) {
+
+
+                initializeQuotationRows(
+                    document
+                );
+
+
+            }
+
+        }
+    );
+
+
+})();
+
+</script>
