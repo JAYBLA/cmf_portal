@@ -17,6 +17,8 @@
 ========================================= */
 
 
+{% if poppins_font %}
+
 @font-face {
 
     font-family: "Poppins";
@@ -27,6 +29,8 @@
 
 }
 
+{% endif %}
+
 
 * {
 
@@ -35,13 +39,21 @@
 }
 
 
+html,
 body {
 
     margin: 0;
 
+    padding: 0;
+
+}
+
+
+body {
+
     font-family: "Poppins", sans-serif;
 
-    font-size: 9px;
+    font-size: 12px;
 
     color: #222;
 
@@ -49,7 +61,7 @@ body {
 
 
 /* =========================================
-   SINGLE PAGE QUOTATION
+   SINGLE PAGE
 ========================================= */
 
 
@@ -66,25 +78,15 @@ body {
         55mm
         14mm;
 
-    background-image: url(
-        "{{ single_bg }}"
-    );
-
-    background-size: 210mm 297mm;
-
-    background-position: center;
-
-    background-repeat: no-repeat;
-
 }
 
 
-{% else %}
-
-
 /* =========================================
-   DEFAULT MIDDLE PAGES
+   MULTI PAGE
 ========================================= */
+
+
+{% else %}
 
 
 @page {
@@ -100,11 +102,6 @@ body {
 }
 
 
-/* =========================================
-   FIRST PAGE
-========================================= */
-
-
 @page :first {
 
     margin:
@@ -113,22 +110,7 @@ body {
         15mm
         14mm;
 
-    background-image: url(
-        "{{ header_bg }}"
-    );
-
-    background-size: 210mm 297mm;
-
-    background-position: center;
-
-    background-repeat: no-repeat;
-
 }
-
-
-/* =========================================
-   LAST PAGE
-========================================= */
 
 
 @page :nth({{ page_count }}) {
@@ -138,16 +120,6 @@ body {
         14mm
         55mm
         14mm;
-
-    background-image: url(
-        "{{ footer_bg }}"
-    );
-
-    background-size: 210mm 297mm;
-
-    background-position: center;
-
-    background-repeat: no-repeat;
 
 }
 
@@ -162,7 +134,7 @@ body {
 
 .quotation-header {
 
-    position: fixed;
+    position: absolute;
 
     top: -53mm;
 
@@ -179,11 +151,12 @@ body {
 
     position: absolute;
 
-    left: 15mm;
+    left: 22mm;
 
-    top: 12mm;
+    top: 45mm;
 
     width: 75mm;
+        line-height: 1.48;
 
 }
 
@@ -192,11 +165,11 @@ body {
 
     position: absolute;
 
-    right: 10mm;
+    right: 2mm;
 
-    top: 12mm;
-
-    width: 75mm;
+    top: 45mm;
+    
+    width: 105mm;
 
     text-align: center;
 
@@ -208,12 +181,14 @@ body {
     position: absolute;
 
     right: 0;
+    left: 160mm;
 
-    top: -12mm;
+    top: 12mm;
 
     width: 45mm;
 
     color: white;
+        line-height: 1.6;
 
 }
 
@@ -228,9 +203,8 @@ body {
     width: 100%;
 
     border-collapse: collapse;
-
-    font-size: 9px;
-
+    margin-top: 22mm;
+    line-height: 1.4;  
 }
 
 
@@ -325,9 +299,13 @@ body {
 
 .terms {
 
-    margin-top: 8mm;
+    position: absolute;
 
-    font-size: 8px;
+    left: 0;
+
+    right: 0;
+
+    bottom: -30mm;
 
     break-inside: avoid;
 
@@ -359,7 +337,6 @@ body {
     margin-bottom: 1mm;
 
 }
-
 
 </style>
 
@@ -482,9 +459,9 @@ body {
         <tr>
 
 
-            <th style="width:7%;">
+            <th style="width:7%; text-align: center;">
 
-                No.
+                S/N
 
             </th>
 
@@ -496,21 +473,21 @@ body {
             </th>
 
 
-            <th style="width:10%;">
+            <th style="width:10%; text-align: center;">
 
                 QTY
 
             </th>
 
 
-            <th style="width:20%;">
+            <th style="width:20%; text-align: right;">
 
                 UNIT PRICE
 
             </th>
 
 
-            <th style="width:20%;">
+            <th style="width:20%; text-align: right;">
 
                 AMOUNT
 
@@ -548,7 +525,7 @@ body {
 
                 <td class="text-center">
 
-                    {{ item.quantity|floatformat:0 }}
+                    {{ item.quantity|floatformat:0 }} {{ item.product.product_unit }}
 
                 </td>
 
@@ -582,19 +559,11 @@ body {
         <tr>
 
 
-            <td style="border:none;">
+            <td style="border:none;"></td>
 
-            </td>
+            <td style="border:none;"></td>
 
-
-            <td style="border:none;">
-
-            </td>
-
-
-            <td style="border:none;">
-
-            </td>
+            <td style="border:none;"></td>
 
 
             <td class="total-label">

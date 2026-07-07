@@ -1,56 +1,25 @@
 import json
+from io import BytesIO
+from pathlib import Path
 
-from django.db import (
-    transaction,
-)
-
-from django.db.models import (
-    ProtectedError,
-)
-
-from django.http import (
-    HttpResponse,
-    JsonResponse,
-)
-
-from products.models import (
-    Product,
-)
-
-from django.shortcuts import (
-    render,
-    get_object_or_404,
-)
-
-from django.templatetags.static import (
-    static,
-)
-
-from django.utils.text import (
-    slugify,
-)
-
-
-from customers.models import (
-    Customer,
-)
-
-
-from .models import (
-    Quotation,
-)
-
-
-from .forms import (
-    QuotationForm,
-    QuotationItemFormSet,
-)
-
+from django.contrib.staticfiles import finders
+from django.db import transaction
 from django.db.models import ProtectedError
-from django.template.loader import (
-    render_to_string,
-)
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+from django.templatetags.static import static
+from django.utils.text import slugify
+
+from pypdf import PdfReader, PdfWriter
 from weasyprint import HTML
+
+from customers.models import Customer
+from products.models import Product
+
+from .forms import QuotationForm, QuotationItemFormSet
+from .models import Quotation
+
 
 # =====================================================
 # QUOTATION LIST
@@ -585,7 +554,237 @@ def product_state(
         }
     )
 
+# =====================================================
+# CREATE A4 BACKGROUND PDF
+# =====================================================
 
+
+def create_background_pdf(image_uri):
+
+    html = f"""
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <meta charset="utf-8">
+
+
+        <style>
+
+
+            @page {{
+
+                size: A4 portrait;
+
+                margin: 0;
+
+            }}
+
+
+            html,
+            body {{
+
+                margin: 0;
+
+                padding: 0;
+
+                width: 210mm;
+
+                height: 297mm;
+
+            }}
+
+
+            img {{
+
+                display: block;
+
+                width: 210mm;
+
+                height: 297mm;
+
+            }}
+
+
+        </style>
+
+    </head>
+
+
+    <body>
+
+
+        <img src="{image_uri}">
+
+
+    </body>
+
+    </html>
+    """
+
+
+    return HTML(
+        string=html,
+    ).write_pdf()
+
+# =====================================================
+# APPLY PAGE BACKGROUNDS
+# =====================================================
+
+
+def apply_quotation_backgrounds(
+    content_pdf,
+    header_bg,
+    footer_bg,
+    single_bg,
+):
+
+    # =========================================
+    # READ CONTENT PDF
+    # =========================================
+
+    content_reader = PdfReader(
+        BytesIO(content_pdf)
+    )
+
+
+    page_count = len(
+        content_reader.pages
+    )
+
+
+    # =========================================
+    # CREATE BACKGROUND PDFS
+    # =========================================
+
+    header_pdf = create_background_pdf(
+        header_bg
+    )
+
+
+    footer_pdf = create_background_pdf(
+        footer_bg
+    )
+
+
+    single_pdf = create_background_pdf(
+        single_bg
+    )
+
+
+    # =========================================
+    # READ BACKGROUND PDFS
+    # =========================================
+
+    header_reader = PdfReader(
+        BytesIO(header_pdf)
+    )
+
+
+    footer_reader = PdfReader(
+        BytesIO(footer_pdf)
+    )
+
+
+    single_reader = PdfReader(
+        BytesIO(single_pdf)
+    )
+
+
+    # =========================================
+    # PDF WRITER
+    # =========================================
+
+    writer = PdfWriter()
+
+
+    # =========================================
+    # PROCESS EACH PAGE
+    # =========================================
+
+    for index, content_page in enumerate(
+        content_reader.pages
+    ):
+
+        # =====================================
+        # SINGLE PAGE
+        # =====================================
+
+        if page_count == 1:
+
+            background_page = (
+                single_reader.pages[0]
+            )
+
+
+        # =====================================
+        # FIRST PAGE
+        # =====================================
+
+        elif index == 0:
+
+            background_page = (
+                header_reader.pages[0]
+            )
+
+
+        # =====================================
+        # LAST PAGE
+        # =====================================
+
+        elif index == page_count - 1:
+
+            background_page = (
+                footer_reader.pages[0]
+            )
+
+
+        # =====================================
+        # MIDDLE PAGE
+        # =====================================
+
+        else:
+
+            writer.add_page(
+                content_page
+            )
+
+            continue
+
+
+        # =====================================
+        # BACKGROUND FIRST
+        # CONTENT SECOND
+        # =====================================
+
+        background_page.merge_page(
+            content_page
+        )
+
+
+        writer.add_page(
+            background_page
+        )
+
+
+    # =========================================
+    # WRITE FINAL PDF
+    # =========================================
+
+    output = BytesIO()
+
+
+    writer.write(
+        output
+    )
+
+
+    output.seek(0)
+
+
+    return output.getvalue()
 # =====================================================
 # DOWNLOAD QUOTATION PDF
 # =====================================================
@@ -607,83 +806,149 @@ def download_quotation_pdf(request, pk):
         pk=pk,
     )
 
+
     # =========================================
-    # BACKGROUND IMAGES
+    # BACKGROUND IMAGE PATHS
     # =========================================
 
-    header_bg = request.build_absolute_uri(static("images/quote_header.png"))
+    header_path = finders.find(
+        "images/quote_header.png"
+    )
 
-    footer_bg = request.build_absolute_uri(static("images/quote_footer.png"))
 
-    single_bg = request.build_absolute_uri(static("images/quote_single.png"))
+    footer_path = finders.find(
+        "images/quote_footer.png"
+    )
+
+
+    single_path = finders.find(
+        "images/quotation_single.png"
+    )
+
+
+    # =========================================
+    # VALIDATE BACKGROUND FILES
+    # =========================================
+
+    if not header_path:
+
+        raise FileNotFoundError(
+            "quote_header.png was not found."
+        )
+
+
+    if not footer_path:
+
+        raise FileNotFoundError(
+            "quote_footer.png was not found."
+        )
+
+
+    if not single_path:
+
+        raise FileNotFoundError(
+            "quotation_single.png was not found."
+        )
+
+
+    # =========================================
+    # FILE URIS
+    # =========================================
+
+    header_bg = Path(
+        header_path
+    ).resolve().as_uri()
+
+
+    footer_bg = Path(
+        footer_path
+    ).resolve().as_uri()
+
+
+    single_bg = Path(
+        single_path
+    ).resolve().as_uri()
+
 
     # =========================================
     # QUOTATION NUMBER
     # =========================================
 
-    quotation_no = f"CMFQ00{quotation.id}"
-
-    # =========================================
-    # BASE URL
-    # =========================================
-
-    base_url = request.build_absolute_uri("/")
-
-    # =========================================
-    # FIRST PASS CONTEXT
-    # =========================================
-
-    first_pass_context = {
-        "quotation": quotation,
-        "quotation_no": quotation_no,
-        "header_bg": header_bg,
-        "footer_bg": footer_bg,
-        "single_bg": single_bg,
-        "page_count": 0,
-        "is_first_pass": True,
-    }
-
-    # =========================================
-    # RENDER FIRST PASS HTML
-    # =========================================
-
-    first_pass_html = render_to_string(
-        "quotations/quotation_pdf.html",
-        first_pass_context,
-        request=request,
+    quotation_no = (
+        f"CMFQ00{quotation.id}"
     )
 
-    # =========================================
-    # WEASYPRINT FIRST PASS
-    # =========================================
-
-    first_pass_document = HTML(
-        string=first_pass_html,
-        base_url=base_url,
-    ).render()
 
     # =========================================
-    # ACTUAL PAGE COUNT
+    # FIRST PAGINATION PASS
     # =========================================
 
-    page_count = len(first_pass_document.pages)
+    page_count = 1
+
+
+    for _ in range(5):
+
+        context = {
+
+            "quotation": quotation,
+
+            "quotation_no": quotation_no,
+
+            "page_count": page_count,
+
+        }
+
+
+        html = render_to_string(
+            "quotations/quotation_pdf.html",
+            context,
+            request=request,
+        )
+
+
+        document = HTML(
+            string=html,
+        ).render()
+
+
+        actual_page_count = len(
+            document.pages
+        )
+
+
+        # =====================================
+        # PAGINATION IS STABLE
+        # =====================================
+
+        if actual_page_count == page_count:
+
+            break
+
+
+        # =====================================
+        # UPDATE PAGE COUNT
+        # =====================================
+
+        page_count = actual_page_count
+
 
     # =========================================
-    # FINAL CONTEXT
+    # FINAL HTML CONTEXT
     # =========================================
 
     final_context = {
+
         "quotation": quotation,
+
         "quotation_no": quotation_no,
-        "header_bg": header_bg,
-        "footer_bg": footer_bg,
-        "single_bg": single_bg,
+
         "page_count": page_count,
-        "is_first_pass": False,
+
     }
 
+
     # =========================================
-    # RENDER FINAL HTML
+    # FINAL HTML
     # =========================================
 
     final_html = render_to_string(
@@ -692,32 +957,60 @@ def download_quotation_pdf(request, pk):
         request=request,
     )
 
+
     # =========================================
-    # GENERATE FINAL PDF
+    # GENERATE CONTENT PDF
     # =========================================
 
-    pdf = HTML(
+    content_pdf = HTML(
         string=final_html,
-        base_url=base_url,
     ).write_pdf()
+
+
+    # =========================================
+    # APPLY PAGE BACKGROUNDS
+    # =========================================
+
+    pdf = apply_quotation_backgrounds(
+        content_pdf=content_pdf,
+        header_bg=header_bg,
+        footer_bg=footer_bg,
+        single_bg=single_bg,
+    )
+
 
     # =========================================
     # CUSTOMER NAME
     # =========================================
 
-    customer_name = slugify(quotation.customer.customer_name)
+    customer_name = slugify(
+        quotation.customer.customer_name
+    )
+
 
     # =========================================
     # QUOTATION TITLE
     # =========================================
 
-    quotation_title = slugify(quotation.title)
+    quotation_title = slugify(
+        quotation.title
+    )
+
 
     # =========================================
     # FILE NAME
     # =========================================
 
-    filename = f"{quotation_no}-" f"{customer_name}-" f"{quotation_title}.pdf"
+    filename = (
+
+        f"{quotation_no}-"
+
+        f"{customer_name}-"
+
+        f"{quotation_title}.pdf"
+
+    )
+
 
     # =========================================
     # PDF RESPONSE
@@ -728,6 +1021,14 @@ def download_quotation_pdf(request, pk):
         content_type="application/pdf",
     )
 
-    response["Content-Disposition"] = "inline; " f'filename="{filename}"'
+
+    response["Content-Disposition"] = (
+
+        "inline; "
+
+        f'filename="{filename}"'
+
+    )
+
 
     return response
