@@ -565,6 +565,7 @@ def download_quotation_pdf(request, pk):
             "customer",
         ).prefetch_related(
             "items",
+            "items__product",
             "payment_terms",
         ),
         pk=pk,
@@ -579,11 +580,9 @@ def download_quotation_pdf(request, pk):
         "images/quote_header.png"
     )
 
-
     footer_path = finders.find(
         "images/quote_footer.png"
     )
-
 
     single_path = finders.find(
         "images/quotation_single.png"
@@ -616,53 +615,49 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # FILE URIS
+    # BACKGROUND FILE URIS
     # =========================================
 
-    header_bg = Path(
-        header_path
-    ).resolve().as_uri()
+    header_bg = (
+        Path(header_path)
+        .resolve()
+        .as_uri()
+    )
 
+    footer_bg = (
+        Path(footer_path)
+        .resolve()
+        .as_uri()
+    )
 
-    footer_bg = Path(
-        footer_path
-    ).resolve().as_uri()
+    single_bg = (
+        Path(single_path)
+        .resolve()
+        .as_uri()
+    )
 
-
-    single_bg = Path(
-        single_path
-    ).resolve().as_uri()
 
     # =========================================
-    # FONT PATH
+    # FONT
     # =========================================
-
 
     poppins_font_path = finders.find(
         "fonts/Poppins-Regular.ttf"
     )
 
 
-    # =========================================
-    # VALIDATE FONT FILE
-    # =========================================
+    if poppins_font_path:
 
-
-    if not poppins_font_path:
-
-        raise FileNotFoundError(
-            "Poppins-Regular.ttf was not found."
+        poppins_font = (
+            Path(poppins_font_path)
+            .resolve()
+            .as_uri()
         )
 
+    else:
 
-    # =========================================
-    # FONT FILE URI
-    # =========================================
+        poppins_font = None
 
-
-    poppins_font = Path(
-        poppins_font_path
-    ).resolve().as_uri()
 
     # =========================================
     # QUOTATION NUMBER
@@ -674,7 +669,7 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # FIRST PAGINATION PASS
+    # PAGINATION PASS
     # =========================================
 
     page_count = 1
@@ -689,6 +684,7 @@ def download_quotation_pdf(request, pk):
             "quotation_no": quotation_no,
 
             "page_count": page_count,
+
             "poppins_font": poppins_font,
 
         }
@@ -712,7 +708,7 @@ def download_quotation_pdf(request, pk):
 
 
         # =====================================
-        # PAGINATION IS STABLE
+        # PAGINATION STABLE
         # =====================================
 
         if actual_page_count == page_count:
@@ -720,15 +716,11 @@ def download_quotation_pdf(request, pk):
             break
 
 
-        # =====================================
-        # UPDATE PAGE COUNT
-        # =====================================
-
         page_count = actual_page_count
 
 
     # =========================================
-    # FINAL HTML CONTEXT
+    # FINAL CONTEXT
     # =========================================
 
     final_context = {
@@ -738,7 +730,8 @@ def download_quotation_pdf(request, pk):
         "quotation_no": quotation_no,
 
         "page_count": page_count,
-        "poppins_font": poppins_font,        
+
+        "poppins_font": poppins_font,
 
     }
 
@@ -776,7 +769,7 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # CUSTOMER NAME
+    # FILE NAME
     # =========================================
 
     customer_name = slugify(
@@ -784,18 +777,10 @@ def download_quotation_pdf(request, pk):
     )
 
 
-    # =========================================
-    # QUOTATION TITLE
-    # =========================================
-
     quotation_title = slugify(
         quotation.title
     )
 
-
-    # =========================================
-    # FILE NAME
-    # =========================================
 
     filename = (
 

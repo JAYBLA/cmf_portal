@@ -732,35 +732,25 @@ def download_invoice_pdf(request, pk):
     ).resolve().as_uri()
 
     # =========================================
-    # FONT PATH
+    # FONT
     # =========================================
-
 
     poppins_font_path = finders.find(
         "fonts/Poppins-Regular.ttf"
     )
 
 
-    # =========================================
-    # VALIDATE FONT FILE
-    # =========================================
+    if poppins_font_path:
 
-
-    if not poppins_font_path:
-
-        raise FileNotFoundError(
-            "Poppins-Regular.ttf was not found."
+        poppins_font = (
+            Path(poppins_font_path)
+            .resolve()
+            .as_uri()
         )
 
+    else:
 
-    # =========================================
-    # FONT FILE URI
-    # =========================================
-
-
-    poppins_font = Path(
-        poppins_font_path
-    ).resolve().as_uri()
+        poppins_font = None
 
 
     # =========================================
