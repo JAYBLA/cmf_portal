@@ -51,156 +51,36 @@
       </div>
       <!-- card end -->
     </div>
-<div class="col">
-
-  <div
-    class="
-      card
-      shadow-none
-      border
-      bg-gradient-start-4
-      h-100
-    "
-  >
-
-    <div class="card-body p-20">
-
-      <div
-        class="
-          d-flex
-          flex-wrap
-          align-items-center
-          justify-content-between
-          gap-3
-        "
-      >
-
-        <div class="text-center">
-
-          <p
-            class="
-              fw-medium
-              text-primary-light
-              mb-1
-            "
-          >
-            Total Receipts
-          </p>
-
-          <h6 class="mb-0">
-
-            {{ receipt_count }}
-
-          </h6>
-
-        </div>
-
-
-        <div
-          class="
-            w-50-px
-            h-50-px
-            bg-success-main
-            rounded-circle
-            d-flex
-            justify-content-center
-            align-items-center
-          "
-        >
-
-          <iconify-icon
-            icon="solar:bill-list-bold"
-            class="
-              text-white
-              text-2xl
-              mb-0
-            "
-          ></iconify-icon>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
     <div class="col">
-
-  <div
-    class="
-      card
-      shadow-none
-      border
-      bg-gradient-start-5
-      h-100
-    "
-  >
-
-    <div class="card-body p-20">
-
-      <div
-        class="
-          d-flex
-          flex-wrap
-          align-items-center
-          justify-content-between
-          gap-3
-        "
-      >
-
-        <div class="text-center">
-
-          <p
-            class="
-              fw-medium
-              text-primary-light
-              mb-1
-            "
-          >
-            Total Vouchers
-          </p>
-
-          <h6 class="mb-0">
-
-            {{ voucher_count }}
-
-          </h6>
-
+      <div class=" card shadow-none border bg-gradient-start-4 h-100 ">
+        <div class="card-body p-20">
+          <div class=" d-flex flex-wrap align-items-center justify-content-between gap-3 ">
+            <div class="text-center">
+              <p class=" fw-medium text-primary-light mb-1 ">Total Receipts</p>
+              <h6 class="mb-0">{{ receipt_count }}</h6>
+            </div>
+            <div class=" w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center ">
+              <iconify-icon icon="solar:bill-list-bold" class=" text-white text-2xl mb-0 "></iconify-icon>
+            </div>
+          </div>
         </div>
-
-
-        <div
-          class="
-            w-50-px
-            h-50-px
-            bg-red
-            rounded-circle
-            d-flex
-            justify-content-center
-            align-items-center
-          "
-        >
-
-          <iconify-icon
-            icon="fa6-solid:file-invoice-dollar"
-            class="
-              text-white
-              text-2xl
-              mb-0
-            "
-          ></iconify-icon>
-
-        </div>
-
       </div>
-
     </div>
-
-  </div>
-
-</div>
+    <div class="col">
+      <div class=" card shadow-none border bg-gradient-start-5 h-100 ">
+        <div class="card-body p-20">
+          <div class=" d-flex flex-wrap align-items-center justify-content-between gap-3 ">
+            <div class="text-center">
+              <p class=" fw-medium text-primary-light mb-1 ">Total Vouchers</p>
+              <h6 class="mb-0">{{ voucher_count }}</h6>
+            </div>
+            <div class=" w-50-px h-50-px bg-red rounded-circle d-flex justify-content-center align-items-center ">
+              <iconify-icon icon="fa6-solid:file-invoice-dollar" class=" text-white text-2xl mb-0 "></iconify-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="row gy-4 mt-1">
     <div class="col-xxl-6 col-xl-12">
@@ -208,8 +88,11 @@
         <div class="card-body">
           <div class="d-flex flex-wrap align-items-center justify-content-between">
             <h6 class="text-lg mb-0">Sales Statistics</h6>
-            <select class="form-select bg-base form-select-sm w-auto">
-              <option selected>{{ current_year }}</option>
+            <select class="form-select form-select-sm w-auto bg-base border text-secondary-light"
+                    onchange="changeDashboardYear(this.value)">
+              {% for year in available_years %}
+                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="d-flex flex-wrap align-items-center gap-2 mt-8">
@@ -233,12 +116,13 @@
         <div class="card-body p-24 mb-8">
           <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
             <h6 class="mb-2 fw-bold text-lg mb-0">Income Vs Expense</h6>
-
-            <select class="form-select form-select-sm w-auto bg-base border text-secondary-light">
-              <option selected>{{ current_year }}</option>
+            <select class="form-select form-select-sm w-auto bg-base border text-secondary-light"
+                    onchange="changeDashboardYear(this.value)">
+              {% for year in available_years %}
+                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+              {% endfor %}
             </select>
           </div>
-
           <ul class="d-flex flex-wrap align-items-center justify-content-center my-3 gap-24">
             <!-- Income -->
             <li class="d-flex flex-column gap-1">
@@ -246,10 +130,8 @@
                 <span class="w-8-px h-8-px rounded-pill bg-primary"></span>
                 <span class="text-secondary-light text-sm fw-semibold">Income</span>
               </div>
-
               <div class="d-flex align-items-center gap-8">
                 <h6 class="mb-0">TZS {{ total_income|floatformat:0|intcomma }}</h6>
-
                 {% if total_income > total_expenses %}
                   <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
                     Profit
@@ -258,7 +140,6 @@
                 {% endif %}
               </div>
             </li>
-
             <!-- Expenses -->
             <li class="d-flex flex-column gap-1">
               <div class="d-flex align-items-center gap-2">
@@ -267,7 +148,6 @@
               </div>
               <div class="d-flex align-items-center gap-8">
                 <h6 class="mb-0">TZS {{ total_expenses|floatformat:0|intcomma }}</h6>
-
                 {% if total_profit > 0 %}
                   <span class="text-success-600 d-flex align-items-center gap-1 text-sm fw-bolder">
                     +TZS {{ total_profit|floatformat:0|intcomma }}
@@ -284,7 +164,6 @@
               </div>
             </li>
           </ul>
-
           <div id="incomeExpense" class="apexcharts-tooltip-style-1"></div>
         </div>
       </div>
@@ -369,15 +248,12 @@
                         <div class="flex-shrink-0 me-12 w-40-px h-40-px bg-primary-50 rounded-circle d-flex justify-content-center align-items-center">
                           <iconify-icon icon="solar:box-outline" class="text-primary-600 text-xl"></iconify-icon>
                         </div>
-
                         <div class="flex-grow-1">
                           <h6 class="text-md mb-0 fw-normal">{{ product.product_name }}</h6>
-
                           <span class="text-sm text-secondary-light fw-normal">{{ product.product_category.name }}</span>
                         </div>
                       </div>
                     </td>
-
                     <td>
                       {% if product.sales_pricing %}
                         TZS {{ product.sales_pricing.selling_price|floatformat:0|intcomma }}
@@ -385,36 +261,14 @@
                         —
                       {% endif %}
                     </td>
-
                     <td>
                       <div class="max-w-112 mx-auto">
                         <div class="w-100">
                           <div class="progress progress-sm rounded-pill">
-                            <div class="progress-bar
-            {% if product.stock_status == 'out' %}
-                                
-                                
-                bg-danger-main
-
-
-                              {% elif product.stock_status == 'low' %}
-                                
-                                
-                bg-warning-main
-
-
-                              {% else %}
-                                
-                                
-                bg-success-main
-
-
-                              {% endif %}
-            rounded-pill"
-                              style="width:{{ product.stock_percentage }}%;"></div>
+                            <div class="progress-bar {% if product.stock_status == 'out' %}   bg-danger-main   {% elif product.stock_status == 'low' %}   bg-warning-main   {% else %}   bg-success-main   {% endif %} rounded-pill"
+                                 style="width:{{ product.stock_percentage }}%"></div>
                           </div>
                         </div>
-
                         {% if product.stock_status == 'out' %}
                           <span class="mt-12 text-danger-main text-sm fw-medium">Out of Stock</span>
                         {% elif product.stock_status == 'low' %}
@@ -439,5 +293,22 @@
   </div>
 {% endblock %}
 {% block scripts %}
+  <script>
 
+function changeDashboardYear(year) {
+
+    const url = new URL(
+        window.location.href
+    );
+
+    url.searchParams.set(
+        "year",
+        year
+    );
+
+    window.location.href = url.toString();
+
+}
+
+  </script>
 {% endblock %}
