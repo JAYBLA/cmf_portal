@@ -736,7 +736,7 @@ def download_invoice_pdf(request, pk):
     # =========================================
 
     poppins_font_path = finders.find(
-        "fonts/Poppins-Regular.ttf"
+        "fonts/poppins-regular.ttf"
     )
 
 
