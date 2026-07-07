@@ -26,6 +26,7 @@ class Invoice(models.Model):
     )
 
     invoice_number = models.CharField(max_length=30, unique=True, blank=True, null=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
 
     customer = models.ForeignKey(
         Customer, on_delete=models.PROTECT, related_name="invoices"

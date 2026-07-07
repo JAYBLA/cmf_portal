@@ -1,33 +1,21 @@
 import json
 from decimal import Decimal
+from pathlib import Path
 
+from django.contrib.staticfiles import finders
 from django.db import transaction
-
-from django.http import (
-    HttpResponse,
-)
-
-from django.shortcuts import (
-    render,
-    get_object_or_404,
-)
-
-from django.templatetags.static import static
-
+from django.db.models import ProtectedError
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 from django.utils.text import slugify
-
-from .models import *
-
-from .forms import *
-from django.http import JsonResponse
-
-from customers.models import (
-    Customer,
-)
-
-from utils import render_to_pdf
+from weasyprint import HTML
+from customers.models import Customer
 from products.models import Product
 from sales.models import SalesProductPricing
+from .forms import InvoiceForm, InvoiceItemFormSet
+from .models import Invoice
+from utils import apply_document_backgrounds
 
 
 # =====================================================
@@ -590,64 +578,6 @@ def invoice_item_empty_row(request):
     )
 
 
-# =====================================================
-# DOWNLOAD INVOICE PDF
-# =====================================================
-
-
-def download_invoice_pdf(request, pk):
-
-    invoice = get_object_or_404(
-        Invoice.objects.select_related(
-            "customer",
-        ).prefetch_related(
-            "items",
-            "items__product",
-        ),
-        pk=pk,
-    )
-
-    bg_image = request.build_absolute_uri(
-        static("images/invoice.png")
-    )
-
-    context = {
-        "invoice": invoice,
-        "invoice_no": invoice.invoice_number,
-        "bg_image": bg_image,
-    }
-
-    pdf = render_to_pdf(
-        "invoices/invoice_pdf.html",
-        context,
-    )
-
-    if pdf:
-
-        customer_name = slugify(
-            invoice.customer.customer_name
-        )
-
-        filename = (
-            f"{invoice.invoice_number}-"
-            f"{customer_name}.pdf"
-        )
-
-        response = HttpResponse(
-            pdf,
-            content_type="application/pdf",
-        )
-
-        # below code is for pdf download
-        response["Content-Disposition"] = f'attachment; filename="{filename}"'
-        # below code is for pdf browser preview
-        #response["Content-Disposition"] = f'inline; filename="{filename}"'
-        return response
-
-    return HttpResponse(
-        "Error generating PDF",
-        status=400,
-    )
     
 # =========================================
 # PRODUCT EFFECTIVE SELLING PRICE
@@ -718,3 +648,248 @@ def product_price(request, product_id):
             "price_source": price_source,
         }
     )
+    
+# =====================================================
+# DOWNLOAD invoice PDF
+# =====================================================
+
+
+def download_invoice_pdf(request, pk):
+
+    # =========================================
+    # GET invoice
+    # =========================================
+
+    invoice = get_object_or_404(
+        Invoice.objects.select_related(
+            "customer",
+        ).prefetch_related(
+            "items",           
+        ),
+        pk=pk,
+    )
+
+
+    # =========================================
+    # BACKGROUND IMAGE PATHS
+    # =========================================
+
+    header_path = finders.find(
+        "images/invoice_header.png"
+    )
+
+
+    footer_path = finders.find(
+        "images/invoice_footer.png"
+    )
+
+
+    single_path = finders.find(
+        "images/invoice_single.png"
+    )
+
+
+    # =========================================
+    # VALIDATE BACKGROUND FILES
+    # =========================================
+
+    if not header_path:
+
+        raise FileNotFoundError(
+            "invoice_header.png was not found."
+        )
+
+
+    if not footer_path:
+
+        raise FileNotFoundError(
+            "invoice_footer.png was not found."
+        )
+
+
+    if not single_path:
+
+        raise FileNotFoundError(
+            "invoice_single.png was not found."
+        )
+
+
+    # =========================================
+    # FILE URIS
+    # =========================================
+
+    header_bg = Path(
+        header_path
+    ).resolve().as_uri()
+
+
+    footer_bg = Path(
+        footer_path
+    ).resolve().as_uri()
+
+
+    single_bg = Path(
+        single_path
+    ).resolve().as_uri()
+
+
+    # =========================================
+    # invoice NUMBER
+    # =========================================
+
+    invoice_no = invoice.invoice_number
+
+
+    # =========================================
+    # FIRST PAGINATION PASS
+    # =========================================
+
+    page_count = 1
+
+
+    for _ in range(5):
+
+        context = {
+
+            "invoice": invoice,
+
+            "invoice_no": invoice_no,
+
+            "page_count": page_count,
+
+        }
+
+
+        html = render_to_string(
+            "invoices/invoice_pdf.html",
+            context,
+            request=request,
+        )
+
+
+        document = HTML(
+            string=html,
+        ).render()
+
+
+        actual_page_count = len(
+            document.pages
+        )
+
+
+        # =====================================
+        # PAGINATION IS STABLE
+        # =====================================
+
+        if actual_page_count == page_count:
+
+            break
+
+
+        # =====================================
+        # UPDATE PAGE COUNT
+        # =====================================
+
+        page_count = actual_page_count
+
+
+    # =========================================
+    # FINAL HTML CONTEXT
+    # =========================================
+
+    final_context = {
+
+        "invoice": invoice,
+
+        "invoice_no": invoice_no,
+
+        "page_count": page_count,
+
+    }
+
+
+    # =========================================
+    # FINAL HTML
+    # =========================================
+
+    final_html = render_to_string(
+        "invoices/invoice_pdf.html",
+        final_context,
+        request=request,
+    )
+
+
+    # =========================================
+    # GENERATE CONTENT PDF
+    # =========================================
+
+    content_pdf = HTML(
+        string=final_html,
+    ).write_pdf()
+
+
+    # =========================================
+    # APPLY PAGE BACKGROUNDS
+    # =========================================
+
+    pdf = apply_document_backgrounds(
+        content_pdf=content_pdf,
+        header_bg=header_bg,
+        footer_bg=footer_bg,
+        single_bg=single_bg,
+    )
+
+
+    # =========================================
+    # CUSTOMER NAME
+    # =========================================
+
+    customer_name = slugify(
+        invoice.customer.customer_name
+    )
+
+
+    # =========================================
+    # invoice TITLE
+    # =========================================
+
+    invoice_title = slugify(
+        invoice.title
+    )
+
+
+    # =========================================
+    # FILE NAME
+    # =========================================
+
+    filename = (
+
+        f"{invoice_no}-"
+
+        f"{customer_name}-"
+
+        f"{invoice_title}.pdf"
+
+    )
+
+
+    # =========================================
+    # PDF RESPONSE
+    # =========================================
+
+    response = HttpResponse(
+        pdf,
+        content_type="application/pdf",
+    )
+
+
+    response["Content-Disposition"] = (
+
+        "inline; "
+
+        f'filename="{filename}"'
+
+    )
+
+
+    return response
