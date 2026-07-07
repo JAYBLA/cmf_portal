@@ -549,11 +549,6 @@ def product_state(
         }
     )
 
-# =====================================================
-# DOWNLOAD QUOTATION PDF
-# =====================================================
-
-
 def download_quotation_pdf(request, pk):
 
     # =========================================
@@ -565,7 +560,6 @@ def download_quotation_pdf(request, pk):
             "customer",
         ).prefetch_related(
             "items",
-            "items__product",
             "payment_terms",
         ),
         pk=pk,
@@ -580,9 +574,11 @@ def download_quotation_pdf(request, pk):
         "images/quote_header.png"
     )
 
+
     footer_path = finders.find(
         "images/quote_footer.png"
     )
+
 
     single_path = finders.find(
         "images/quotation_single.png"
@@ -615,49 +611,53 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # BACKGROUND FILE URIS
+    # FILE URIS
     # =========================================
 
-    header_bg = (
-        Path(header_path)
-        .resolve()
-        .as_uri()
-    )
+    header_bg = Path(
+        header_path
+    ).resolve().as_uri()
 
-    footer_bg = (
-        Path(footer_path)
-        .resolve()
-        .as_uri()
-    )
 
-    single_bg = (
-        Path(single_path)
-        .resolve()
-        .as_uri()
-    )
+    footer_bg = Path(
+        footer_path
+    ).resolve().as_uri()
 
+
+    single_bg = Path(
+        single_path
+    ).resolve().as_uri()
 
     # =========================================
-    # FONT
+    # FONT PATH
     # =========================================
+
 
     poppins_font_path = finders.find(
         "fonts/Poppins-Regular.ttf"
     )
 
 
-    if poppins_font_path:
+    # =========================================
+    # VALIDATE FONT FILE
+    # =========================================
 
-        poppins_font = (
-            Path(poppins_font_path)
-            .resolve()
-            .as_uri()
+
+    if not poppins_font_path:
+
+        raise FileNotFoundError(
+            "Poppins-Regular.ttf was not found."
         )
 
-    else:
 
-        poppins_font = None
+    # =========================================
+    # FONT FILE URI
+    # =========================================
 
+
+    poppins_font = Path(
+        poppins_font_path
+    ).resolve().as_uri()
 
     # =========================================
     # QUOTATION NUMBER
@@ -669,7 +669,7 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # PAGINATION PASS
+    # FIRST PAGINATION PASS
     # =========================================
 
     page_count = 1
@@ -684,7 +684,6 @@ def download_quotation_pdf(request, pk):
             "quotation_no": quotation_no,
 
             "page_count": page_count,
-
             "poppins_font": poppins_font,
 
         }
@@ -708,7 +707,7 @@ def download_quotation_pdf(request, pk):
 
 
         # =====================================
-        # PAGINATION STABLE
+        # PAGINATION IS STABLE
         # =====================================
 
         if actual_page_count == page_count:
@@ -716,11 +715,15 @@ def download_quotation_pdf(request, pk):
             break
 
 
+        # =====================================
+        # UPDATE PAGE COUNT
+        # =====================================
+
         page_count = actual_page_count
 
 
     # =========================================
-    # FINAL CONTEXT
+    # FINAL HTML CONTEXT
     # =========================================
 
     final_context = {
@@ -730,8 +733,7 @@ def download_quotation_pdf(request, pk):
         "quotation_no": quotation_no,
 
         "page_count": page_count,
-
-        "poppins_font": poppins_font,
+        "poppins_font": poppins_font,        
 
     }
 
@@ -769,7 +771,7 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # FILE NAME
+    # CUSTOMER NAME
     # =========================================
 
     customer_name = slugify(
@@ -777,10 +779,18 @@ def download_quotation_pdf(request, pk):
     )
 
 
+    # =========================================
+    # QUOTATION TITLE
+    # =========================================
+
     quotation_title = slugify(
         quotation.title
     )
 
+
+    # =========================================
+    # FILE NAME
+    # =========================================
 
     filename = (
 
