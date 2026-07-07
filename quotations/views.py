@@ -820,7 +820,7 @@ def download_quotation_pdf(request, pk):
 
     response["Content-Disposition"] = (
 
-        "inline; "
+        "attachment; "
 
         f'filename="{filename}"'
 
