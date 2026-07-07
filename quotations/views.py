@@ -639,7 +639,7 @@ def download_quotation_pdf(request, pk):
 
 
     poppins_font_path = finders.find(
-        "fonts/Poppins-Regular.ttf"
+        "fonts/poppins-regular.ttf"
     )
 
 
@@ -651,7 +651,7 @@ def download_quotation_pdf(request, pk):
     if not poppins_font_path:
 
         raise FileNotFoundError(
-            "Poppins-Regular.ttf was not found."
+            "poppins-regular.ttf was not found."
         )
 
 
