@@ -83,4 +83,14 @@ urlpatterns = [
         views.declared_price_delete,
         name="declared_price_delete",
     ),
+    path(
+
+        "<int:pk>/detail/",
+
+        views.sale_detail,
+
+        name="detail",
+
+    ),
+
 ]

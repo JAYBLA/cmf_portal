@@ -715,3 +715,146 @@ def additional_cost_documents(request, pk):
         "purchases/additional_costs/documents.html",
         context,
     )
+    
+# =====================================================
+# PURCHASE DETAIL
+# =====================================================
+
+
+def purchase_detail(request, pk):
+
+    # =========================================
+    # GET PURCHASE
+    # =========================================
+
+    purchase = get_object_or_404(
+
+        Purchase.objects.select_related(
+
+            "supplier",
+
+        ).prefetch_related(
+
+            "items__product",
+
+            "payments",
+
+            "additional_costs__clearing_agent",
+
+            "additional_costs__documents",
+
+        ),
+
+        pk=pk,
+
+    )
+
+
+    # =========================================
+    # TOTAL ADDITIONAL COSTS
+    # =========================================
+
+    total_additional_costs = sum(
+
+        (
+
+            cost.amount_tzs
+
+            for cost in purchase.additional_costs.all()
+
+        ),
+
+        Decimal("0.00"),
+
+    )
+
+
+    # =========================================
+    # TOTAL PAYMENTS
+    # =========================================
+
+    total_payments = sum(
+
+        (
+
+            payment.amount
+
+            for payment in purchase.payments.all()
+
+        ),
+
+        Decimal("0.00"),
+
+    )
+
+
+    # =========================================
+    # TOTAL ALLOCATED COST
+    # =========================================
+
+    total_allocated_cost = sum(
+
+        (
+
+            item.allocated_additional_cost
+
+            for item in purchase.items.all()
+
+        ),
+
+        Decimal("0.00"),
+
+    )
+
+
+    # =========================================
+    # TOTAL LANDED COST
+    # =========================================
+
+    total_landed_cost = sum(
+
+        (
+
+            item.landed_cost_total
+
+            for item in purchase.items.all()
+
+        ),
+
+        Decimal("0.00"),
+
+    )
+
+
+    # =========================================
+    # CONTEXT
+    # =========================================
+
+    context = {
+
+        "purchase": purchase,
+
+        "total_additional_costs": total_additional_costs,
+
+        "total_payments": total_payments,
+
+        "total_allocated_cost": total_allocated_cost,
+
+        "total_landed_cost": total_landed_cost,
+
+    }
+
+
+    # =========================================
+    # RENDER DETAIL
+    # =========================================
+
+    return render(
+
+        request,
+
+        "purchases/purchase_detail.html",
+
+        context,
+
+    )

@@ -264,3 +264,10 @@ input[type="checkbox"] {
     min-width: 20px;
     text-align: center;
 }
+
+.btn-xsm {
+    padding: 0.15rem 0.35rem;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    border-radius: 0.2rem;
+}

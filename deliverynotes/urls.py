@@ -59,4 +59,10 @@ urlpatterns = [
         views.delivery_note_delete,
         name="delivery_note_delete",
     ),
+    path(
+        "<int:pk>/download/",
+        views.download_delivery_note_pdf,
+        name="download",
+    ),
+
 ]

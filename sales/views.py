@@ -606,3 +606,58 @@ def declared_price_delete(request, pk):
         "sales/pricing/delete.html",
         context,
     )
+    
+# =====================================================
+# SALE DETAIL
+# =====================================================
+
+
+def sale_detail(request, pk):
+
+    # =========================================
+    # GET SALE
+    # =========================================
+
+    sale = get_object_or_404(
+
+        Sale.objects.select_related(
+
+            "customer",
+
+        ).prefetch_related(
+
+            "items__product",
+
+            "payments",
+
+        ),
+
+        pk=pk,
+
+    )
+
+
+    # =========================================
+    # CONTEXT
+    # =========================================
+
+    context = {
+
+        "sale": sale,
+
+    }
+
+
+    # =========================================
+    # RENDER DETAIL
+    # =========================================
+
+    return render(
+
+        request,
+
+        "sales/sale_detail.html",
+
+        context,
+
+    )

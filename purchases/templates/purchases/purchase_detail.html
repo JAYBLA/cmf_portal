@@ -1,0 +1,329 @@
+{% load humanize %}
+
+<div class="modal-header border-0 pb-0">
+  <div>
+    <h5 class="modal-title fw-bold d-flex align-items-center gap-2 flex-wrap">
+      <i class="bi bi-box-seam"></i>
+      Purchase Details
+      <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fs-6 fw-semibold px-3 py-1">{{ purchase.purchase_number }}</span>
+      <span class="badge 
+                {% if purchase.payment_status == 'paid' %}
+          bg-success
+
+        {% elif purchase.payment_status == 'partial' %}
+          bg-warning text-dark
+
+        {% else %}
+          bg-danger
+        {% endif %} 
+                fs-6 fw-semibold px-3 py-1">
+        {{ purchase.get_payment_status_display }}
+      </span>
+    </h5>
+    <p class="text-muted small mb-0 mt-1">
+      <i class="bi bi-calendar3 me-1"></i>
+      Created {{ purchase.created_at|timesince }} ago
+    </p>
+  </div>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body pt-2">
+  <!-- ========== NOTES (if any) ========== -->
+  {% if purchase.notes %}
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+        <i class="bi bi-sticky text-primary"></i>
+        <span class="fw-semibold">Notes</span>
+      </div>
+      <div class="card-body py-2">{{ purchase.notes|linebreaks }}</div>
+    </div>
+  {% endif %}
+
+  <!-- ========== STATUS / DATE BAR ========== -->
+  <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-light rounded-3 border flex-wrap">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-tag text-muted"></i>
+      <span class="text-muted small fw-medium">Category:</span>
+      <span class="badge bg-info fs-6 fw-semibold px-3 py-2">{{ purchase.get_purchase_category_display }}</span>
+    </div>
+    <div class="vr"></div>
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <div>
+        <small class="text-muted d-block lh-1">Purchase Date</small>
+        <strong class="small">{{ purchase.purchase_date }}</strong>
+      </div>
+      <div>
+        <small class="text-muted d-block lh-1">Currency</small>
+        <strong class="small">{{ purchase.currency }}</strong>
+      </div>
+      <div>
+        <small class="text-muted d-block lh-1">Exchange Rate</small>
+        <strong class="small">{{ purchase.exchange_rate|floatformat:2 }}</strong>
+      </div>
+      {% if purchase.supplier_invoice_number %}
+        <div>
+          <small class="text-muted d-block lh-1">Supplier Invoice</small>
+          <strong class="small">{{ purchase.supplier_invoice_number }}</strong>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ========== TWO COLUMNS: SUPPLIER & SUMMARY ========== -->
+  <div class="row g-3 mb-3">
+    <!-- Supplier -->
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+          <i class="bi bi-building text-primary"></i>
+          <span class="fw-semibold">Supplier</span>
+        </div>
+        <div class="card-body">
+          <div class="d-flex flex-column gap-1">
+            <div>
+              <small class="text-muted d-block lh-1">Name</small>
+              <strong>{{ purchase.supplier.supplier_name }}</strong>
+            </div>
+            {% if purchase.supplier.contact_person %}
+              <div>
+                <small class="text-muted d-block lh-1">Contact Person</small>
+                <span>{{ purchase.supplier.contact_person }}</span>
+              </div>
+            {% endif %}
+            {% if purchase.supplier.phone_number %}
+              <div>
+                <small class="text-muted d-block lh-1">Phone</small>
+                <span><i class="bi bi-telephone me-1"></i>{{ purchase.supplier.phone_number }}</span>
+              </div>
+            {% endif %}
+            {% if purchase.supplier.email %}
+              <div>
+                <small class="text-muted d-block lh-1">Email</small>
+                <span><i class="bi bi-envelope me-1"></i>{{ purchase.supplier.email }}</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-2">
+          <i class="bi bi-calculator text-primary"></i>
+          <span class="fw-semibold">Summary</span>
+        </div>
+        <div class="card-body d-flex flex-column justify-content-center">
+          <div class="row g-1">
+            <div class="col-6">
+              <small class="text-muted d-block lh-1">Total ({{ purchase.currency }})</small>
+              <span class="fw-bold fs-5">{{ purchase.total_amount|floatformat:0|intcomma }}</span>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block lh-1">Total (TZS)</small>
+              <span class="fw-bold fs-5">{{ purchase.total_amount_tzs|floatformat:0|intcomma }}</span>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block lh-1">Landed Cost (TZS)</small>
+              <span class="fw-bold text-primary">{{ purchase.landed_cost_tzs|floatformat:0|intcomma }}</span>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block lh-1">Amount Paid</small>
+              <span class="fw-bold {% if purchase.amount_paid > 0 %}
+                  text-success
+                {% else %}
+                  text-muted
+                {% endif %}">
+                {{ purchase.amount_paid|floatformat:0|intcomma }}
+              </span>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block lh-1">Balance</small>
+              <span class="fw-bold {% if purchase.balance > 0 %}
+                  text-danger
+                {% else %}
+                  text-success
+                {% endif %}">
+                {{ purchase.balance|floatformat:0|intcomma }}
+              </span>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block lh-1">Items</small>
+              <span class="fw-semibold">{{ purchase.items.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PURCHASE ITEMS ========== -->
+  <div class="card shadow-sm border-0 mb-3">
+    <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-2">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-list-ul text-primary"></i>
+        <span class="fw-semibold">Purchase Items</span>
+      </div>
+      <span class="badge bg-light text-dark border">{{ purchase.items.count }} items</span>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0 table-sm">
+          <thead class="table-light">
+            <tr>
+              <th width="50" class="text-center">#</th>
+              <th>Product</th>
+              <th width="90" class="text-center">Qty</th>
+              <th width="140" class="text-end">Unit Cost</th>
+              <th width="140" class="text-end">Subtotal</th>
+              <th width="140" class="text-end">Subtotal (TZS)</th>
+              <th width="140" class="text-end">Landed Unit Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in purchase.items.all %}
+              <tr>
+                <td class="text-center text-muted small">{{ forloop.counter }}</td>
+                <td>
+                  <span class="fw-medium">{{ item.product.product_name }}</span>
+                </td>
+                <td class="text-center">{{ item.quantity|floatformat:2 }}</td>
+                <td class="text-end font-monospace">{{ item.unit_cost|floatformat:2|intcomma }}</td>
+                <td class="text-end font-monospace">{{ item.subtotal|floatformat:2|intcomma }}</td>
+                <td class="text-end font-monospace">{{ item.subtotal_tzs|floatformat:0|intcomma }}</td>
+                <td class="text-end fw-semibold text-primary font-monospace">{{ item.landed_unit_cost|floatformat:0|intcomma }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                  <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                  No items found
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot class="table-light fw-semibold">
+            <tr>
+              <td colspan="4" class="text-end">Totals</td>
+              <td class="text-end font-monospace">{{ purchase.total_amount|floatformat:0|intcomma }}</td>
+              <td class="text-end font-monospace">{{ purchase.total_amount_tzs|floatformat:0|intcomma }}</td>
+              <td class="text-end text-danger">Landed Total: {{ purchase.landed_cost_tzs|floatformat:0|intcomma }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ADDITIONAL COSTS (if any) ========== -->
+  {% if purchase.additional_costs.exists %}
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-2">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle text-primary"></i>
+          <span class="fw-semibold">Additional Costs</span>
+        </div>
+        <span class="badge bg-light text-dark border">{{ purchase.additional_costs.count }}</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped mb-0 table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th width="120" class="text-end">Amount</th>
+                <th width="100" class="text-center">Currency</th>
+                <th width="120" class="text-end">Amount (TZS)</th>
+                <th width="100" class="text-center">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cost in purchase.additional_costs.all %}
+                <tr>
+                  <td>{{ cost.get_cost_type_display }}</td>
+                  <td>{{ cost.description|default:'-' }}</td>
+                  <td class="text-end font-monospace">{{ cost.amount|floatformat:2|intcomma }}</td>
+                  <td class="text-center">{{ cost.currency }}</td>
+                  <td class="text-end font-monospace">{{ cost.amount_tzs|floatformat:0|intcomma }}</td>
+                  <td class="text-center">
+                    <span class="badge {% if cost.payment_status == 'paid' %}
+                        bg-success
+                      {% else %}
+                        bg-warning text-dark
+                      {% endif %}">
+                      {{ cost.get_payment_status_display }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot class="table-light fw-semibold">
+              <tr>
+                <td colspan="4" class="text-end">Total Additional Costs (TZS)</td>
+
+                <td class="text-end font-monospace">{{ total_additional_costs|floatformat:0|intcomma }}</td>
+
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ========== PAYMENTS (if any) ========== -->
+  {% if purchase.payments.exists %}
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-2">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-credit-card text-primary"></i>
+          <span class="fw-semibold">Payments</span>
+        </div>
+        <span class="badge bg-light text-dark border">{{ purchase.payments.count }}</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped mb-0 table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Method</th>
+                <th class="text-end">Amount</th>
+                <th>Reference</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for payment in purchase.payments.all %}
+                <tr>
+                  <td>{{ payment.payment_date }}</td>
+                  <td>{{ payment.get_payment_method_display }}</td>
+                  <td class="text-end font-monospace fw-semibold">{{ payment.amount|floatformat:0|intcomma }}</td>
+                  <td>{{ payment.reference_number|default:'-' }}</td>
+                  <td>{{ payment.notes|default:'-' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot class="table-light fw-semibold">
+              <tr>
+                <td colspan="2" class="text-end">Total Paid</td>
+                <td class="text-end font-monospace">{{ purchase.amount_paid|floatformat:0|intcomma }}</td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<div class="modal-footer border-0 pt-0">
+  <div class="d-flex gap-2 w-100 justify-content-end">
+    <button type="button" class="btn btn-outline-warning" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i> Close</button>
+  </div>
+</div>

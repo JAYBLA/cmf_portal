@@ -15,6 +15,16 @@ from .models import *
 from decimal import Decimal
 
 from django.db.models import Sum
+from utils import (
+    apply_document_backgrounds,
+)
+from django.template.loader import render_to_string
+from django.utils.text import slugify
+
+from weasyprint import HTML
+from pathlib import Path
+
+from django.contrib.staticfiles import finders
 
 
 # =========================================
@@ -456,3 +466,253 @@ def delivery_note_delete(request, pk):
         ),
         context,
     )
+    
+# =====================================================
+# DOWNLOAD DELIVERYNOTE PDF
+# =====================================================
+
+
+def download_delivery_note_pdf(request, pk):
+
+    # =========================================
+    # GET DELIVERYNOTE
+    # =========================================
+
+    delivery_note = get_object_or_404(
+        DeliveryNote.objects.select_related(
+            "quotation",
+            "quotation__customer",
+        ).prefetch_related(
+            "items",
+            "items__quotation_item",
+            "items__quotation_item__product",
+        ),
+        pk=pk,
+    )
+
+
+    # =========================================
+    # BACKGROUND IMAGE PATHS
+    # =========================================
+
+    header_path = finders.find(
+        "images/delivery_note_header.png"
+    )
+
+
+    footer_path = finders.find(
+        "images/delivery_note_footer.png"
+    )
+
+
+    single_path = finders.find(
+        "images/delivery_note_single.png"
+    )
+
+
+    # =========================================
+    # VALIDATE BACKGROUND FILES
+    # =========================================
+
+    if not header_path:
+
+        raise FileNotFoundError(
+            "quote_header.png was not found."
+        )
+
+
+    if not footer_path:
+
+        raise FileNotFoundError(
+            "quote_footer.png was not found."
+        )
+
+
+    if not single_path:
+
+        raise FileNotFoundError(
+            "quotation_single.png was not found."
+        )
+
+
+    # =========================================
+    # FILE URIS
+    # =========================================
+
+    header_bg = Path(
+        header_path
+    ).resolve().as_uri()
+
+
+    footer_bg = Path(
+        footer_path
+    ).resolve().as_uri()
+
+
+    single_bg = Path(
+        single_path
+    ).resolve().as_uri()
+
+
+    # =========================================
+    # BASE CONTEXT
+    # =========================================
+
+    context_data = {
+
+        "delivery_note": delivery_note,
+
+        "customer": delivery_note.customer,
+
+        "quotation": delivery_note.quotation,
+
+    }
+
+
+    # =========================================
+    # FIRST PAGINATION PASS
+    # =========================================
+
+    page_count = 1
+
+
+    for _ in range(5):
+
+        context = {
+
+            **context_data,
+
+            "page_count": page_count,
+
+        }
+
+
+        html = render_to_string(
+            "delivery_notes/delivery_note_pdf.html",
+            context,
+            request=request,
+        )
+
+
+        document = HTML(
+            string=html,
+        ).render()
+
+
+        actual_page_count = len(
+            document.pages
+        )
+
+
+        # =====================================
+        # PAGINATION IS STABLE
+        # =====================================
+
+        if actual_page_count == page_count:
+
+            break
+
+
+        # =====================================
+        # UPDATE PAGE COUNT
+        # =====================================
+
+        page_count = actual_page_count
+
+
+    # =========================================
+    # FINAL HTML CONTEXT
+    # =========================================
+
+    final_context = {
+
+        **context_data,
+
+        "page_count": page_count,
+
+    }
+
+
+    # =========================================
+    # FINAL HTML
+    # =========================================
+
+    final_html = render_to_string(
+        "delivery_notes/delivery_note_pdf.html",
+        final_context,
+        request=request,
+    )
+
+
+    # =========================================
+    # GENERATE CONTENT PDF
+    # =========================================
+
+    content_pdf = HTML(
+        string=final_html,
+    ).write_pdf()
+
+
+    # =========================================
+    # APPLY PAGE BACKGROUNDS
+    # =========================================
+
+    pdf = apply_document_backgrounds(
+        content_pdf=content_pdf,
+        header_bg=header_bg,
+        footer_bg=footer_bg,
+        single_bg=single_bg,
+    )
+
+
+    # =========================================
+    # CUSTOMER NAME
+    # =========================================
+
+    customer_name = slugify(
+        delivery_note.customer.customer_name
+    )
+
+
+    # =========================================
+    # DELIVERY NUMBER
+    # =========================================
+
+    delivery_number = slugify(
+        delivery_note.delivery_number
+    )
+
+
+    # =========================================
+    # FILE NAME
+    # =========================================
+
+    filename = (
+
+        f"{delivery_number}-"
+
+        f"{customer_name}.pdf"
+
+    )
+
+
+    # =========================================
+    # PDF RESPONSE
+    # =========================================
+
+    response = HttpResponse(
+        pdf,
+        content_type="application/pdf",
+    )
+
+
+    response["Content-Disposition"] = (
+
+        "attachment; "
+
+        f'filename="{filename}"'
+
+    )
+
+
+    return response

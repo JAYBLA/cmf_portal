@@ -1,0 +1,926 @@
+<!doctype html>
+
+<html>
+
+{% load humanize %}
+
+<head>
+
+<meta charset="utf-8">
+
+
+<style>
+
+
+/* =========================================
+   FONT
+========================================= */
+
+
+{% if poppins_font %}
+
+@font-face {
+
+    font-family: "Poppins";
+
+    src: url(
+        "{{ poppins_font }}"
+    );
+
+}
+
+{% endif %}
+
+
+* {
+
+    box-sizing: border-box;
+
+}
+
+
+html,
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+body {
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: 12px;
+
+    color: #222;
+
+}
+
+
+/* =========================================
+   SINGLE PAGE
+========================================= */
+
+
+{% if page_count == 1 %}
+
+
+@page {
+
+    size: A4 portrait;
+
+    margin:
+        70mm
+        14mm
+        55mm
+        14mm;
+
+}
+
+
+/* =========================================
+   MULTI PAGE
+========================================= */
+
+
+{% else %}
+
+
+@page {
+
+    size: A4 portrait;
+
+    margin:
+        15mm
+        14mm
+        15mm
+        14mm;
+
+}
+
+
+@page :first {
+
+    margin:
+        70mm
+        14mm
+        15mm
+        14mm;
+
+}
+
+
+@page :nth({{ page_count }}) {
+
+    margin:
+        15mm
+        14mm
+        55mm
+        14mm;
+
+}
+
+
+{% endif %}
+
+
+/* =========================================
+   DELIVERY HEADER INFORMATION
+========================================= */
+
+
+.delivery-header {
+
+    position: absolute;
+
+    top: -53mm;
+
+    left: 0;
+
+    right: 0;
+
+    height: 45mm;
+
+}
+
+
+/* =========================================
+   CUSTOMER INFORMATION
+========================================= */
+
+
+.customer-info {
+
+    position: absolute;
+
+    left: 22mm;
+
+    top: 45mm;
+
+    width: 75mm;
+
+    line-height: 1.48;
+
+}
+
+
+/* =========================================
+   DELIVERY DESCRIPTION
+========================================= */
+
+
+.delivery-description {
+
+    position: absolute;
+
+    right: 2mm;
+
+    top: 45mm;
+
+    width: 105mm;
+
+    text-align: center;
+
+}
+
+
+/* =========================================
+   DELIVERY INFORMATION
+========================================= */
+
+
+.delivery-info {
+
+    position: absolute;
+
+    right: 0;
+
+    left: 155mm;
+
+    top: 12mm;
+
+    width: 45mm;
+
+    color: white;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+
+.items-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 22mm;
+
+    line-height: 1.4;
+
+}
+
+
+.items-table thead {
+
+    display: table-header-group;
+
+}
+
+
+.items-table tr {
+
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+
+}
+
+
+.items-table th {
+
+    background: #ee7623;
+
+    color: #ffffff;
+
+    border: 1px solid #dddddd;
+
+    padding: 3px;
+
+    text-align: left;
+
+}
+
+
+.items-table td {
+
+    border: 1px solid #dddddd;
+
+    padding: 3px;
+
+}
+
+
+.items-table tbody tr:nth-child(even) {
+
+    background: #f5f5f5;
+
+}
+
+
+/* =========================================
+   TEXT ALIGNMENT
+========================================= */
+
+
+.text-center {
+
+    text-align: center;
+
+}
+
+
+.text-right {
+
+    text-align: right;
+
+}
+
+
+/* =========================================
+   DELIVERY DETAILS
+========================================= */
+
+
+.delivery-details {
+
+    margin-top: 8mm;
+
+    width: 100%;
+
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+
+}
+
+
+.delivery-details-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+.delivery-details-table td {
+
+    padding: 3px 5px;
+
+    vertical-align: top;
+
+}
+
+
+.detail-label {
+
+    font-weight: bold;
+
+    width: 20%;
+
+}
+
+
+.detail-value {
+
+    width: 30%;
+
+}
+
+
+/* =========================================
+   RECEIVER SECTION
+========================================= */
+
+
+.receiver-section {
+
+    position: absolute;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: -30mm;
+
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+
+}
+
+
+.receiver-title {
+
+    font-weight: bold;
+
+    margin-bottom: 3mm;
+
+}
+
+
+.receiver-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+.receiver-table td {
+
+    border: none;
+
+    padding: 3px 5px;
+
+    vertical-align: bottom;
+
+}
+
+
+.signature-line {
+
+    border-bottom: 1px solid #222;
+
+    height: 8mm;
+
+}
+
+
+.signature-label {
+
+    font-size: 10px;
+
+    padding-top: 1mm;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     HEADER INFORMATION
+========================================= -->
+
+
+<div class="delivery-header">
+
+
+    <!-- =====================================
+         DELIVERY INFORMATION
+    ====================================== -->
+
+
+    <div class="delivery-info">
+
+        <strong>
+
+            {{ delivery_note.delivery_number }}
+
+        </strong>
+
+        <br>
+
+
+        <strong>
+
+            {{ delivery_note.delivery_date|date:"d/m/Y" }}
+
+        </strong>
+
+        <br>
+
+
+        <strong>
+
+            {{ delivery_note.get_status_display }}
+
+        </strong>
+
+    </div>
+
+
+    <!-- =====================================
+         CUSTOMER INFORMATION
+    ====================================== -->
+
+
+    <div class="customer-info">
+
+        <strong>
+
+            {{ delivery_note.customer.customer_name }}
+
+        </strong>
+
+        <br>
+
+
+        {% if delivery_note.customer.company_name %}
+
+            {{ delivery_note.customer.company_name }}
+
+            <br>
+
+        {% endif %}
+
+
+        {% if delivery_note.customer.phone_number %}
+
+            {{ delivery_note.customer.phone_number }}
+
+            <br>
+
+        {% endif %}
+
+
+        {% if delivery_note.customer.tin_number %}
+
+            {{ delivery_note.customer.tin_number }}
+
+            <br>
+
+        {% endif %}
+
+
+        {% if delivery_note.customer.address %}
+
+            {{ delivery_note.customer.address }}
+
+        {% endif %}
+
+    </div>
+</div>
+
+
+<!-- =========================================
+     ITEMS TABLE
+========================================= -->
+
+
+<table class="items-table">
+
+
+    <thead>
+
+
+        <tr>
+
+
+            <th
+                style="
+                    width: 7%;
+                    text-align: center;
+                "
+            >
+
+                S/N
+
+            </th>
+
+
+            <th
+                style="
+                    width: 43%;
+                "
+            >
+
+                DESCRIPTION
+
+            </th>
+
+
+            <th
+                style="
+                    width: 15%;
+                    text-align: center;
+                "
+            >
+
+                QUOTED QTY
+
+            </th>
+
+
+            <th
+                style="
+                    width: 15%;
+                    text-align: center;
+                "
+            >
+
+                DELIVERED
+
+            </th>
+
+
+            <th
+                style="
+                    width: 20%;
+                "
+            >
+
+                REMARKS
+
+            </th>
+
+
+        </tr>
+
+
+    </thead>
+
+
+    <tbody>
+
+
+        {% for item in delivery_note.items.all %}
+
+
+            <tr>
+
+
+                <td class="text-center">
+
+                    {{ forloop.counter }}
+
+                </td>
+
+
+                <td>
+
+                    {{ item.item_name }}
+
+                </td>
+
+
+                <td class="text-center">
+
+                    {{ item.quoted_quantity|floatformat:0 }}
+
+                    {% if item.quotation_item.product %}
+
+                        {{ item.quotation_item.product.product_unit }}
+
+                    {% endif %}
+
+                </td>
+
+
+                <td class="text-center">
+
+                    {{ item.quantity|floatformat:0 }}
+
+                    {% if item.quotation_item.product %}
+
+                        {{ item.quotation_item.product.product_unit }}
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {% if item.remarks %}
+
+                        {{ item.remarks }}
+
+                    {% else %}
+
+                        -
+
+                    {% endif %}
+
+                </td>
+
+
+            </tr>
+
+
+        {% empty %}
+
+
+            <tr>
+
+
+                <td
+                    colspan="5"
+                    class="text-center"
+                >
+
+                    No delivery items available.
+
+                </td>
+
+
+            </tr>
+
+
+        {% endfor %}
+
+
+    </tbody>
+
+
+</table>
+
+
+<!-- =========================================
+     DELIVERY DETAILS
+========================================= -->
+
+
+<div class="delivery-details">
+
+
+    <table class="delivery-details-table">
+
+
+        <tr>
+
+
+            <td class="detail-label">
+
+                Delivery Address:
+
+            </td>
+
+
+            <td class="detail-value">
+
+                {% if delivery_note.delivery_address %}
+
+                    {{ delivery_note.delivery_address }}
+
+                {% else %}
+
+                    -
+
+                {% endif %}
+
+            </td>
+
+
+            <td class="detail-label">
+
+                Vehicle Number:
+
+            </td>
+
+
+            <td class="detail-value">
+
+                {% if delivery_note.vehicle_number %}
+
+                    {{ delivery_note.vehicle_number }}
+
+                {% else %}
+
+                    -
+
+                {% endif %}
+
+            </td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+            <td class="detail-label">
+
+                Driver Name:
+
+            </td>
+
+
+            <td class="detail-value">
+
+                {% if delivery_note.driver_name %}
+
+                    {{ delivery_note.driver_name }}
+
+                {% else %}
+
+                    -
+
+                {% endif %}
+
+            </td>
+
+
+            <td class="detail-label">
+
+                Receiver Phone:
+
+            </td>
+
+
+            <td class="detail-value">
+
+                {% if delivery_note.receiver_phone %}
+
+                    {{ delivery_note.receiver_phone }}
+
+                {% else %}
+
+                    -
+
+                {% endif %}
+
+            </td>
+
+
+        </tr>
+
+
+        {% if delivery_note.notes %}
+
+
+            <tr>
+
+
+                <td class="detail-label">
+
+                    Notes:
+
+                </td>
+
+
+                <td colspan="3">
+
+                    {{ delivery_note.notes }}
+
+                </td>
+
+
+            </tr>
+
+
+        {% endif %}
+
+
+    </table>
+
+
+</div>
+
+
+<!-- =========================================
+     RECEIVER CONFIRMATION
+========================================= -->
+
+
+<div class="receiver-section">
+
+
+    <div class="receiver-title">
+
+        RECEIVER CONFIRMATION
+
+    </div>
+
+
+    <table class="receiver-table">
+
+
+        <tr>
+
+
+            <td style="width: 30%;">
+
+                <div class="signature-line">
+
+                    {% if delivery_note.receiver_name %}
+
+                        {{ delivery_note.receiver_name }}
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="signature-label">
+
+                    Receiver Name
+
+                </div>
+
+            </td>
+
+
+            <td style="width: 5%;"></td>
+
+
+            <td style="width: 30%;">
+
+                <div class="signature-line"></div>
+
+
+                <div class="signature-label">
+
+                    Signature
+
+                </div>
+
+            </td>
+
+
+            <td style="width: 5%;"></td>
+
+
+            <td style="width: 30%;">
+
+                <div class="signature-line"></div>
+
+
+                <div class="signature-label">
+
+                    Date Received
+
+                </div>
+
+            </td>
+
+
+        </tr>
+
+
+    </table>
+
+
+</div>
+
+
+</body>
+
+</html>
