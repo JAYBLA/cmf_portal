@@ -509,7 +509,6 @@ def download_delivery_note_pdf(request, pk):
         "images/delivery_note_single.png"
     )
 
-
     # =========================================
     # VALIDATE BACKGROUND FILES
     # =========================================
@@ -553,6 +552,36 @@ def download_delivery_note_pdf(request, pk):
         single_path
     ).resolve().as_uri()
 
+    # =========================================
+    # FONT PATH
+    # =========================================
+
+
+    poppins_font_path = finders.find(
+        "fonts/Poppins-Regular.ttf"
+    )
+
+
+    # =========================================
+    # VALIDATE FONT FILE
+    # =========================================
+
+
+    if not poppins_font_path:
+
+        raise FileNotFoundError(
+            "Poppins-Regular.ttf was not found."
+        )
+
+
+    # =========================================
+    # FONT FILE URI
+    # =========================================
+
+
+    poppins_font = Path(
+        poppins_font_path
+    ).resolve().as_uri()
 
     # =========================================
     # BASE CONTEXT
@@ -565,6 +594,7 @@ def download_delivery_note_pdf(request, pk):
         "customer": delivery_note.customer,
 
         "quotation": delivery_note.quotation,
+        "poppins_font": poppins_font,
 
     }
 

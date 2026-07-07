@@ -686,8 +686,7 @@ def download_invoice_pdf(request, pk):
 
     single_path = finders.find(
         "images/invoice_single.png"
-    )
-
+    )   
 
     # =========================================
     # VALIDATE BACKGROUND FILES
@@ -730,6 +729,37 @@ def download_invoice_pdf(request, pk):
 
     single_bg = Path(
         single_path
+    ).resolve().as_uri()
+
+    # =========================================
+    # FONT PATH
+    # =========================================
+
+
+    poppins_font_path = finders.find(
+        "fonts/Poppins-Regular.ttf"
+    )
+
+
+    # =========================================
+    # VALIDATE FONT FILE
+    # =========================================
+
+
+    if not poppins_font_path:
+
+        raise FileNotFoundError(
+            "Poppins-Regular.ttf was not found."
+        )
+
+
+    # =========================================
+    # FONT FILE URI
+    # =========================================
+
+
+    poppins_font = Path(
+        poppins_font_path
     ).resolve().as_uri()
 
 
@@ -804,6 +834,8 @@ def download_invoice_pdf(request, pk):
         "invoice_no": invoice_no,
 
         "page_count": page_count,
+
+        "poppins_font": poppins_font,
 
     }
 
@@ -885,7 +917,7 @@ def download_invoice_pdf(request, pk):
 
     response["Content-Disposition"] = (
 
-        "inline; "
+        "attachment; "
 
         f'filename="{filename}"'
 

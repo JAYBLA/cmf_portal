@@ -633,6 +633,36 @@ def download_quotation_pdf(request, pk):
         single_path
     ).resolve().as_uri()
 
+    # =========================================
+    # FONT PATH
+    # =========================================
+
+
+    poppins_font_path = finders.find(
+        "fonts/Poppins-Regular.ttf"
+    )
+
+
+    # =========================================
+    # VALIDATE FONT FILE
+    # =========================================
+
+
+    if not poppins_font_path:
+
+        raise FileNotFoundError(
+            "Poppins-Regular.ttf was not found."
+        )
+
+
+    # =========================================
+    # FONT FILE URI
+    # =========================================
+
+
+    poppins_font = Path(
+        poppins_font_path
+    ).resolve().as_uri()
 
     # =========================================
     # QUOTATION NUMBER
@@ -659,6 +689,7 @@ def download_quotation_pdf(request, pk):
             "quotation_no": quotation_no,
 
             "page_count": page_count,
+            "poppins_font": poppins_font,
 
         }
 
@@ -707,6 +738,7 @@ def download_quotation_pdf(request, pk):
         "quotation_no": quotation_no,
 
         "page_count": page_count,
+        "poppins_font": poppins_font,        
 
     }
 
