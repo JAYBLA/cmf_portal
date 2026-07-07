@@ -64,7 +64,9 @@ body {
    SINGLE PAGE
 ========================================= */
 
+
 {% if page_count == 1 %}
+
 
 @page {
 
@@ -76,14 +78,6 @@ body {
         55mm
         14mm;
 
-    background-image: url("{{ single_bg }}");
-
-    background-size: 210mm 297mm;
-
-    background-position: center;
-
-    background-repeat: no-repeat;
-
 }
 
 
@@ -91,7 +85,9 @@ body {
    MULTI PAGE
 ========================================= */
 
+
 {% else %}
+
 
 @page {
 
@@ -114,14 +110,6 @@ body {
         15mm
         14mm;
 
-    background-image: url("{{ header_bg }}");
-
-    background-size: 210mm 297mm;
-
-    background-position: center;
-
-    background-repeat: no-repeat;
-
 }
 
 
@@ -133,17 +121,11 @@ body {
         55mm
         14mm;
 
-    background-image: url("{{ footer_bg }}");
-
-    background-size: 210mm 297mm;
-
-    background-position: center;
-
-    background-repeat: no-repeat;
-
 }
 
+
 {% endif %}
+
 
 /* =========================================
    QUOTATION HEADER INFORMATION

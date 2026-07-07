@@ -549,6 +549,11 @@ def product_state(
         }
     )
 
+# =====================================================
+# DOWNLOAD QUOTATION PDF
+# =====================================================
+
+
 def download_quotation_pdf(request, pk):
 
     # =========================================
@@ -574,9 +579,11 @@ def download_quotation_pdf(request, pk):
         "images/quote_header.png"
     )
 
+
     footer_path = finders.find(
         "images/quote_footer.png"
     )
+
 
     single_path = finders.find(
         "images/quotation_single.png"
@@ -609,7 +616,7 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # BACKGROUND FILE URIS
+    # FILE URIS
     # =========================================
 
     header_bg = Path(
@@ -626,24 +633,25 @@ def download_quotation_pdf(request, pk):
         single_path
     ).resolve().as_uri()
 
-
     # =========================================
     # FONT PATH
     # =========================================
 
+
     poppins_font_path = finders.find(
-        "fonts/poppins-regular.ttf"
+        "fonts/Poppins-Regular.ttf"
     )
 
 
     # =========================================
-    # VALIDATE FONT
+    # VALIDATE FONT FILE
     # =========================================
+
 
     if not poppins_font_path:
 
         raise FileNotFoundError(
-            "poppins-regular.ttf was not found."
+            "Poppins-Regular.ttf was not found."
         )
 
 
@@ -651,10 +659,10 @@ def download_quotation_pdf(request, pk):
     # FONT FILE URI
     # =========================================
 
+
     poppins_font = Path(
         poppins_font_path
     ).resolve().as_uri()
-
 
     # =========================================
     # QUOTATION NUMBER
@@ -681,14 +689,7 @@ def download_quotation_pdf(request, pk):
             "quotation_no": quotation_no,
 
             "page_count": page_count,
-
             "poppins_font": poppins_font,
-
-            "header_bg": header_bg,
-
-            "footer_bg": footer_bg,
-
-            "single_bg": single_bg,
 
         }
 
@@ -737,14 +738,7 @@ def download_quotation_pdf(request, pk):
         "quotation_no": quotation_no,
 
         "page_count": page_count,
-
-        "poppins_font": poppins_font,
-
-        "header_bg": header_bg,
-
-        "footer_bg": footer_bg,
-
-        "single_bg": single_bg,
+        "poppins_font": poppins_font,        
 
     }
 
@@ -761,12 +755,24 @@ def download_quotation_pdf(request, pk):
 
 
     # =========================================
-    # GENERATE FINAL PDF
+    # GENERATE CONTENT PDF
     # =========================================
 
-    pdf = HTML(
+    content_pdf = HTML(
         string=final_html,
     ).write_pdf()
+
+
+    # =========================================
+    # APPLY PAGE BACKGROUNDS
+    # =========================================
+
+    pdf = apply_document_backgrounds(
+        content_pdf=content_pdf,
+        header_bg=header_bg,
+        footer_bg=footer_bg,
+        single_bg=single_bg,
+    )
 
 
     # =========================================
@@ -814,7 +820,7 @@ def download_quotation_pdf(request, pk):
 
     response["Content-Disposition"] = (
 
-        "attachment; "
+        "inline; "
 
         f'filename="{filename}"'
 
