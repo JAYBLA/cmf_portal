@@ -171,10 +171,7 @@ class PurchaseItem(models.Model):
         related_name="purchase_items",
     )
 
-    quantity = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-    )
+    quantity = models.PositiveIntegerField(default=1)
 
     unit_cost = models.DecimalField(
         max_digits=12,
@@ -454,7 +451,7 @@ class PurchaseProductPricing(models.Model):
 
     purchase_item = models.OneToOneField(PurchaseItem, on_delete=models.CASCADE)
 
-    quantity = models.DecimalField(max_digits=12, decimal_places=2)
+    quantity = models.PositiveIntegerField(default=1)
 
     purchase_value_tzs = models.DecimalField(max_digits=14, decimal_places=2, default=0)
 

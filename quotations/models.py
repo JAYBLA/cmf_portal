@@ -330,9 +330,7 @@ class QuotationItem(models.Model):
     # QUANTITY
     # =========================================
 
-    quantity = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
+    quantity = models.PositiveIntegerField(
         default=1,
     )
 

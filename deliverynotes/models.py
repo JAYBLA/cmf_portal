@@ -15,11 +15,6 @@ from quotations.models import (
 # =========================================
 
 
-# =========================================
-# DELIVERY NOTE
-# =========================================
-
-
 class DeliveryNote(models.Model):
 
     STATUS_CHOICES = (
@@ -351,10 +346,7 @@ class DeliveryNoteItem(models.Model):
         related_name="delivery_items",
     )
 
-    quantity = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-    )
+    quantity = models.PositiveIntegerField(default=1)
 
     remarks = models.CharField(
         max_length=255,

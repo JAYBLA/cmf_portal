@@ -175,7 +175,7 @@ class InvoiceItem(models.Model):
         null=True,
     )
 
-    quantity = models.DecimalField(max_digits=12, decimal_places=2)
+    quantity = models.PositiveIntegerField(default=1)
 
     unit_price = models.DecimalField(max_digits=14, decimal_places=2)
 

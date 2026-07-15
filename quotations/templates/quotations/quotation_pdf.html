@@ -388,8 +388,9 @@ body {
 
         {% if quotation.customer.company_name %}
 
-            {{ quotation.customer.company_name }}
-
+            {{ quotation.customer.company_name }}<br>
+        {% else %}:
+            ----------------
             <br>
 
         {% endif %}
@@ -397,8 +398,9 @@ body {
 
         {% if quotation.customer.phone_number %}
 
-            {{ quotation.customer.phone_number }}
-
+            {{ quotation.customer.phone_number }}<br>
+        {% else %}:
+            ----------------
             <br>
 
         {% endif %}
@@ -406,7 +408,9 @@ body {
 
         {% if quotation.customer.tin_number %}
 
-            {{ quotation.customer.tin_number }}
+            {{ quotation.customer.tin_number }}<br>
+        {% else %}:
+            ----------------
 
             <br>
 
@@ -416,6 +420,9 @@ body {
         {% if quotation.customer.address %}
 
             {{ quotation.customer.address }}
+
+        {% else %}:
+            ----------------
 
         {% endif %}
 
