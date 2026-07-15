@@ -309,8 +309,8 @@ class QuotationItemForm(forms.ModelForm):
                         "text-end "
                         "form-control-sm"
                     ),
-                    "step": "0.01",
-                    "min": "0.01",
+                    "step": "1",
+                    "min": "1",
                     "placeholder": "Qty",
                 }
             ),
@@ -323,7 +323,7 @@ class QuotationItemForm(forms.ModelForm):
             "unit_price": forms.NumberInput(
                 attrs={
                     "class": (
-                        "form-control "
+                        "form-control no-spinner"
                         "text-end "
                         "form-control-sm"
                     ),

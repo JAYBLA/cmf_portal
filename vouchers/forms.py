@@ -91,9 +91,8 @@ class VoucherItemForm(forms.ModelForm):
             ),
             "amount": forms.NumberInput(
                 attrs={
-                    "class": "form-control form-control-sm text-end",
-                    "step": "0.01",
-                    "min": "0",
+                    "class": "form-control form-control-sm text-end no-spinner",                   
+                   
                     "placeholder": "Amount",
                 }
             ),

@@ -682,8 +682,14 @@ textarea {
   font: inherit;
 }
 
-[type=number] {
-  -moz-appearance: textfield;
+.no-spinner {
+    -moz-appearance: textfield;
+}
+
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 label[for] {

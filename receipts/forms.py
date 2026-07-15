@@ -87,7 +87,7 @@ class ReceiptForm(forms.ModelForm):
 
             "amount": forms.NumberInput(
                 attrs={
-                    "class": "form-control text-end",
+                    "class": "form-control text-end no-spinner",
                     "step": "0.01",
                     "min": "0.01",
                     "placeholder": (

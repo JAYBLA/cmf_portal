@@ -60,9 +60,8 @@ class InvoiceForm(forms.ModelForm):
 
             "discount_amount": forms.NumberInput(
                 attrs={
-                    "class": "form-control text-end",
-                    "step": "0.01",
-                    "min": "0",
+                    "class": "form-control text-end no-spinner",
+                    
                 }
             ),
 
@@ -195,20 +194,18 @@ class InvoiceItemForm(forms.ModelForm):
                         "text-end "
                         "form-control-sm"
                     ),
-                    "step": "0.01",
-                    "min": "0",
+                    "step": "1",
+                    "min": "1",
                 }
             ),
 
             "unit_price": forms.NumberInput(
                 attrs={
                     "class": (
-                        "form-control "
+                        "form-control no-spinner"
                         "text-end "
                         "form-control-sm"
-                    ),
-                    "step": "0.01",
-                    "min": "0",
+                    ),                    
                 }
             ),
 

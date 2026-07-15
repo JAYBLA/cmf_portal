@@ -86,7 +86,8 @@ class SaleItemForm(forms.ModelForm):
                         "text-end "
                         "item-qty"
                     ),
-                    "min": "0",
+                    "min": "1",
+                    "step": "1",
                 }
             ),
 
@@ -96,6 +97,7 @@ class SaleItemForm(forms.ModelForm):
                         "form-control "
                         "text-end "
                         "item-price"
+                        "no-spinner"
                     ),
                     "readonly": True,
                 }

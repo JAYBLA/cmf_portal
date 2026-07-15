@@ -118,8 +118,8 @@ class DeliveryNoteItemForm(forms.ModelForm):
             "quantity": forms.NumberInput(
                 attrs={
                     "class": ("form-control " "form-control-sm " "text-end"),
-                    "step": "0.01",
-                    "min": "0.01",
+                    "step": "1",
+                    "min": "1",
                 }
             ),
             "remarks": forms.TextInput(

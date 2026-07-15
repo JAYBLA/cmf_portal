@@ -45,7 +45,7 @@ class PurchaseForm(forms.ModelForm):
             ),
             "exchange_rate": forms.NumberInput(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-control no-spinner",
                     "id": "exchange-rate",
                     "step": "0.01",
                 }
@@ -126,10 +126,10 @@ class PurchaseItemForm(forms.ModelForm):
                 }
             ),
             "quantity": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm", "placeholder": "Qty"}
+                attrs={"class": "form-control form-control-sm", "placeholder": "Qty","step":"1", "min":"1"}
             ),
             "unit_cost": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm", "placeholder": "Cost"}
+                attrs={"class": "form-control form-control-sm no-spinner", "placeholder": "Cost"}
             ),
         }
 
