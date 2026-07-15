@@ -117,7 +117,10 @@ class SaleItem(models.Model):
         related_name="sale_items",
     )
 
-    quantity = models.PositiveIntegerField(default=1)
+    quantity = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+    )
 
     unit_price = models.DecimalField(
         max_digits=12,

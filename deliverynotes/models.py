@@ -346,7 +346,10 @@ class DeliveryNoteItem(models.Model):
         related_name="delivery_items",
     )
 
-    quantity = models.PositiveIntegerField(default=1)
+    quantity = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
 
     remarks = models.CharField(
         max_length=255,
