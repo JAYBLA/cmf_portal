@@ -96,8 +96,7 @@ class SaleItemForm(forms.ModelForm):
                     "class": (
                         "form-control "
                         "text-end "
-                        "item-price"
-                        "no-spinner"
+                        "item-price"                       
                     ),
                     "readonly": True,
                 }
