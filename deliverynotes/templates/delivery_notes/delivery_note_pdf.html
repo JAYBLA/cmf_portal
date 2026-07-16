@@ -487,6 +487,10 @@ body {
             {{ delivery_note.customer.company_name }}
 
             <br>
+        {% else %}:
+            ----------------
+
+            <br>
 
         {% endif %}
 
@@ -496,7 +500,10 @@ body {
             {{ delivery_note.customer.phone_number }}
 
             <br>
+                {% else %}:
+            ----------------
 
+            <br>
         {% endif %}
 
 
@@ -505,7 +512,10 @@ body {
             {{ delivery_note.customer.tin_number }}
 
             <br>
+                {% else %}:
+            ----------------
 
+            <br>
         {% endif %}
 
 
