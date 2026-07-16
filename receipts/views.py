@@ -70,6 +70,7 @@ def receipt_create(request):
 
     form = ReceiptForm(
         request.POST or None,
+        request.FILES or None,
     )
 
     if request.method == "POST":
@@ -138,9 +139,11 @@ def receipt_update(request, pk):
     # ---------------------------------
 
     old_invoice = receipt.invoice
+    old_payment_proof = receipt.payment_proof
 
     form = ReceiptForm(
         request.POST or None,
+        request.FILES or None,
         instance=receipt,
     )
 
@@ -153,6 +156,11 @@ def receipt_update(request, pk):
             # ---------------------------------
 
             receipt = form.save()
+            if (
+                old_payment_proof
+                and old_payment_proof != receipt.payment_proof
+            ):
+                old_payment_proof.delete(save=False)
 
             new_invoice = receipt.invoice
 
@@ -227,7 +235,8 @@ def receipt_delete(request, pk):
         # ---------------------------------
         # Delete receipt
         # ---------------------------------
-
+        if receipt.payment_proof:
+            receipt.payment_proof.delete(save=False)
         receipt.delete()
 
         # ---------------------------------

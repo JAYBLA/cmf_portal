@@ -11,9 +11,9 @@ class Receipt(models.Model):
 
     PAYMENT_METHODS = (
         ("cash", "Cash"),
-        ("kcb bank deposit", "KCB BANK DEPOSIT"),
+        ("tcb bank deposit", "TCB BANK DEPOSIT"),
         ("nmb bank deposit", "NMB BANK DEPOSIT"),
-        ("kcb bank cheque", "KCB BANK CHEQUE"),
+        ("tcb bank cheque", "TCB BANK CHEQUE"),
         ("nmb bank cheque", "NMB BANK CHEQUE"),        
     )
 
@@ -43,10 +43,12 @@ class Receipt(models.Model):
         default="cash",
     )
 
-    payment_reference = models.CharField(
-        max_length=255,
+    payment_proof = models.FileField(
+        upload_to="receipts/payment_proofs/%Y/%m/",
         blank=True,
         null=True,
+        verbose_name="Payment Proof",
+        help_text="Upload bank deposit slip, mobile money receipt, cheque scan or payment screenshot.",
     )
 
     notes = models.TextField(

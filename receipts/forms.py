@@ -67,7 +67,7 @@ class ReceiptForm(forms.ModelForm):
             "receipt_date",
             "amount",
             "payment_method",
-            "payment_reference",
+            "payment_proof",
             "notes",
         ]
 
@@ -104,12 +104,10 @@ class ReceiptForm(forms.ModelForm):
             ),
 
 
-            "payment_reference": forms.TextInput(
+            "payment_proof": forms.FileInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": (
-                        "Payment reference"
-                    ),
+                    "accept": ".pdf,.jpg,.jpeg,.png,.webp",
                 }
             ),
 
@@ -183,7 +181,7 @@ class ReceiptForm(forms.ModelForm):
                     status="cancelled"
                 )
                 .filter(
-                    models.Q(
+                    Q(
                         status__in=[
                             "draft",
                             "unpaid",
@@ -191,7 +189,7 @@ class ReceiptForm(forms.ModelForm):
                         ]
                     )
                     |
-                    models.Q(
+                    Q(
                         pk=self.instance.invoice_id
                     )
                 )
