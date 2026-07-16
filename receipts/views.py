@@ -359,12 +359,6 @@ def download_receipt_pdf(request, pk):
         
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-        # =====================================
-        # BROWSER PREVIEW
-        # =====================================
-
-        #response["Content-Disposition"] = f'inline; filename="{filename}"'
-
         return response
 
     return HttpResponse(
