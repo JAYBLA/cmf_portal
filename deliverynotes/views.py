@@ -298,88 +298,63 @@ def quotation_items(request, quotation_id):
     quotation = get_object_or_404(
         Quotation.objects.prefetch_related(
             "items",
+            "items__product",
         ),
         pk=quotation_id,
     )
 
+    # Temporary delivery note so we can use the property
+    delivery_note = DeliveryNote(
+        quotation=quotation,
+    )
 
     initial = []
-
-
-    # =========================================
-    # BUILD REMAINING DELIVERY ITEMS
-    # =========================================
-
-    for quotation_item in quotation.items.all():
+    
+    for quotation_item in delivery_note.deliverable_quotation_items:
 
         delivered_quantity = (
-            quotation_item
-            .delivery_items
-            .aggregate(
+            quotation_item.delivery_items.aggregate(
                 total=Sum("quantity")
             )["total"]
             or Decimal("0")
         )
-
 
         remaining_quantity = (
             quotation_item.quantity
             - delivered_quantity
         )
 
-
         if remaining_quantity <= 0:
             continue
 
-
         initial.append(
             {
-                "quotation_item":
-                    quotation_item.pk,
-
-                "quantity":
-                    remaining_quantity,
-
-                "remarks":
-                    "",
+                "quotation_item": quotation_item.pk,
+                "quantity": remaining_quantity,
+                "remarks": "",
             }
         )
 
-
-    # =========================================
-    # DYNAMIC FORMSET
-    # =========================================
-
-    QuotationDeliveryItemFormSet = (
-        inlineformset_factory(
-            parent_model=DeliveryNote,
-            model=DeliveryNoteItem,
-            form=DeliveryNoteItemForm,
-            extra=len(initial),
-            can_delete=True,
-        )
+    QuotationDeliveryItemFormSet = inlineformset_factory(
+        DeliveryNote,
+        DeliveryNoteItem,
+        form=DeliveryNoteItemForm,
+        extra=len(initial),
+        can_delete=True,
     )
-
 
     formset = QuotationDeliveryItemFormSet(
         initial=initial,
         prefix="items",
     )
 
-
-    context = {
-        "quotation": quotation,
-        "formset": formset,
-    }
-
-
     return render(
         request,
-        (
-            "delivery_notes/partials/"
-            "quotation_items_rows.html"
-        ),
-        context,
+        "delivery_notes/partials/quotation_items_rows.html",
+        {
+            "quotation": quotation,
+            "formset": formset,
+        },
     )
     
 # =========================================
