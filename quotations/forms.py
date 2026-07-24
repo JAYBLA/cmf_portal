@@ -18,8 +18,6 @@ from datetime import (
 )
 from core.widgets import IntegerDisplay
 
-
-
 # =========================================
 # QUOTATION FORM
 # =========================================
@@ -30,13 +28,12 @@ class QuotationForm(forms.ModelForm):
     customer_text = forms.CharField(
         required=False,
     )
-    
+
     payment_terms = forms.ModelMultipleChoiceField(
         queryset=PaymentTerm.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
-
 
     class Meta:
 
@@ -50,85 +47,55 @@ class QuotationForm(forms.ModelForm):
             "completion_period_from",
             "completion_period_to",
             "completion_period_unit",
-            "payment_terms",           
+            "payment_terms",
         ]
 
-
         widgets = {
-
             "title": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": (
-                        "Quotation title"
-                    ),
+                    "placeholder": ("Quotation title"),
                 }
             ),
-
-
             "description": forms.Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": (
-                        "Quotation description"
-                    ),
+                    "placeholder": ("Quotation description"),
                 }
             ),
-
-
             "quote_date": forms.DateInput(
                 attrs={
-                    "class": (
-                        "form-control flatpickr"
-                    ),
+                    "class": ("form-control flatpickr"),
                     "autocomplete": "off",
-                    "placeholder": (
-                        "Select quotation date"
-                    ),
+                    "placeholder": ("Select quotation date"),
                 }
             ),
-
-
             "due_date": forms.DateInput(
                 attrs={
-                    "class": (
-                        "form-control flatpickr"
-                    ),
+                    "class": ("form-control flatpickr"),
                     "autocomplete": "off",
-                    "placeholder": (
-                        "Select due date"
-                    ),
+                    "placeholder": ("Select due date"),
                 }
             ),
-
-
-            "completion_period_from":
-                forms.NumberInput(
-                    attrs={
-                        "class": "form-control",
-                        "min": "0",
-                    }
-                ),
-
-
-            "completion_period_to":
-                forms.NumberInput(
-                    attrs={
-                        "class": "form-control",
-                        "min": "0",
-                    }
-                ),
-
-
-            "completion_period_unit":
-                forms.Select(
-                    attrs={
-                        "class": "form-select",
-                    }
-                ),
+            "completion_period_from": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "min": "0",
+                }
+            ),
+            "completion_period_to": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "min": "0",
+                }
+            ),
+            "completion_period_unit": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
         }
-
 
     def __init__(
         self,
@@ -140,7 +107,7 @@ class QuotationForm(forms.ModelForm):
             *args,
             **kwargs,
         )
-        
+
         # =========================================
         # DEFAULT QUOTATION DATES
         # =========================================
@@ -149,74 +116,40 @@ class QuotationForm(forms.ModelForm):
 
             today = date.today()
 
-            self.fields[
-                "quote_date"
-            ].initial = today
+            self.fields["quote_date"].initial = today
 
-            self.fields[
-                "due_date"
-            ].initial = (
-                today
-                + timedelta(days=7)
-            )
-
-
+            self.fields["due_date"].initial = today + timedelta(days=7)
 
         # =========================================
         # CUSTOMER FIELD
         # =========================================
 
-        self.fields[
-            "customer_text"
-        ].widget = forms.Select(
+        self.fields["customer_text"].widget = forms.Select(
             attrs={
-                "class": (
-                    "form-select choices-tags"
-                ),
+                "class": ("form-select choices-tags"),
             }
         )
 
-
-        self.fields[
-            "customer_text"
-        ].widget.choices = [
-
+        self.fields["customer_text"].widget.choices = [
             (
                 "",
                 "Select Customer",
             )
-
         ] + [
-
             (
                 str(customer.id),
                 customer.customer_name,
             )
-
-            for customer in (
-                Customer.objects
-                .order_by("customer_name")
-            )
-
+            for customer in (Customer.objects.order_by("customer_name"))
         ]
-
 
         # =========================================
         # UPDATE CUSTOMER
         # =========================================
 
-        if (
-            self.instance
-            and self.instance.pk
-            and self.instance.customer_id
-        ):
+        if self.instance and self.instance.pk and self.instance.customer_id:
 
-            self.initial[
-                "customer_text"
-            ] = str(
-                self.instance.customer_id
-            )
-
+            self.initial["customer_text"] = str(self.instance.customer_id)
 
     # =========================================
     # VALIDATE CUSTOMER
@@ -224,23 +157,11 @@ class QuotationForm(forms.ModelForm):
 
     def clean_customer_text(self):
 
-        customer_text = (
-            self.cleaned_data.get(
-                "customer_text"
-            )
-            or ""
-        ).strip()
-
+        customer_text = (self.cleaned_data.get("customer_text") or "").strip()
 
         if not customer_text:
 
-            raise forms.ValidationError(
-                (
-                    "Please select or enter "
-                    "a customer."
-                )
-            )
-
+            raise forms.ValidationError(("Please select or enter " "a customer."))
 
         return customer_text
 
@@ -251,7 +172,6 @@ class QuotationForm(forms.ModelForm):
 
 
 class QuotationItemForm(forms.ModelForm):
-
 
     class Meta:
 
@@ -265,95 +185,57 @@ class QuotationItemForm(forms.ModelForm):
             "is_tangible",
         ]
 
-
         widgets = {
-
             # =====================================
             # PRODUCT
             # =====================================
-
             "product": forms.Select(
                 attrs={
-                    "class": (
-                        "form-select "
-                        "form-select-sm"
-                    ),
+                    "class": ("form-select " "form-select-sm"),
                 }
             ),
-
-
             # =====================================
             # CUSTOM ITEM
             # =====================================
-
             "description": forms.TextInput(
                 attrs={
-                    "class": (
-                        "form-control "
-                        "form-control-sm"
-                    ),
-                    "placeholder": (
-                        "Or type custom item"
-                    ),
+                    "class": ("form-control " "form-control-sm"),
+                    "placeholder": ("Or type custom item"),
                 }
             ),
-
-
             # =====================================
             # QUANTITY
             # =====================================
-
             "quantity": IntegerDisplay(
                 attrs={
-                    "class": (
-                        "form-control "
-                        "text-end "
-                        "form-control-sm"
-                    ),
+                    "class": ("form-control " "text-end " "form-control-sm"),
                     "step": "1",
                     "min": "1",
                     "placeholder": "Qty",
                 }
             ),
-
-
             # =====================================
             # UNIT PRICE
             # =====================================
-
             "unit_price": forms.NumberInput(
                 attrs={
-                    "class": (
-                        "form-control no-spinner"
-                        "text-end "
-                        "form-control-sm"
-                    ),                                   
-                    "placeholder": (
-                        "Unit price"
-                    ),
+                    "class": ("form-control no-spinner" "text-end " "form-control-sm"),
+                    "placeholder": ("Unit price"),
                 }
             ),
-
-
             # =====================================
             # TANGIBLE
             # =====================================
-
             "is_tangible": forms.Select(
                 choices=(
                     (True, "Yes"),
                     (False, "No"),
                 ),
                 attrs={
-                    "class": (
-                        "form-select "
-                        "form-select-sm"
-                    ),
-                }
+                    "class": ("form-select " "form-select-sm"),
+                },
             ),
-
         }
-
 
     def __init__(
         self,
@@ -366,48 +248,29 @@ class QuotationItemForm(forms.ModelForm):
             **kwargs,
         )
 
-
         # =========================================
         # PRODUCT OPTIONAL
         # =========================================
 
-        self.fields[
-            "product"
-        ].required = False
+        self.fields["product"].required = False
 
-
-        self.fields[
-            "product"
-        ].empty_label = (
-            "Select Product"
-        )
-
+        self.fields["product"].empty_label = "Select Product"
 
         # =========================================
         # DESCRIPTION OPTIONAL
         # =========================================
 
-        self.fields[
-            "description"
-        ].required = False
-
+        self.fields["description"].required = False
 
         # =========================================
         # ACTIVE PRODUCTS
         # =========================================
 
-        self.fields[
-            "product"
-        ].queryset = (
-            Product.objects
-            .filter(
-                status="active",
-            )
-            .order_by(
-                "product_name",
-            )
+        self.fields["product"].queryset = Product.objects.filter(
+            status="active",
+        ).order_by(
+            "product_name",
         )
-
 
         # =========================================
         # DELETE FIELD
@@ -415,16 +278,11 @@ class QuotationItemForm(forms.ModelForm):
 
         if "DELETE" in self.fields:
 
-            self.fields[
-                "DELETE"
-            ].widget.attrs.update(
+            self.fields["DELETE"].widget.attrs.update(
                 {
-                    "class": (
-                        "form-check-input"
-                    ),
+                    "class": ("form-check-input"),
                 }
             )
-
 
     # =========================================
     # VALIDATE ITEM
@@ -434,34 +292,15 @@ class QuotationItemForm(forms.ModelForm):
 
         cleaned_data = super().clean()
 
+        product = cleaned_data.get("product")
 
-        product = cleaned_data.get(
-            "product"
-        )
+        description = (cleaned_data.get("description") or "").strip()
 
+        quantity = cleaned_data.get("quantity")
 
-        description = (
-            cleaned_data.get(
-                "description"
-            )
-            or ""
-        ).strip()
+        unit_price = cleaned_data.get("unit_price")
 
-
-        quantity = cleaned_data.get(
-            "quantity"
-        )
-
-
-        unit_price = cleaned_data.get(
-            "unit_price"
-        )
-
-
-        delete = cleaned_data.get(
-            "DELETE"
-        )
-
+        delete = cleaned_data.get("DELETE")
 
         # =========================================
         # DELETED ROW
@@ -471,28 +310,20 @@ class QuotationItemForm(forms.ModelForm):
 
             return cleaned_data
 
-
         # =========================================
         # EMPTY AUTOMATIC ROW
         # =========================================
 
-        if (
-            not product
-            and not description
-        ):
+        if not product and not description:
 
             return cleaned_data
-
 
         # =========================================
         # PRODUCT AND DESCRIPTION
         # CANNOT BOTH BE USED
         # =========================================
 
-        if (
-            product
-            and description
-        ):
+        if product and description:
 
             raise forms.ValidationError(
                 (
@@ -501,7 +332,6 @@ class QuotationItemForm(forms.ModelForm):
                     "You cannot use both."
                 )
             )
-
 
         # =========================================
         # QUANTITY REQUIRED FOR ACTIVE ROW
@@ -514,17 +344,12 @@ class QuotationItemForm(forms.ModelForm):
                 "Quantity is required.",
             )
 
-
         elif quantity <= 0:
 
             self.add_error(
                 "quantity",
-                (
-                    "Quantity must be greater "
-                    "than zero."
-                ),
+                ("Quantity must be greater " "than zero."),
             )
-
 
         # =========================================
         # UNIT PRICE REQUIRED
@@ -537,17 +362,12 @@ class QuotationItemForm(forms.ModelForm):
                 "Unit price is required.",
             )
 
-
         elif unit_price < 0:
 
             self.add_error(
                 "unit_price",
-                (
-                    "Unit price cannot be "
-                    "negative."
-                ),
+                ("Unit price cannot be " "negative."),
             )
-
 
         # =========================================
         # PRODUCT ITEM
@@ -559,19 +379,13 @@ class QuotationItemForm(forms.ModelForm):
             # PRODUCT DETERMINES TANGIBLE STATE
             # -------------------------------------
 
-            cleaned_data[
-                "is_tangible"
-            ] = product.is_tangible
-
+            cleaned_data["is_tangible"] = product.is_tangible
 
             # -------------------------------------
             # ENSURE DESCRIPTION IS EMPTY
             # -------------------------------------
 
-            cleaned_data[
-                "description"
-            ] = None
-
+            cleaned_data["description"] = None
 
         # =========================================
         # CUSTOM ITEM
@@ -583,33 +397,18 @@ class QuotationItemForm(forms.ModelForm):
             # KEEP USER SELECTED TANGIBLE STATE
             # -------------------------------------
 
-            cleaned_data[
-                "description"
-            ] = description
+            cleaned_data["description"] = description
         # =========================================
         # VALIDATE DELIVERED QUANTITY
         # =========================================
 
-        if (
-            self.instance
-            and self.instance.pk
-            and self.instance.is_tangible
-        ):
+        if self.instance and self.instance.pk and self.instance.is_tangible:
 
-            delivered_quantity = (
-                self.instance.delivered_quantity
-            )
+            delivered_quantity = self.instance.delivered_quantity
 
+            quantity = cleaned_data.get("quantity")
 
-            quantity = cleaned_data.get(
-                "quantity"
-            )
-
-
-            if (
-                quantity is not None
-                and quantity < delivered_quantity
-            ):
+            if quantity is not None and quantity < delivered_quantity:
 
                 self.add_error(
                     "quantity",
@@ -628,12 +427,10 @@ class QuotationItemForm(forms.ModelForm):
 # =========================================
 
 
-QuotationItemFormSet = (
-    inlineformset_factory(
-        Quotation,
-        QuotationItem,
-        form=QuotationItemForm,
-        extra=1,
-        can_delete=True,
-    )
+QuotationItemFormSet = inlineformset_factory(
+    Quotation,
+    QuotationItem,
+    form=QuotationItemForm,
+    extra=1,
+    can_delete=True,
 )

@@ -305,6 +305,15 @@ def quotation_items(request, quotation_id):
     delivery_note = DeliveryNote(
         quotation=quotation,
     )
+    
+    print(
+        list(
+            delivery_note.deliverable_quotation_items.values_list(
+                "id",
+                flat=True,
+            )
+        )
+    )
 
     initial = []
     
@@ -342,6 +351,7 @@ def quotation_items(request, quotation_id):
     )
 
     formset = QuotationDeliveryItemFormSet(
+        instance=delivery_note,
         initial=initial,
         prefix="items",
     )

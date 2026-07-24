@@ -1,383 +1,122 @@
-<form
-    hx-post="
-        {% if quotation %}
-            {% url 'quotations:quotation_update' quotation.id %}
-        {% else %}
-            {% url 'quotations:quotation_create' %}
-        {% endif %}
-    "
-    hx-swap="none"
->
-
+<form hx-post=" {% if quotation %} {% url 'quotations:quotation_update' quotation.id %} {% else %} {% url 'quotations:quotation_create' %} {% endif %} "
+      hx-swap="none">
     {% csrf_token %}
-
     {{ formset.management_form }}
-
-
     <!-- =========================================
          MODAL HEADER
-    ========================================== -->
-
+========================================== -->
     <div class="modal-header">
-
         <h5 class="modal-title">
-
             {% if quotation %}
-
                 Edit Quotation
-
             {% else %}
-
                 New Quotation
-
             {% endif %}
-
         </h5>
-
-
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-        ></button>
-
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
     </div>
-
-
     <!-- =========================================
          MODAL BODY
-    ========================================== -->
-
-    <div
-        class="modal-body"
-        style="
-            overflow-y: auto;
-            max-height: calc(95vh - 180px);
-        "
-    >
-
-
+========================================== -->
+    <div class="modal-body"
+         style="overflow-y: auto;
+                max-height: calc(95vh - 180px)">
         <!-- =========================================
              QUOTATION DETAILS
-        ========================================== -->
-
+========================================== -->
         <div class="card mb-4">
-
             <div class="card-body">
-
                 <div class="row g-3">
-
-
                     <!-- CUSTOMER -->
-
                     <div class="col-md-12">
-
-                        <label class="form-label">
-                            Customer
-                        </label>
-
+                        <label class="form-label">Customer</label>
                         {{ form.customer_text }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.customer_text.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.customer_text.errors }}</div>
                     </div>
-
-
                     <!-- TITLE -->
-
                     <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Quotation Title
-
-                        </label>
-
-
+                        <label class="form-label">Quotation Title</label>
                         {{ form.title }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.title.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.title.errors }}</div>
                     </div>
                     <!-- QUOTATION DATE -->
-
                     <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Quotation Date
-
-                        </label>
-
-
+                        <label class="form-label">Quotation Date</label>
                         {{ form.quote_date }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.quote_date.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.quote_date.errors }}</div>
                     </div>
-
-
                     <!-- DUE DATE -->
-
                     <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Due Date
-
-                        </label>
-
-
+                        <label class="form-label">Due Date</label>
                         {{ form.due_date }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.due_date.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.due_date.errors }}</div>
                     </div>
-
-
                     <!-- COMPLETION PERIOD FROM -->
-
                     <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Completion From
-
-                        </label>
-
-
+                        <label class="form-label">Completion From</label>
                         {{ form.completion_period_from }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.completion_period_from.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.completion_period_from.errors }}</div>
                     </div>
-
-
                     <!-- COMPLETION PERIOD TO -->
-
                     <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Completion To
-
-                        </label>
-
-
+                        <label class="form-label">Completion To</label>
                         {{ form.completion_period_to }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.completion_period_to.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.completion_period_to.errors }}</div>
                     </div>
-
-
                     <!-- COMPLETION PERIOD UNIT -->
-
                     <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Period Unit
-
-                        </label>
-
-
+                        <label class="form-label">Period Unit</label>
                         {{ form.completion_period_unit }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.completion_period_unit.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.completion_period_unit.errors }}</div>
                     </div>
-
                     <div class="col-md-6">
-
-                        <label class="form-label">
-                            Payment Terms
-                        </label>
-
-                        <div class="border rounded p-2">
-
-                            {{ form.payment_terms }}
-
-                        </div>
-
-                        <div class="text-danger small">
-                            {{ form.payment_terms.errors }}
-                        </div>
-
+                        <label class="form-label">Payment Terms</label>
+                        <div class="border rounded p-2">{{ form.payment_terms }}</div>
+                        <div class="text-danger small">{{ form.payment_terms.errors }}</div>
                     </div>
-                                        <!-- DESCRIPTION -->
-
+                    <!-- DESCRIPTION -->
                     <div class="col-md-6">
-
-                        <label class="form-label">
-
-                            Description
-
-                        </label>
-
-
+                        <label class="form-label">Description</label>
                         {{ form.description }}
-
-
-                        <div class="text-danger small">
-
-                            {{ form.description.errors }}
-
-                        </div>
-
+                        <div class="text-danger small">{{ form.description.errors }}</div>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
-
         <!-- =========================================
              QUOTATION ITEMS
-        ========================================== -->
-
+========================================== -->
         <div class="card">
-
-            <div class="card-header">
-
-                Quotation Items
-
-            </div>
-
-
+            <div class="card-header">Quotation Items</div>
             <div class="table-responsive">
-
-                <table
-                    class="
-                        table
-                        table-sm
-                        table-bordered
-                        mb-0
-                        align-middle
-                    "
-                >
-
+                <table class=" table table-sm table-bordered mb-0 align-middle ">
                     <thead class="table-light">
-
                         <tr>
-
-                            <th>
-                                Product
-                            </th>
-
-                            <th>
-                                Item Name
-                            </th>
-
-                            <th width="100">
-                                Qty
-                            </th>
-
-                            <th width="130">
-                                Unit Price
-                            </th>
-
-                            <th width="100">
-                                Tangible
-                            </th>
-
-                            <th width="60">
-                                Del
-                            </th>
-
+                            <th>Product</th>
+                            <th>Item Name</th>
+                            <th width="100">Qty</th>
+                            <th width="130">Unit Price</th>
+                            <th width="100">Tangible</th>
+                            <th width="60">Del</th>
                         </tr>
-
                     </thead>
-
-
                     <tbody id="quotation-items-container">
-
                         {% for form in formset %}
-
                             {% include "quotations/partials/item_row.html" %}
-
                         {% endfor %}
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
-
     </div>
-
-
     <!-- =========================================
          MODAL FOOTER
-    ========================================== -->
-
+========================================== -->
     <div class="modal-footer">
-
-        <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-        >
-
-            Close
-
-        </button>
-
-
-        <button
-            type="submit"
-            class="btn btn-success"
-        >
-
-            Save Quotation
-
-        </button>
-
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success">Save Quotation</button>
     </div>
-
 </form>
-
-
 <script>
 
 ;(function () {

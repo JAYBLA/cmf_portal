@@ -105,17 +105,11 @@ class DeliveryNote(models.Model):
     # =========================================
     # DELIVERABLE QUOTATION ITEMS
     # =========================================
-
     @property
     def deliverable_quotation_items(self):
-
-        return (
-            self.quotation.items
-            .filter(
-                product__is_tangible=True,
-            )
+        return self.quotation.items.filter(
+            is_tangible=True,
         )
-
 
     # =========================================
     # QUOTED DELIVERABLE QUANTITY
@@ -143,7 +137,7 @@ class DeliveryNote(models.Model):
         return (
             self.items
             .filter(
-                quotation_item__product__is_tangible=True,
+                quotation_item__is_tangible=True,
             )
             .aggregate(
                 total=Sum("quantity")
@@ -162,7 +156,7 @@ class DeliveryNote(models.Model):
         return (
             self.items
             .filter(
-                quotation_item__product__is_tangible=True,
+                quotation_item__is_tangible=True,
             )
             .count()
         )
@@ -179,16 +173,12 @@ class DeliveryNote(models.Model):
             (
                 item.total_price
                 for item in self.items.filter(
-                    quotation_item__product__is_tangible=True,
+                    quotation_item__is_tangible=True,
                 )
             ),
             Decimal("0"),
         )
 
-
-    # =========================================
-    # UPDATE DELIVERY STATUS
-    # =========================================
 
 # =========================================
 # UPDATE DELIVERY STATUS
