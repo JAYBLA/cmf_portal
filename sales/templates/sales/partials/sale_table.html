@@ -99,9 +99,8 @@
 
             <span>
                 <span class="fw-light">Total:</span>
-
                 <span class="fw-semibold text-primary">
-                    TZS {{ sale.total_amount|floatformat:2|intcomma }}
+                    TZS {{ sale.total_amount|floatformat:0|intcomma }}
                 </span>
             </span>
 
@@ -111,7 +110,7 @@
                 <span class="fw-light">Paid:</span>
 
                 <span class="fw-semibold text-success">
-                    TZS {{ sale.amount_paid|floatformat:2|intcomma }}
+                    TZS {{ sale.amount_paid|floatformat:0|intcomma }}
                 </span>
             </span>
 
@@ -121,7 +120,7 @@
                 <span class="fw-light">Balance:</span>
 
                 <span class="fw-bold text-danger">
-                    TZS {{ sale.balance|floatformat:2|intcomma }}
+                    TZS {{ sale.balance|floatformat:0|intcomma }}
                 </span>
             </span>
 

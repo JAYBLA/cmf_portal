@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import *
+from core.widgets import IntegerDisplay
 
 # =========================================
 # PURCHASE FORM
@@ -43,11 +44,11 @@ class PurchaseForm(forms.ModelForm):
                     "id": "purchase-currency",
                 }
             ),
-            "exchange_rate": forms.NumberInput(
+            "exchange_rate": IntegerDisplay(
                 attrs={
                     "class": "form-control no-spinner",
                     "id": "exchange-rate",
-                    "step": "0.01",
+                    "step": "1",
                 }
             ),
             "supplier_invoice_number": forms.TextInput(
@@ -125,7 +126,7 @@ class PurchaseItemForm(forms.ModelForm):
                     "placeholder": "Product",
                 }
             ),
-            "quantity": forms.NumberInput(
+            "quantity": IntegerDisplay(
                 attrs={"class": "form-control form-control-sm", "placeholder": "Qty","step":"1", "min":"1"}
             ),
             "unit_cost": forms.NumberInput(
@@ -163,7 +164,7 @@ class PurchasePaymentForm(forms.ModelForm):
 
         widgets = {
             "payment_date": forms.DateInput(attrs={"type": "date"}),
-            "notes": forms.Textarea(attrs={"rows": 3}),
+            "notes": forms.Textarea(attrs={"rows": 3}),           
         }
 
 
@@ -190,7 +191,8 @@ class PurchaseAdditionalCostForm(forms.ModelForm):
         ]
 
         widgets = {
-            "notes": forms.Textarea(attrs={"rows": 2}),
+            "notes": forms.Textarea(attrs={"rows": 2}),            
+            "exchange_rate": IntegerDisplay(attrs={"step": "1"}),
         }
 
     def clean(self):

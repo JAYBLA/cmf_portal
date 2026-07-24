@@ -16,18 +16,18 @@
             <span>
                 <span class="fw-light">Amount:</span>
                 <span class="fw-semibold text-primary">
-                    {{ cost.currency }} {{ cost.amount|floatformat:2|intcomma }}
+                    {{ cost.currency }} {{ cost.amount|floatformat:0|intcomma }}
                 </span>
             </span>
             {% if cost.currency == "USD" %}
                 <span class="text-muted">|</span>
                 <span>
-                    <span class="fw-light">Rate:</span> {{ cost.exchange_rate|floatformat:2 }}
+                    <span class="fw-light">Rate:</span> {{ cost.exchange_rate|floatformat:0 }}
                 </span>
                 <span class="text-muted">|</span>
                 <span>
                     <span class="fw-light">TZS:</span>
-                    <span class="fw-semibold">{{ cost.amount_tzs|floatformat:2|intcomma }}</span>
+                    <span class="fw-semibold">{{ cost.amount_tzs|floatformat:0|intcomma }}</span>
                 </span>
             {% endif %}
             <span class="text-muted">|</span>

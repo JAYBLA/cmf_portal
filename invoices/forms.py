@@ -16,6 +16,7 @@ from products.models import Product
 
 from .models import *
 from quotations.models import *
+from core.widgets import IntegerDisplay
 
 class InvoiceForm(forms.ModelForm):
 
@@ -58,7 +59,7 @@ class InvoiceForm(forms.ModelForm):
                 }
             ),
 
-            "discount_amount": forms.NumberInput(
+            "discount_amount": IntegerDisplay(
                 attrs={
                     "class": "form-control text-end no-spinner",
                     
@@ -187,7 +188,7 @@ class InvoiceItemForm(forms.ModelForm):
                 }
             ),
 
-            "quantity": forms.NumberInput(
+            "quantity": IntegerDisplay(
                 attrs={
                     "class": (
                         "form-control "
@@ -199,7 +200,7 @@ class InvoiceItemForm(forms.ModelForm):
                 }
             ),
 
-            "unit_price": forms.NumberInput(
+            "unit_price": IntegerDisplay(
                 attrs={
                     "class": (
                         "form-control no-spinner"

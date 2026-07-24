@@ -6,6 +6,7 @@ from django.db.models import Q, Sum
 from invoices.models import Invoice
 
 from .models import Receipt
+from core.widgets import IntegerDisplay
 
 
 # =========================================
@@ -87,9 +88,7 @@ class ReceiptForm(forms.ModelForm):
 
             "amount": forms.NumberInput(
                 attrs={
-                    "class": "form-control text-end no-spinner",
-                    "step": "0.01",
-                    "min": "0.01",
+                    "class": "form-control text-end no-spinner",                                       
                     "placeholder": (
                         "Enter amount received"
                     ),

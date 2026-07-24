@@ -20,7 +20,7 @@
             <span class="text-muted">|</span>
             <span>
                 <span class="fw-light">Total:</span>
-                <span class="fw-semibold text-primary">{{ invoice.total_amount|floatformat:2|intcomma }}</span>
+                <span class="fw-semibold text-primary">{{ invoice.total_amount|floatformat:0|intcomma }}</span>
             </span>
             <span class="text-muted">|</span>
             <span>
@@ -50,7 +50,7 @@
             <span>|</span>
             <span>
                 <span class="fw-light">Balance:</span>
-                <span class="text-danger fw-semibold">{{ invoice.balance|floatformat:2|intcomma }}</span>
+                <span class="text-danger fw-semibold">{{ invoice.balance|floatformat:0|intcomma }}</span>
             </span>
             <span>|</span>
             <span>

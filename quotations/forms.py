@@ -16,6 +16,7 @@ from datetime import (
     date,
     timedelta,
 )
+from core.widgets import IntegerDisplay
 
 
 
@@ -302,7 +303,7 @@ class QuotationItemForm(forms.ModelForm):
             # QUANTITY
             # =====================================
 
-            "quantity": forms.NumberInput(
+            "quantity": IntegerDisplay(
                 attrs={
                     "class": (
                         "form-control "
@@ -326,9 +327,7 @@ class QuotationItemForm(forms.ModelForm):
                         "form-control no-spinner"
                         "text-end "
                         "form-control-sm"
-                    ),
-                    "step": "0.01",
-                    "min": "0",
+                    ),                                   
                     "placeholder": (
                         "Unit price"
                     ),

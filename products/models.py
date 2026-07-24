@@ -99,9 +99,7 @@ class Product(models.Model):
         default=0,
     )
 
-    minimum_stock = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
+    minimum_stock = models.PositiveIntegerField(
         default=0,
     )
 

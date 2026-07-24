@@ -302,8 +302,6 @@ def quotation_items(request, quotation_id):
         ),
         pk=quotation_id,
     )
-
-    # Temporary delivery note so we can use the property
     delivery_note = DeliveryNote(
         quotation=quotation,
     )

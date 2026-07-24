@@ -3,6 +3,7 @@ from django.forms import inlineformset_factory
 
 from .models import *
 from products.models import Product
+from core.widgets import IntegerDisplay
 
 
 
@@ -79,7 +80,7 @@ class SaleItemForm(forms.ModelForm):
                 }
             ),
 
-            "quantity": forms.NumberInput(
+            "quantity": IntegerDisplay(
                 attrs={
                     "class": (
                         "form-control "
@@ -150,7 +151,7 @@ class SalePaymentForm(forms.ModelForm):
 
             "amount": forms.NumberInput(
                 attrs={
-                    "class": "form-control text-end",
+                    "class": "form-control text-end",                   
                 }
             ),
 
@@ -192,12 +193,12 @@ class DeclaredPriceForm(forms.Form):
         decimal_places=2,
         min_value=0,
         label="Declared Price",
-        widget=forms.NumberInput(
+        widget=IntegerDisplay(
             attrs={
                 "class": "form-control",
                 "placeholder": "Enter declared price",
                 "min": "0",
-                "step": "0.01",
+                "step": "500",
             }
         ),
     )

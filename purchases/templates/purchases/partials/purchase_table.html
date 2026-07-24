@@ -82,13 +82,13 @@
             <span>
                 <span class="fw-light">Total:</span>
                 {% if purchase.currency == 'USD' %}
-                    <span class="fw-semibold">USD {{ purchase.total_amount|floatformat:2|intcomma }}</span>
+                    <span class="fw-semibold">USD {{ purchase.total_amount|floatformat:0|intcomma }}</span>
                     <span class="text-muted">|</span>
                     <span class="fw-light">Shipping:</span> USD {{ purchase.international_shipping_cost|floatformat:2|intcomma }}
                     <span class="text-muted">|</span>
-                    <span class="fw-light">Rate:</span> {{ purchase.exchange_rate|floatformat:2 }}
+                    <span class="fw-light">Rate:</span> {{ purchase.exchange_rate|floatformat:0 }}
                 {% else %}
-                    <span class="fw-semibold">TZS {{ purchase.total_amount|floatformat:2|intcomma }}</span>
+                    <span class="fw-semibold">TZS {{ purchase.total_amount|floatformat:0|intcomma }}</span>
                 {% endif %}
             </span>
             <span>|</span>
@@ -99,7 +99,7 @@
                     {% if purchase.currency == 'USD' %}
                         USD {{ purchase.amount_paid|floatformat:2|intcomma }}
                     {% else %}
-                        TZS {{ purchase.amount_paid|floatformat:2|intcomma }}
+                        TZS {{ purchase.amount_paid|floatformat:0|intcomma }}
                     {% endif %}
                 </span>
             </span>
@@ -107,9 +107,9 @@
             <!-- Value (TZS) + Local Transport -->
             <span>
                 <span class="fw-light">Value (TZS):</span>
-                <span class="fw-bold text-primary">{{ purchase.total_amount_tzs|floatformat:2|intcomma }}</span>
+                <span class="fw-bold text-primary">{{ purchase.total_amount_tzs|floatformat:0|intcomma }}</span>
                 <span class="text-muted">|</span>
-                <span class="fw-light">Local Tr:</span> TZS {{ purchase.local_shipping_cost|floatformat:2|intcomma }}
+                <span class="fw-light">Local Tr:</span> TZS {{ purchase.local_shipping_cost|floatformat:0|intcomma }}
             </span>
             <span>|</span>
             <!-- Balance -->
@@ -119,11 +119,11 @@
                     {% if purchase.currency == 'USD' %}
                         USD {{ purchase.balance|floatformat:2|intcomma }}
                     {% else %}
-                        TZS {{ purchase.balance|floatformat:2|intcomma }}
+                        TZS {{ purchase.balance|floatformat:0|intcomma }}
                     {% endif %}
                 </span>
                 {% if purchase.currency == 'USD' %}
-                    <span class="text-muted">(TZS {{ purchase.balance_tzs|floatformat:2|intcomma }})</span>
+                    <span class="text-muted">(TZS {{ purchase.balance_tzs|floatformat:0|intcomma }})</span>
                 {% endif %}
             </span>
         </div>

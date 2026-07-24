@@ -2,11 +2,10 @@ from django import forms
 
 from .models import Customer
 
-
-
 # =========================================
 # CUSTOMER FORM
 # =========================================
+
 
 class CustomerForm(forms.ModelForm):
 
@@ -17,77 +16,40 @@ class CustomerForm(forms.ModelForm):
         fields = "__all__"
 
         widgets = {
-
             "customer_name": forms.TextInput(
-                attrs={
-                    "placeholder":
-                        "Enter customer full name"
-                }
+                attrs={"placeholder": "Enter customer full name"}
             ),
-
             "company_name": forms.TextInput(
-                attrs={
-                    "placeholder":
-                        "Enter company/business name"
-                }
+                attrs={"placeholder": "Enter company/business name"}
             ),
-
             "phone_number": forms.TextInput(
-                attrs={
-                    "placeholder":
-                        "e.g. +255712345678"
-                }
+                attrs={"placeholder": "e.g. +255712345678"}
             ),
-
-            "email": forms.EmailInput(
-                attrs={
-                    "placeholder":
-                        "e.g. customer@email.com"
-                }
-            ),
-
+            "email": forms.EmailInput(attrs={"placeholder": "e.g. customer@email.com"}),
             "tin_number": forms.TextInput(
-                attrs={
-                    "placeholder":
-                        "Enter customer TIN number"
-                }
+                attrs={"placeholder": "Enter customer TIN number"}
             ),
-
             "vrn_number": forms.TextInput(
-                attrs={
-                    "placeholder":
-                        "Enter customer VRN number"
-                }
+                attrs={"placeholder": "Enter customer VRN number"}
             ),
-
             "credit_limit": forms.NumberInput(
                 attrs={
-                    "placeholder":
-                        "Maximum credit allowed",
+                    "placeholder": "Maximum credit allowed",
+                    "step": "1000",
+                    "min": "1000",
                 }
             ),
-
             "opening_balance": forms.NumberInput(
                 attrs={
-                    "placeholder":
-                        "Existing customer debt balance",
+                    "placeholder": "Existing customer debt balance",
+                    "step": "1000",
+                    "min": "1000",
                 }
             ),
-
             "address": forms.Textarea(
-                attrs={
-                    "rows": 3,
-                    "placeholder":
-                        "Enter customer address"
-                }
+                attrs={"rows": 3, "placeholder": "Enter customer address"}
             ),
-
             "notes": forms.Textarea(
-                attrs={
-                    "rows": 3,
-                    "placeholder":
-                        "Optional internal notes..."
-                }
+                attrs={"rows": 3, "placeholder": "Optional internal notes..."}
             ),
-
         }

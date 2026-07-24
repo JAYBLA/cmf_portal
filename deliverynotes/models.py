@@ -190,91 +190,68 @@ class DeliveryNote(models.Model):
     # UPDATE DELIVERY STATUS
     # =========================================
 
-    def update_delivery_status(self):
+# =========================================
+# UPDATE DELIVERY STATUS
+# =========================================
 
-        # =====================================
-        # TANGIBLE PRODUCTS ONLY
-        # =====================================
+    def update_delivery_status(self):
 
         quotation_items = (
             self.deliverable_quotation_items
         )
 
-
-        # =====================================
-        # NO DELIVERABLE ITEMS
-        # =====================================
-
         if not quotation_items.exists():
 
-            self.status = "pending"
+            if self.status != "pending":
+
+                self.status = "pending"
+                self.save(update_fields=["status"])
+
+            return
+
+        total_quoted = Decimal("0")
+        total_delivered = Decimal("0")
+
+        for quotation_item in quotation_items:
+
+            total_quoted += quotation_item.quantity
+
+            delivered = (
+                quotation_item.delivery_items.aggregate(
+                    total=Sum("quantity")
+                )["total"]
+                or Decimal("0")
+            )
+
+            # Prevent over-delivery affecting status
+            delivered = min(
+                delivered,
+                quotation_item.quantity,
+            )
+
+            total_delivered += delivered
+
+        if total_delivered == Decimal("0"):
+
+            status = "pending"
+
+        elif total_delivered >= total_quoted:
+
+            status = "completed"
+
+        else:
+
+            status = "partial"
+
+        if self.status != status:
+
+            self.status = status
 
             self.save(
                 update_fields=[
                     "status",
                 ]
             )
-
-            return
-
-
-        has_delivery = False
-
-        fully_delivered = True
-
-
-        # =====================================
-        # CHECK EACH TANGIBLE PRODUCT
-        # =====================================
-
-        for quotation_item in quotation_items:
-
-            delivered = (
-                quotation_item
-                .delivery_items
-                .aggregate(
-                    total=Sum("quantity")
-                )["total"]
-                or Decimal("0")
-            )
-
-
-            if delivered > Decimal("0"):
-
-                has_delivery = True
-
-
-            if delivered < quotation_item.quantity:
-
-                fully_delivered = False
-
-
-        # =====================================
-        # DETERMINE STATUS
-        # =====================================
-
-        if fully_delivered:
-
-            self.status = "completed"
-
-        elif has_delivery:
-
-            self.status = "partial"
-
-        else:
-
-            self.status = "pending"
-
-
-        # =====================================
-        # SAVE STATUS
-        # =====================================
-
-        self.save(
-            update_fields=[
-                "status",
-            ]
-        )
 
 
     # =========================================

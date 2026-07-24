@@ -170,7 +170,7 @@
                                         {% endif %}
                                     </span>
                                 </td>
-                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-center">{{ item.quantity|floatformat:0 }}</td>
                                 <td class="text-end font-monospace">{{ item.unit_price |floatformat:0 |intcomma }}</td>
                                 <td class="text-end fw-semibold font-monospace">{{ item.subtotal |floatformat:0 |intcomma }}</td>
                             </tr>

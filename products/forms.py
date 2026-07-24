@@ -76,8 +76,8 @@ class ProductForm(forms.ModelForm):
                 attrs={
                     "class": "form-control text-end",
                     "placeholder": "0",
-                    "step": "0.01",
-                    "min": "0",
+                    "step": "1",
+                    "min": "1",
                 }
             ),
             "status": forms.Select(
