@@ -173,7 +173,7 @@
                                 <td>
                                     <span class="fw-medium">{{ item.product.product_name }}</span>
                                 </td>
-                                <td class="text-center">{{ item.quantity|floatformat:2 }}</td>
+                                <td class="text-center">{{ item.quantity|floatformat:0|intcomma }}</td>
                                 <td class="text-end font-monospace">{{ item.unit_price|floatformat:0|intcomma }}</td>
                                 <td class="text-end fw-semibold font-monospace">{{ item.subtotal|floatformat:0|intcomma }}</td>
                             </tr>

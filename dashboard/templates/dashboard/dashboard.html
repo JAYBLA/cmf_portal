@@ -203,7 +203,7 @@
                     </td>
                     <td>TZS {{ product.unit_price|floatformat:0|intcomma }}</td>
                     <td>—</td>
-                    <td>{{ product.total_sold|floatformat:0 }}</td>
+                    <td>{{ product.total_sold|floatformat:0|intcomma }}</td>
                     <td class="text-center">
                       <span class="bg-success-focus text-success-main px-32 py-4 rounded-pill fw-medium text-sm">{{ product.total_orders }}</span>
                     </td>
@@ -272,9 +272,9 @@
                         {% if product.stock_status == 'out' %}
                           <span class="mt-12 text-danger-main text-sm fw-medium">Out of Stock</span>
                         {% elif product.stock_status == 'low' %}
-                          <span class="mt-12 text-warning-main text-sm fw-medium">{{ product.current_stock|floatformat:0 }} Low Stock</span>
+                          <span class="mt-12 text-warning-main text-sm fw-medium">{{ product.current_stock|floatformat:0|intcomma }} Low Stock</span>
                         {% else %}
-                          <span class="mt-12 text-success-main text-sm fw-medium">{{ product.current_stock|floatformat:0 }} In Stock</span>
+                          <span class="mt-12 text-success-main text-sm fw-medium">{{ product.current_stock|floatformat:0|intcomma }} In Stock</span>
                         {% endif %}
                       </div>
                     </td>

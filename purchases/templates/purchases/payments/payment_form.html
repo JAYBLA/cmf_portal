@@ -1,5 +1,5 @@
 <!-- templates/purchases/payments/payment_form.html -->
-{% load widget_tweaks %}
+{% load widget_tweaks humanize %}
 <div class="modal-header">
   <h5 class="modal-title">Add Supplier Payment</h5>
   <button type="button" class="btn border-0 shadow-none p-0" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
@@ -32,7 +32,7 @@
         <!-- EXCHANGE RATE -->
         <div class="col-md-3">
           <small class="text-muted d-block">Exchange Rate</small>
-          <span class="fw-semibold">{{ purchase.exchange_rate|floatformat:2 }}</span>
+          <span class="fw-semibold">{{ purchase.exchange_rate|floatformat:0|intcomma }}</span>
         </div>
       </div>
       <hr />
@@ -42,7 +42,7 @@
           <small class="text-muted d-block">Total Amount</small>
           <span class="fw-bold">
             {{ purchase.currency }}
-            {{ purchase.total_amount|floatformat:2 }}
+            {% if purchase.currency == "USD" %}{{ purchase.total_amount|floatformat:2|intcomma }}{% else %}{{ purchase.total_amount|floatformat:0|intcomma }}{% endif %}
           </span>
         </div>
         <!-- TZS EQUIVALENT -->
@@ -50,7 +50,7 @@
           <small class="text-muted d-block">TZS Equivalent</small>
           <span class="fw-bold text-primary">
             TZS
-            {{ purchase.total_amount_tzs|floatformat:2 }}
+            {{ purchase.total_amount_tzs|floatformat:0|intcomma }}
           </span>
         </div>
         <!-- BALANCE -->
@@ -58,7 +58,7 @@
           <small class="text-muted d-block">Outstanding Balance</small>
           <span class="fw-bold text-danger">
             {{ purchase.currency }}
-            {{ purchase.balance|floatformat:2 }}
+            {% if purchase.currency == "USD" %}{{ purchase.balance|floatformat:2|intcomma }}{% else %}{{ purchase.balance|floatformat:0|intcomma }}{% endif %}
           </span>
         </div>
       </div>
@@ -81,7 +81,7 @@
         <small class="text-muted">
           Remaining balance:
           {{ purchase.currency }}
-          {{ purchase.balance|floatformat:2 }}
+          {% if purchase.currency == "USD" %}{{ purchase.balance|floatformat:2|intcomma }}{% else %}{{ purchase.balance|floatformat:0|intcomma }}{% endif %}
         </small>
         <div class="text-danger small">{{ form.amount.errors }}</div>
       </div>
@@ -113,7 +113,7 @@
         <strong id="payment-balance-preview" class="text-primary">
           TZS
 
-          {{ purchase.total_amount_tzs|floatformat:2 }}
+          {{ purchase.total_amount_tzs|floatformat:0|intcomma }}
         </strong>
       </div>
     </div>
@@ -234,8 +234,8 @@ function updatePaymentPreview() {
         remainingTZS.toLocaleString(
             undefined,
             {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }
         )
 

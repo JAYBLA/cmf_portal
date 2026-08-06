@@ -164,13 +164,13 @@ function createChartTwo(chartId, color1, color2) {
 
       labels: {
         formatter: function (value) {
-          if (value >= 1000000000) return (value / 1000000000).toFixed(1) + "B";
+          if (value >= 1000000000) return (value / 1000000000).toFixed(0) + "B";
 
-          if (value >= 1000000) return (value / 1000000).toFixed(1) + "M";
+          if (value >= 1000000) return (value / 1000000).toFixed(0) + "M";
 
           if (value >= 1000) return (value / 1000).toFixed(0) + "K";
 
-          return value.toLocaleString();
+          return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
         },
       },
     },

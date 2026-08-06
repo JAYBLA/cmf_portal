@@ -1,4 +1,4 @@
-{% load widget_tweaks %}
+{% load widget_tweaks humanize %}
 
 <div class="modal-header bg-danger text-white">
 
@@ -73,7 +73,7 @@
 
                 <span class="badge badge-outline-danger">
 
-                    {{ purchase.total_amount }}
+                    {% if purchase.currency == "USD" %}{{ purchase.total_amount|floatformat:2|intcomma }}{% else %}{{ purchase.total_amount|floatformat:0|intcomma }}{% endif %}
 
                 </span>
 

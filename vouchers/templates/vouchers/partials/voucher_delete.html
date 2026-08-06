@@ -1,3 +1,4 @@
+{% load humanize %}
 <form hx-post="{% url 'vouchers:voucher_delete' voucher.id %}">
 
     {% csrf_token %}
@@ -92,7 +93,7 @@
                         </small>
 
                         <strong class="text-success">
-                            {{ voucher.total_amount|floatformat:2 }}
+                            {{ voucher.total_amount|floatformat:0|intcomma }}
                         </strong>
 
                     </div>

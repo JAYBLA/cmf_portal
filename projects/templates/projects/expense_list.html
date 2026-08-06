@@ -17,12 +17,12 @@
         <div class="row g-3 mb-4">
           <div class="col-md-4">
             <div class="border rounded p-3">
-              <span class="text-muted small d-block">Project Budget</span><strong>TZS {{ project.budget|default_if_none:0|floatformat:2|intcomma }}</strong>
+              <span class="text-muted small d-block">Project Budget</span><strong>TZS {{ project.budget|default_if_none:0|floatformat:0|intcomma }}</strong>
             </div>
           </div>
           <div class="col-md-4">
             <div class="border rounded p-3">
-              <span class="text-muted small d-block">Total Expenses</span><strong class="text-danger">TZS {{ project.total_expenses|floatformat:2|intcomma }}</strong>
+              <span class="text-muted small d-block">Total Expenses</span><strong class="text-danger">TZS {{ project.total_expenses|floatformat:0|intcomma }}</strong>
             </div>
           </div>
           <div class="col-md-4">
@@ -32,7 +32,7 @@
                 {% else %}
                   text-success
                 {% endif %}">
-                TZS {{ project.profit|floatformat:2|intcomma }}
+                TZS {{ project.profit|floatformat:0|intcomma }}
               </strong>
             </div>
           </div>

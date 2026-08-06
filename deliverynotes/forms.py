@@ -208,7 +208,7 @@ class DeliveryNoteItemForm(forms.ModelForm):
                 (
                     "Delivery quantity cannot "
                     "exceed remaining quantity "
-                    f"of {remaining_quantity:,.2f}."
+                    f"of {remaining_quantity:,.0f}."
                 ),
             )
 

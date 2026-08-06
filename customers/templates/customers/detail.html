@@ -10,7 +10,7 @@
     <dt class="col-sm-4">Phone</dt><dd class="col-sm-8">{{ customer.phone_number|default:"-" }}</dd>
     <dt class="col-sm-4">Email</dt><dd class="col-sm-8">{{ customer.email|default:"-" }}</dd>
     <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ customer.address|default:"-" }}</dd>
-    <dt class="col-sm-4">Credit limit</dt><dd class="col-sm-8">{{ customer.credit_limit|default_if_none:0|floatformat:2|intcomma }}</dd>
+    <dt class="col-sm-4">Credit limit</dt><dd class="col-sm-8">{{ customer.credit_limit|default_if_none:0|floatformat:0|intcomma }}</dd>
     <dt class="col-sm-4">Status</dt><dd class="col-sm-8">{{ customer.get_status_display }}</dd>
     <dt class="col-sm-4">Notes</dt><dd class="col-sm-8">{{ customer.notes|default:"-" }}</dd>
   </dl>

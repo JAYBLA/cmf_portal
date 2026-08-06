@@ -59,7 +59,7 @@
       </div>
       <div>
         <small class="text-muted d-block lh-1">Exchange Rate</small>
-        <strong class="small">{{ purchase.exchange_rate|floatformat:2 }}</strong>
+        <strong class="small">{{ purchase.exchange_rate|floatformat:0|intcomma }}</strong>
       </div>
       {% if purchase.supplier_invoice_number %}
         <div>
@@ -119,7 +119,7 @@
           <div class="row g-1">
             <div class="col-6">
               <small class="text-muted d-block lh-1">Total ({{ purchase.currency }})</small>
-              <span class="fw-bold fs-5">{{ purchase.total_amount|floatformat:0|intcomma }}</span>
+              <span class="fw-bold fs-5">{% if purchase.currency == "USD" %}{{ purchase.total_amount|floatformat:2|intcomma }}{% else %}{{ purchase.total_amount|floatformat:0|intcomma }}{% endif %}</span>
             </div>
             <div class="col-6">
               <small class="text-muted d-block lh-1">Total (TZS)</small>
@@ -136,7 +136,7 @@
                 {% else %}
                   text-muted
                 {% endif %}">
-                {{ purchase.amount_paid|floatformat:0|intcomma }}
+                {% if purchase.currency == "USD" %}{{ purchase.amount_paid|floatformat:2|intcomma }}{% else %}{{ purchase.amount_paid|floatformat:0|intcomma }}{% endif %}
               </span>
             </div>
             <div class="col-6">
@@ -146,7 +146,7 @@
                 {% else %}
                   text-success
                 {% endif %}">
-                {{ purchase.balance|floatformat:0|intcomma }}
+                {% if purchase.currency == "USD" %}{{ purchase.balance|floatformat:2|intcomma }}{% else %}{{ purchase.balance|floatformat:0|intcomma }}{% endif %}
               </span>
             </div>
             <div class="col-6">
@@ -189,9 +189,9 @@
                 <td>
                   <span class="fw-medium">{{ item.product.product_name }}</span>
                 </td>
-                <td class="text-center">{{ item.quantity|floatformat:2 }}</td>
-                <td class="text-end font-monospace">{{ item.unit_cost|floatformat:2|intcomma }}</td>
-                <td class="text-end font-monospace">{{ item.subtotal|floatformat:2|intcomma }}</td>
+                <td class="text-center">{{ item.quantity|floatformat:0|intcomma }}</td>
+                <td class="text-end font-monospace">{% if purchase.currency == "USD" %}{{ item.unit_cost|floatformat:2|intcomma }}{% else %}{{ item.unit_cost|floatformat:0|intcomma }}{% endif %}</td>
+                <td class="text-end font-monospace">{% if purchase.currency == "USD" %}{{ item.subtotal|floatformat:2|intcomma }}{% else %}{{ item.subtotal|floatformat:0|intcomma }}{% endif %}</td>
                 <td class="text-end font-monospace">{{ item.subtotal_tzs|floatformat:0|intcomma }}</td>
                 <td class="text-end fw-semibold text-primary font-monospace">{{ item.landed_unit_cost|floatformat:0|intcomma }}</td>
               </tr>
@@ -207,7 +207,7 @@
           <tfoot class="table-light fw-semibold">
             <tr>
               <td colspan="4" class="text-end">Totals</td>
-              <td class="text-end font-monospace">{{ purchase.total_amount|floatformat:0|intcomma }}</td>
+              <td class="text-end font-monospace">{% if purchase.currency == "USD" %}{{ purchase.total_amount|floatformat:2|intcomma }}{% else %}{{ purchase.total_amount|floatformat:0|intcomma }}{% endif %}</td>
               <td class="text-end font-monospace">{{ purchase.total_amount_tzs|floatformat:0|intcomma }}</td>
               <td class="text-end text-danger">Landed Total: {{ purchase.landed_cost_tzs|floatformat:0|intcomma }}</td>
             </tr>
@@ -245,7 +245,7 @@
                 <tr>
                   <td>{{ cost.get_cost_type_display }}</td>
                   <td>{{ cost.description|default:'-' }}</td>
-                  <td class="text-end font-monospace">{{ cost.amount|floatformat:2|intcomma }}</td>
+                  <td class="text-end font-monospace">{% if cost.currency == "USD" %}{{ cost.amount|floatformat:2|intcomma }}{% else %}{{ cost.amount|floatformat:0|intcomma }}{% endif %}</td>
                   <td class="text-center">{{ cost.currency }}</td>
                   <td class="text-end font-monospace">{{ cost.amount_tzs|floatformat:0|intcomma }}</td>
                   <td class="text-center">
@@ -302,7 +302,7 @@
                 <tr>
                   <td>{{ payment.payment_date }}</td>
                   <td>{{ payment.get_payment_method_display }}</td>
-                  <td class="text-end font-monospace fw-semibold">{{ payment.amount|floatformat:0|intcomma }}</td>
+                  <td class="text-end font-monospace fw-semibold">{% if purchase.currency == "USD" %}{{ payment.amount|floatformat:2|intcomma }}{% else %}{{ payment.amount|floatformat:0|intcomma }}{% endif %}</td>
                   <td>{{ payment.reference_number|default:'-' }}</td>
                   <td>{{ payment.notes|default:'-' }}</td>
                 </tr>
@@ -311,7 +311,7 @@
             <tfoot class="table-light fw-semibold">
               <tr>
                 <td colspan="2" class="text-end">Total Paid</td>
-                <td class="text-end font-monospace">{{ purchase.amount_paid|floatformat:0|intcomma }}</td>
+                <td class="text-end font-monospace">{% if purchase.currency == "USD" %}{{ purchase.amount_paid|floatformat:2|intcomma }}{% else %}{{ purchase.amount_paid|floatformat:0|intcomma }}{% endif %}</td>
                 <td colspan="2"></td>
               </tr>
             </tfoot>

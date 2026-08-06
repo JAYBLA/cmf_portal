@@ -1,4 +1,4 @@
-{% load widget_tweaks %}
+{% load widget_tweaks humanize %}
 
 
 <form
@@ -155,7 +155,7 @@
 
                 <span class="fw-semibold">
 
-                    {{ pricing.landed_unit_cost|floatformat:2 }}
+                    {{ pricing.landed_unit_cost|floatformat:0|intcomma }}
 
                 </span>
 
@@ -191,7 +191,7 @@
 
                 <span class="fw-bold text-primary">
 
-                    {{ pricing.selling_price|floatformat:2 }}
+                    {{ pricing.selling_price|floatformat:0|intcomma }}
 
                 </span>
 

@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="modal-header bg-danger">
 
     <h5 class="modal-title text-white">
@@ -88,7 +89,7 @@
 
             {{ additional_cost.currency }}
 
-            {{ additional_cost.amount|floatformat:2 }}
+            {% if additional_cost.currency == "USD" %}{{ additional_cost.amount|floatformat:2|intcomma }}{% else %}{{ additional_cost.amount|floatformat:0|intcomma }}{% endif %}
 
         </div>
 

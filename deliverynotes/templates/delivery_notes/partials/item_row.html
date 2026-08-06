@@ -1,3 +1,4 @@
+{% load humanize %}
 <tr>
 
     {{ form.id }}
@@ -33,7 +34,7 @@
 
     <td class="text-center">
 
-        {{ form.quotation_item_object.quantity|floatformat:0 }}
+        {{ form.quotation_item_object.quantity|floatformat:0|intcomma }}
 
     </td>
 

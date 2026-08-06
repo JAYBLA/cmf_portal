@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="modal-header">
 
     <h5 class="modal-title">
@@ -84,7 +85,7 @@
                         </th>
 
                         <td>
-                            TZS {{ receipt.amount|floatformat:2 }}
+                            TZS {{ receipt.amount|floatformat:0|intcomma }}
                         </td>
                     </tr>
 

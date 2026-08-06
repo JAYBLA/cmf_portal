@@ -1,3 +1,4 @@
+{% load humanize %}
 <form method="post" hx-post="{% url 'sales:declared_price_delete' pricing.pk %}" hx-target="#modal-body" hx-swap="innerHTML">
   {% csrf_token %}
 
@@ -33,13 +34,13 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="text-muted">Current Declared Price</span>
 
-          <span class="fw-bold text-danger">{{ pricing.declared_price|floatformat:2 }}</span>
+          <span class="fw-bold text-danger">{{ pricing.declared_price|floatformat:0|intcomma }}</span>
         </div>
 
         <div class="d-flex justify-content-between align-items-center">
           <span class="text-muted">Price After Removal</span>
 
-          <span class="fw-bold text-primary">{{ pricing.selling_price|floatformat:2 }}</span>
+          <span class="fw-bold text-primary">{{ pricing.selling_price|floatformat:0|intcomma }}</span>
         </div>
       </div>
 

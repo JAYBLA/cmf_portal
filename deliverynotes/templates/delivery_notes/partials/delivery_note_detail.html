@@ -149,12 +149,12 @@
                         <tr>
                             <td class="text-center text-muted">{{ forloop.counter }}</td>
                             <td class="fw-semibold">{{ item.item_name }}</td>
-                            <td class="text-center">{{ item.quoted_quantity|floatformat:0 }}</td>
+                            <td class="text-center">{{ item.quoted_quantity|floatformat:0|intcomma }}</td>
                             <td class="text-center fw-semibold 
                                 {% if item.quantity >= item.quoted_quantity %}text-success
                                 {% elif item.quantity > 0 %}text-warning
                                 {% else %}text-danger{% endif %}">
-                                {{ item.quantity|floatformat:0 }}
+                                {{ item.quantity|floatformat:0|intcomma }}
                             </td>
                             <td>
                                 {% if item.remarks %}
@@ -174,7 +174,7 @@
                         <tr>
                             <td colspan="2" class="text-end">Total Delivered</td>
                             <td></td>
-                            <td class="text-center text-primary">{{ delivery_note.delivered_quantity|floatformat:0 }}</td>
+                            <td class="text-center text-primary">{{ delivery_note.delivered_quantity|floatformat:0|intcomma }}</td>
                             <td></td>
                         </tr>
                     </tfoot>

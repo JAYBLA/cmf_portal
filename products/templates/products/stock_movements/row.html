@@ -79,7 +79,7 @@
         <div class="fw-bold mt-2">
 
             Qty:
-            {{ movement.quantity|floatformat:2|intcomma }}
+            {{ movement.quantity|floatformat:0|intcomma }}
 
         </div>
 
@@ -89,7 +89,7 @@
         <small class="text-muted d-block">
 
             Balance:
-            {{ movement.balance_after|floatformat:2|intcomma }}
+            {{ movement.balance_after|floatformat:0|intcomma }}
 
         </small>
 
@@ -104,7 +104,7 @@
         <div class="fw-bold">
 
             TZS
-            {{ movement.unit_cost|floatformat:2|intcomma }}
+            {{ movement.unit_cost|floatformat:0|intcomma }}
 
         </div>
 
@@ -118,7 +118,7 @@
         <div class="fw-bold text-primary mt-2">
 
             TZS
-            {{ movement.total_cost|floatformat:2|intcomma }}
+            {{ movement.total_cost|floatformat:0|intcomma }}
 
         </div>
 

@@ -646,7 +646,7 @@ body {
                 <td class="text-center">
 
 
-                    {{ item.quantity|floatformat:0 }}
+                    {{ item.quantity|floatformat:0|intcomma }}
 
 
                     {% if item.product %}

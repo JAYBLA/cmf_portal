@@ -632,7 +632,7 @@ body {
 
                 <td class="text-center">
 
-                    {{ item.quoted_quantity|floatformat:0 }}
+                    {{ item.quoted_quantity|floatformat:0|intcomma }}
 
                     {% if item.quotation_item.product %}
 
@@ -645,7 +645,7 @@ body {
 
                 <td class="text-center">
 
-                    {{ item.quantity|floatformat:0 }}
+                    {{ item.quantity|floatformat:0|intcomma }}
 
                     {% if item.quotation_item.product %}
 

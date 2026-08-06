@@ -62,7 +62,7 @@
             {% if customer.credit_limit %}
                 <span>
                     <span class="fw-light">Credit Limit:</span>
-                    <span class="fw-semibold text-primary">{{ customer.credit_limit|floatformat:2|intcomma }}</span>
+                    <span class="fw-semibold text-primary">{{ customer.credit_limit|floatformat:0|intcomma }}</span>
                 </span>
                 <span>|</span>
             {% endif %}
@@ -70,7 +70,7 @@
             {% if customer.opening_balance %}
                 <span>
                     <span class="fw-light">Opening Balance:</span>
-                    <span class="fw-semibold">{{ customer.opening_balance|floatformat:2|intcomma }}</span>
+                    <span class="fw-semibold">{{ customer.opening_balance|floatformat:0|intcomma }}</span>
                 </span>
                 <span>|</span>
             {% endif %}

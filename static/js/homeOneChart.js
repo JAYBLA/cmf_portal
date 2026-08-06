@@ -43,7 +43,7 @@ var options = {
   tooltip: {
     y: {
       formatter: function (value) {
-        return "TZS " + value.toLocaleString();
+        return "TZS " + value.toLocaleString(undefined, { maximumFractionDigits: 0 });
       },
     },
   },
@@ -72,7 +72,7 @@ var options = {
     if (value >= 1000)
         return (value / 1000).toFixed(0) + "K";
 
-    return value.toLocaleString();
+    return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
 },
       style: {
         fontSize: "14px",

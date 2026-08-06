@@ -38,9 +38,9 @@
                       {% if product.stock_status == 'out' %}
                         <span class="text-danger-main">Out of Stock</span>
                       {% elif product.stock_status == 'low' %}
-                        <span class="text-warning-main">{{ product.current_stock|floatformat:0 }} Low Stock</span>
+                        <span class="text-warning-main">{{ product.current_stock|floatformat:0|intcomma }} Low Stock</span>
                       {% else %}
-                        <span class="text-success-main">{{ product.current_stock|floatformat:0 }} In Stock</span>
+                        <span class="text-success-main">{{ product.current_stock|floatformat:0|intcomma }} In Stock</span>
                       {% endif %}
                     </td>
                   </tr>
