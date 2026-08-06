@@ -1,0 +1,23 @@
+{% load humanize %}
+{% for expense in expenses %}
+  <tr id="expense-{{ expense.id }}">
+    <td class="text-center fw-semibold text-muted">{{ forloop.counter }}</td>
+    <td>{{ expense.expense_date|date:'Y-m-d' }}</td>
+    <td>
+      <span class="badge bg-secondary">{{ expense.get_expense_type_display }}</span>
+    </td>
+    <td>
+      {{ expense.description }} <small class="text-muted">({{ expense.quantity|floatformat:2 }} × TZS {{ expense.unit_price|floatformat:2|intcomma }})</small>
+    </td>
+    <td class="text-end fw-semibold">TZS {{ expense.amount|floatformat:2|intcomma }}</td>
+    <td class="text-end">
+      {% if request.user.can_manage_records %}
+        <button class="btn btn-warning btn-sm me-1" hx-get="{% url 'projects:expense_update' expense.id %}" hx-target="#modal-body" hx-swap="innerHTML"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-danger btn-sm" hx-get="{% url 'projects:expense_delete' expense.id %}" hx-target="#modal-body" hx-swap="innerHTML"><i class="fa-solid fa-trash-can"></i></button>
+      {% endif %}
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="5" class="text-center text-muted py-4">No expenses have been recorded for this project.</td>
+  </tr>
+{% endfor %}

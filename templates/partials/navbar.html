@@ -41,6 +41,12 @@
 
             <ul class="to-top-list">
 
+              {% if request.user.is_super_admin %}
+              <li>
+                <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3" href="/admin/"><iconify-icon icon="mdi:account-cog-outline" class="icon text-xl"></iconify-icon>User Administration</a>
+              </li>
+              {% endif %}
+
               <li>
                 <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3" href="#"><iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl"></iconify-icon>Settings</a>
               </li>

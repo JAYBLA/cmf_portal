@@ -249,49 +249,14 @@ class DeliveryNote(models.Model):
     # =========================================
 
     def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
 
-        if not self.delivery_number:
-
-            today = timezone.now().strftime(
-                "%Y%m%d"
+        if is_new:
+            self.delivery_number = f"CMFDN00{self.pk}"
+            type(self).objects.filter(pk=self.pk).update(
+                delivery_number=self.delivery_number,
             )
-
-            last = (
-                DeliveryNote.objects
-                .filter(
-                    delivery_number__startswith=(
-                        f"DN-{today}"
-                    )
-                )
-                .order_by("-id")
-                .first()
-            )
-
-
-            if last:
-
-                number = (
-                    int(
-                        last.delivery_number
-                        .split("-")[-1]
-                    )
-                    + 1
-                )
-
-            else:
-
-                number = 1
-
-
-            self.delivery_number = (
-                f"DN-{today}-{number:04d}"
-            )
-
-
-        super().save(
-            *args,
-            **kwargs,
-        )
 
 
 # =========================================

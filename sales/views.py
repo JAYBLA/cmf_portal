@@ -8,6 +8,7 @@ from django.shortcuts import (
 
 from django.http import (
     HttpResponse,
+    HttpResponseForbidden,
     JsonResponse,
 )
 
@@ -26,7 +27,7 @@ from products.services.stock import move_stock
 
 def sale_list(request):
 
-    sales = Sale.objects.select_related("customer").all()
+    sales = Sale.objects.select_related("customer", "source_invoice").all()
 
     context = {
         "sales": sales,
@@ -42,7 +43,7 @@ def sale_list(request):
 
 def sale_table(request):
 
-    sales = Sale.objects.select_related("customer").all()
+    sales = Sale.objects.select_related("customer", "source_invoice").all()
 
     context = {
         "sales": sales,
@@ -141,6 +142,11 @@ def sale_create(request):
 def sale_update(request, pk):
 
     sale = get_object_or_404(Sale, pk=pk)
+
+    if sale.source_invoice_id:
+        return HttpResponseForbidden(
+            "Sales generated from paid invoices are managed through receipts."
+        )
 
     form = SaleForm(request.POST or None, instance=sale)
 
@@ -246,6 +252,11 @@ def sale_delete(request, pk):
 
     sale = get_object_or_404(Sale, pk=pk)
 
+    if sale.source_invoice_id:
+        return HttpResponseForbidden(
+            "Sales generated from paid invoices are managed through receipts."
+        )
+
     if request.method == "POST":
 
         for item in sale.items.all():
@@ -290,6 +301,11 @@ def sale_delete(request, pk):
 def sale_payment_create(request, sale_id):
 
     sale = get_object_or_404(Sale, pk=sale_id)
+
+    if sale.source_invoice_id:
+        return HttpResponseForbidden(
+            "Payments for invoice-generated sales are managed through receipts."
+        )
 
     form = SalePaymentForm(request.POST or None)
 
@@ -386,7 +402,10 @@ def product_price(request, product_id):
 
 def sale_detail(request, pk):
     sale = get_object_or_404(
-        Sale.objects.prefetch_related("items__product", "payments"), pk=pk
+        Sale.objects.select_related("source_invoice").prefetch_related(
+            "items__product", "payments"
+        ),
+        pk=pk,
     )
     return render(
         request,

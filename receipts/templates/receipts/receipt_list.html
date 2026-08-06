@@ -12,6 +12,7 @@
                 Receipts
             </h4>
 
+            {% if request.user.is_super_admin %}
             <button
                 class="btn btn-primary"
                 hx-get="{% url 'receipts:receipt_create' %}"
@@ -21,6 +22,7 @@
                 Add Receipt
 
             </button>
+            {% endif %}
 
         </div>
 

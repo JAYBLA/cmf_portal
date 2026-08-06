@@ -12,6 +12,7 @@
                 Purchases
             </h4>
 
+            {% if request.user.is_super_admin %}
             <button
                 class="btn btn-primary"
                 hx-get="{% url 'purchases:purchase_create' %}"
@@ -21,6 +22,7 @@
                 Add Purchase
 
             </button>
+            {% endif %}
 
         </div>
 

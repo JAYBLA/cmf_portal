@@ -65,6 +65,19 @@ def update_invoice_totals(invoice):
     invoice.save()
 
 
+def _render_invoice_form(request, context):
+    """Render validation errors back into the open HTMX modal."""
+    response = render(
+        request,
+        "invoices/partials/invoice_form.html",
+        context,
+    )
+    if request.method == "POST":
+        response["HX-Retarget"] = "#modal-body"
+        response["HX-Reswap"] = "innerHTML"
+    return response
+
+
 # =====================================================
 # INVOICE LIST
 # =====================================================
@@ -134,32 +147,6 @@ def invoice_create(request):
 
         form_valid = form.is_valid()
         formset_valid = formset.is_valid()
-
-        print(
-            "FORM VALID:",
-            form_valid,
-        )
-
-        print(
-            "FORM ERRORS:",
-            form.errors,
-        )
-
-        print(
-            "FORMSET VALID:",
-            formset_valid,
-        )
-
-        print(
-            "FORMSET ERRORS:",
-            formset.errors,
-        )
-
-        print(
-            "FORMSET NON FORM ERRORS:",
-            formset.non_form_errors(),
-        )
-
 
         if form_valid and formset_valid:
 
@@ -277,11 +264,7 @@ def invoice_create(request):
     }
 
 
-    return render(
-        request,
-        "invoices/partials/invoice_form.html",
-        context,
-    )
+    return _render_invoice_form(request, context)
 
 # =====================================================
 # UPDATE INVOICE
@@ -405,11 +388,7 @@ def invoice_update(request, pk):
         "formset": formset,
     }
 
-    return render(
-        request,
-        "invoices/partials/invoice_form.html",
-        context,
-    )
+    return _render_invoice_form(request, context)
 
 
 # =====================================================

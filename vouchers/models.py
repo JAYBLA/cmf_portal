@@ -70,31 +70,14 @@ class Voucher(models.Model):
         ordering = ["-id"]
 
     def save(self, *args, **kwargs):
-
-        if not self.voucher_number:
-
-            year = timezone.now().year
-
-            last = (
-                Voucher.objects.filter(
-                    voucher_number__startswith=f"PV-{year}"
-                )
-                .order_by("-id")
-                .first()
-            )
-
-            next_number = 1
-
-            if last:
-                next_number = (
-                    int(last.voucher_number.split("-")[-1]) + 1
-                )
-
-            self.voucher_number = (
-                f"PV-{year}-{next_number:05d}"
-            )
-
+        is_new = self._state.adding
         super().save(*args, **kwargs)
+
+        if is_new:
+            self.voucher_number = f"CMFV00{self.pk}"
+            type(self).objects.filter(pk=self.pk).update(
+                voucher_number=self.voucher_number,
+            )
 
     def __str__(self):
         return self.voucher_number

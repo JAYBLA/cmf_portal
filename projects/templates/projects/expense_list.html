@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h4 class="card-title mb-0">Project Expenses: {{ project.project_name }}</h4><small class="text-muted">Record materials and other costs to track profitability.</small>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'projects:project_list' %}" class="btn btn-outline-secondary">Back to Projects</a>{% if request.user.can_manage_records %}
+            <button class="btn btn-primary" hx-get="{% url 'projects:expense_create' project.id %}" hx-target="#modal-body" hx-swap="innerHTML">Add Expense</button>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="border rounded p-3">
+              <span class="text-muted small d-block">Project Budget</span><strong>TZS {{ project.budget|default_if_none:0|floatformat:2|intcomma }}</strong>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded p-3">
+              <span class="text-muted small d-block">Total Expenses</span><strong class="text-danger">TZS {{ project.total_expenses|floatformat:2|intcomma }}</strong>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded p-3">
+              <span class="text-muted small d-block">Profit</span><strong class="{% if project.profit < 0 %}
+                  text-danger
+                {% else %}
+                  text-success
+                {% endif %}">
+                TZS {{ project.profit|floatformat:2|intcomma }}
+              </strong>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>S/N</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th class="text-end">Amount</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table-container" data-refresh-url="{% url 'projects:expense_table' project.id %}">
+              {% include 'projects/partials/expense_table.html' %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

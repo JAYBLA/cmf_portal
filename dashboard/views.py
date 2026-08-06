@@ -23,6 +23,21 @@ from vouchers.models import Voucher
 
 def dashboard(request):
 
+    # Employees may use the home page only to check current stock. Avoid
+    # calculating or exposing sales and financial dashboard information.
+    if request.user.role == request.user.Roles.EMPLOYEE:
+        stock_report = (
+            Product.objects
+            .select_related("product_category")
+            .prefetch_related("sales_pricing")
+            .order_by("product_name")[:10]
+        )
+        return render(
+            request,
+            "dashboard/employee_dashboard.html",
+            {"stock_report": stock_report},
+        )
+
     # =========================================
     # CURRENT DATE
     # =========================================

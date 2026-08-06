@@ -59,28 +59,14 @@ class Invoice(models.Model):
         ordering = ["-id"]
 
     def save(self, *args, **kwargs):
-
-        # =====================================
-        # AUTO NUMBER
-        # =====================================
-
-        if not self.invoice_number:
-
-            last_invoice = Invoice.objects.order_by("-id").first()
-
-            if last_invoice:
-
-                last_id = int(last_invoice.invoice_number.split("-")[-1])
-
-                next_id = last_id + 1
-
-            else:
-
-                next_id = 1
-
-            self.invoice_number = f"INV-{next_id:05d}"
-
+        is_new = self._state.adding
         super().save(*args, **kwargs)
+
+        if is_new:
+            self.invoice_number = f"CMFI00{self.pk}"
+            type(self).objects.filter(pk=self.pk).update(
+                invoice_number=self.invoice_number,
+            )
     def update_payment_status(self):
 
         amount_paid = (

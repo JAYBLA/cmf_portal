@@ -71,40 +71,14 @@ class Receipt(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
 
-        # =====================================
-        # AUTO RECEIPT NUMBER
-        # =====================================
-
-        if not self.receipt_number:
-
-            last_receipt = Receipt.objects.order_by("-id").first()
-
-            if last_receipt:
-
-                try:
-
-                    last_id = int(last_receipt.receipt_number.split("-")[-1])
-
-                    next_id = last_id + 1
-
-                except (
-                    ValueError,
-                    AttributeError,
-                ):
-
-                    next_id = last_receipt.id + 1
-
-            else:
-
-                next_id = 1
-
-            self.receipt_number = f"RCT-{next_id:05d}"
-
-        super().save(
-            *args,
-            **kwargs,
-        )
+        if is_new:
+            self.receipt_number = f"CMFR00{self.pk}"
+            type(self).objects.filter(pk=self.pk).update(
+                receipt_number=self.receipt_number,
+            )
 
     @property
     def customer(self):

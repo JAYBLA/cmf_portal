@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'dashboard',
     'products',
+    'projects',
     'widget_tweaks',
     'suppliers',
     'purchases',
@@ -73,6 +74,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'users.middleware.RoleAccessMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -212,3 +214,6 @@ LOGGING = {
 }
 
 AUTH_USER_MODEL = "users.CustomUser"
+LOGIN_URL = "users:login"
+LOGIN_REDIRECT_URL = "dashboard:dashboard"
+LOGOUT_REDIRECT_URL = "users:login"

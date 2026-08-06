@@ -64,6 +64,7 @@
                     title="View Receipt">
                 <i class="fa-solid fa-eye"></i>
             </button>
+            {% if request.user.is_super_admin %}
             <!-- Edit -->
             <button type="button"
                     class="btn btn-warning btn-sm"
@@ -82,6 +83,7 @@
                     title="Delete Receipt">
                 <i class="fa-solid fa-trash-can"></i>
             </button>
+            {% endif %}
             <!-- Optional: Download PDF receipt -->
             <a href="{% url 'receipts:download_receipt_pdf' receipt.id %}"
                class="btn btn-success btn-sm"

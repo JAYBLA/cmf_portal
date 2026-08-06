@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+  <div class="row gy-4">
+    <div class="col-12">
+      <div class="card h-100">
+        <div class="card-body p-24">
+          <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+            <h6 class="mb-0 fw-bold text-lg">Stock Report</h6>
+          </div>
+          <div class="table-responsive scroll-sm">
+            <table class="table bordered-table mb-0" id="responsiveTable">
+              <thead>
+                <tr>
+                  <th class="text-center">S/N</th>
+                  <th>Items</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in stock_report %}
+                  <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td>
+                      <div class="fw-medium">{{ product.product_name }}</div>
+                      <span class="text-sm text-secondary-light">{{ product.product_category.name }}</span>
+                    </td>
+                    <td>
+                      {% if product.sales_pricing %}
+                        TZS {{ product.sales_pricing.selling_price|floatformat:0|intcomma }}
+                      {% else %}
+                        —
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if product.stock_status == 'out' %}
+                        <span class="text-danger-main">Out of Stock</span>
+                      {% elif product.stock_status == 'low' %}
+                        <span class="text-warning-main">{{ product.current_stock|floatformat:0 }} Low Stock</span>
+                      {% else %}
+                        <span class="text-success-main">{{ product.current_stock|floatformat:0 }} In Stock</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="4" class="text-center py-5">No products available.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

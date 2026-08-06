@@ -30,7 +30,7 @@
     </div>
     {% endif %}
 
-    {% if edit_url %}
+    {% if edit_url and request.user.can_manage_records %}
     <div class="action-wrapper">
 
         <span class="action-icon action-icon-edit">
@@ -60,7 +60,7 @@
     </div>
     {% endif %}
 
-    {% if delete_url %}
+    {% if delete_url and request.user.can_manage_records %}
     <div class="action-wrapper">
 
         <span class="action-icon action-icon-delete">

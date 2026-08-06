@@ -27,6 +27,20 @@
 
   <div class="sidebar-menu-area">
     <ul class="sidebar-menu" id="sidebar-menu">
+      {% if request.user.role == "employee" %}
+      <li class="sidebar-menu-group-title">Customer Management</li>
+      <li>
+        <a href="{% url 'customers:customer_list' %}" class="{% if request.resolver_match.url_name == 'customer_list' %}active-page{% endif %}">
+          <i class="fa-solid fa-users menu-icon"></i><span>Customers</span>
+        </a>
+      </li>
+      <li class="sidebar-menu-group-title">Sales Orders</li>
+      <li>
+        <a href="{% url 'sales:sales_list' %}" class="{% if request.resolver_match.url_name == 'sales_list' %}active-page{% endif %}">
+          <i class="fa-solid fa-bag-shopping menu-icon"></i><span>Sales</span>
+        </a>
+      </li>
+      {% else %}
       <!--  =====================================
            CUSTOMER MANAGEMENT
       ======================================  -->
@@ -106,6 +120,7 @@
           <span>Sales</span>
         </a>
       </li>
+      {% if request.user.role != "admin" %}
       <li>
         <a href="{% url 'sales:declared_price_list' %}" class="{% if request.resolver_match.url_name == 'declared_price_list' %}active-page{% endif %}">
           <i class="fa-solid fa-file-invoice menu-icon"></i>
@@ -113,6 +128,7 @@
           <span>Declare Sales Prices</span>
         </a>
       </li>
+      {% endif %}
 
       <!-- QUOTATIONS -->
 
@@ -179,7 +195,7 @@
       <!-- PROJECTS -->
 
       <li>
-        <a href="#" class="{% if request.resolver_match.url_name == 'project_list' %}active-page{% endif %}">
+        <a href="{% url 'projects:project_list' %}" class="{% if request.resolver_match.url_name == 'project_list' %}active-page{% endif %}">
           <i class="fa-solid fa-diagram-project menu-icon"></i>
 
           <span>Projects</span>
@@ -195,6 +211,7 @@
           <span>Lendings</span>
         </a>
       </li>
+      {% endif %}
     </ul>
   </div>
 </aside>

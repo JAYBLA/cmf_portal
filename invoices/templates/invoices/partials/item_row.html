@@ -3,10 +3,25 @@
     {{ hidden }}
   {% endfor %}
 
-  <td>{{ form.product }}</td>
-  <td>{{ form.description }}</td>
-  <td>{{ form.quantity }}</td>
-  <td>{{ form.unit_price }}</td>
+  <td>
+    {{ form.product }}
+    <div class="text-danger small">{{ form.product.errors }}</div>
+  </td>
+  <td>
+    {{ form.description }}
+    <div class="text-danger small">{{ form.description.errors }}</div>
+    {% if form.non_field_errors %}
+      <div class="text-danger small">{{ form.non_field_errors }}</div>
+    {% endif %}
+  </td>
+  <td>
+    {{ form.quantity }}
+    <div class="text-danger small">{{ form.quantity.errors }}</div>
+  </td>
+  <td>
+    {{ form.unit_price }}
+    <div class="text-danger small">{{ form.unit_price.errors }}</div>
+  </td>
   <td class="text-center">
     {% if form.DELETE %}
       <div class="d-none">{{ form.DELETE }}</div>

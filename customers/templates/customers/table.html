@@ -99,6 +99,15 @@
     <!-- ACTIONS (icon buttons) -->
     <td class="text-end">
         <div class="d-flex flex-wrap justify-content-end gap-1">
+            <button type="button"
+                    class="btn btn-info btn-sm"
+                    hx-get="{% url 'customers:customer_detail' customer.id %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    title="View Customer">
+                <i class="fa-solid fa-eye"></i>
+            </button>
+            {% if request.user.can_manage_records %}
             <!-- Edit -->
             <button type="button"
                     class="btn btn-warning btn-sm"
@@ -117,6 +126,7 @@
                     title="Delete Customer">
                 <i class="fa-solid fa-trash-can"></i>
             </button>
+            {% endif %}
         </div>
     </td>
 

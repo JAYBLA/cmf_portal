@@ -12,6 +12,7 @@
                 Customers
             </h4>
 
+            {% if request.user.can_manage_records %}
             <button
                 class="btn btn-primary"
                 hx-get="{% url 'customers:customer_create' %}"
@@ -21,6 +22,7 @@
                 Add Customer
 
             </button>
+            {% endif %}
 
         </div>
 

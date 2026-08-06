@@ -18,6 +18,16 @@ class Sale(models.Model):
         related_name="sales",
     )
 
+    # A sale generated from a paid invoice must be unique.  This also gives
+    # the receipt workflow a durable link to reconcile if payments change.
+    source_invoice = models.OneToOneField(
+        "invoices.Invoice",
+        on_delete=models.PROTECT,
+        related_name="generated_sale",
+        blank=True,
+        null=True,
+    )
+
     sale_number = models.CharField(
         max_length=50,
         unique=True,

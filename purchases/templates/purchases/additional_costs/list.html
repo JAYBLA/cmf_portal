@@ -16,6 +16,7 @@
                 <a href="{% url 'purchases:purchase_list' %}" class="btn btn-sm btn-outline-secondary me-1">
                     <i class="fa-solid fa-arrow-left"></i> Back
                 </a>
+                {% if request.user.is_super_admin %}
                 <button
                     class="btn btn-primary btn-sm"
                     hx-get="{% url 'purchases:additional_cost_create' purchase.id %}"
@@ -23,6 +24,7 @@
                     hx-swap="innerHTML">
                     <i class="fa-solid fa-plus me-1"></i> Add Cost
                 </button>
+                {% endif %}
             </div>
 
         </div>

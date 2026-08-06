@@ -18,6 +18,9 @@
         <div class="card mb-4">
             <div class="card-header">Invoice Details</div>
             <div class="card-body">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ form.non_field_errors }}</div>
+                {% endif %}
                 <div class="row g-3">
                     <!-- CUSTOMER -->
                     <div class="col-md-12">
@@ -30,6 +33,12 @@
                         <label class="form-label">Invoice Type</label>
                         {{ form.invoice_type }}
                         <div class="text-danger small">{{ form.invoice_type.errors }}</div>
+                    </div>
+                    <!-- TITLE -->
+                    <div class="col-md-6">
+                        <label class="form-label">Title</label>
+                        {{ form.title }}
+                        <div class="text-danger small">{{ form.title.errors }}</div>
                     </div>
                     <!-- INVOICE DATE -->
                     <div class="col-md-6">
@@ -63,6 +72,11 @@
 ========================================== -->
         <div class="card">
             <div class="card-header">Invoice Items</div>
+            {% if formset.non_form_errors %}
+                <div class="alert alert-danger rounded-0 mb-0 py-2">
+                    {{ formset.non_form_errors }}
+                </div>
+            {% endif %}
             <div class="table-responsive">
                 <table class=" table table-sm table-bordered mb-0 align-middle ">
                     <thead class="table-light">

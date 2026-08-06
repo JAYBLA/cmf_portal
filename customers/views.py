@@ -35,6 +35,11 @@ def customer_table(request):
     return render(request, "customers/table.html", context)
 
 
+def customer_detail(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    return render(request, "customers/detail.html", {"customer": customer})
+
+
 # =========================================
 # CREATE CUSTOMER
 # =========================================

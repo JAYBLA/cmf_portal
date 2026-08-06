@@ -1,0 +1,58 @@
+{% load humanize %}
+{% for project in projects %}
+  <tr id="project-{{ project.id }}">
+    <td class="text-center fw-semibold text-muted">{{ forloop.counter }}</td>
+    <td>
+      <div class="d-flex flex-wrap align-items-center gap-1 small">
+        <span class="fw-bold text-primary">{{ project.project_name }}</span>
+        <span class="badge {% if project.status == 'active' %}
+            bg-success
+          {% elif project.status == 'completed' %}
+            bg-primary
+          {% elif project.status == 'cancelled' %}
+            bg-danger
+          {% else %}
+            bg-warning text-dark
+          {% endif %}">
+          {{ project.get_status_display }}
+        </span>
+        {% if project.client_name %}
+          <span class="text-muted">|</span><span><span class="fw-light">Client:</span> {{ project.client_name }}</span>
+        {% endif %}
+      </div>
+      <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+        {% if project.start_date %}
+          <span><span class="fw-light">Start:</span> {{ project.start_date|date:'Y-m-d' }}</span><span>|</span>
+        {% endif %}
+        {% if project.end_date %}
+          <span><span class="fw-light">End:</span> {{ project.end_date|date:'Y-m-d' }}</span><span>|</span>
+        {% endif %}
+        {% if project.budget is not None %}
+          <span><span class="fw-light">Budget:</span> <strong>TZS {{ project.budget|floatformat:0|intcomma }}</strong></span>
+        {% endif %}
+        <span>|</span><span><span class="fw-light">Expenses:</span> TZS {{ project.total_expenses|floatformat:0|intcomma }}</span>
+        <span>|</span><span>
+          <span class="fw-light">Profit:</span>
+          <strong class="{% if project.profit < 0 %}
+              text-danger
+            {% else %}
+              text-success
+            {% endif %}">
+            TZS {{ project.profit|floatformat:0|intcomma }}
+          </strong>
+        </span>
+      </div>
+    </td>
+    <td class="text-end">
+      {% if request.user.can_manage_records %}
+        <a class="btn btn-info btn-sm" href="{% url 'projects:expense_list' project.id %}" title="Project Expenses"><i class="fa-solid fa-receipt"></i></a>
+        <button class="btn btn-warning btn-sm mb-1" hx-get="{% url 'projects:project_update' project.id %}" hx-target="#modal-body" hx-swap="innerHTML" title="Edit Project"><i class="fa-solid fa-pen-to-square"></i></button>
+        <button class="btn btn-danger btn-sm" hx-get="{% url 'projects:project_delete' project.id %}" hx-target="#modal-body" hx-swap="innerHTML" title="Delete Project"><i class="fa-solid fa-trash-can"></i></button>
+      {% endif %}
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="3" class="text-center text-muted py-4">No projects recorded.</td>
+  </tr>
+{% endfor %}

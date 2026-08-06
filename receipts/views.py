@@ -13,6 +13,23 @@ from utils import render_to_pdf
 
 from .forms import ReceiptForm
 from .models import Receipt
+from sales.services.invoice_conversion import (
+    InvoiceSaleConversionError,
+    reconcile_invoice_sale,
+)
+
+
+def _reconcile_paid_invoice(invoice, form):
+    """Return False and show a form error if conversion cannot be completed."""
+    try:
+        reconcile_invoice_sale(invoice)
+    except InvoiceSaleConversionError as error:
+        # This view is wrapped in transaction.atomic. Mark it for rollback so
+        # a receipt can never mark an invoice paid without its matching sale.
+        transaction.set_rollback(True)
+        form.add_error(None, str(error))
+        return False
+    return True
 
 # =========================================
 # RECEIPT LIST
@@ -88,6 +105,13 @@ def receipt_create(request):
             # ---------------------------------
 
             receipt.invoice.update_payment_status()
+
+            if not _reconcile_paid_invoice(receipt.invoice, form):
+                return render(
+                    request,
+                    "receipts/partials/receipt_form.html",
+                    {"form": form},
+                )
 
             # ---------------------------------
             # Response
@@ -170,6 +194,13 @@ def receipt_update(request, pk):
 
             old_invoice.update_payment_status()
 
+            if not _reconcile_paid_invoice(old_invoice, form):
+                return render(
+                    request,
+                    "receipts/partials/receipt_form.html",
+                    {"receipt": receipt, "form": form},
+                )
+
             # ---------------------------------
             # Update new invoice
             # ---------------------------------
@@ -177,6 +208,13 @@ def receipt_update(request, pk):
             if old_invoice.pk != new_invoice.pk:
 
                 new_invoice.update_payment_status()
+
+                if not _reconcile_paid_invoice(new_invoice, form):
+                    return render(
+                        request,
+                        "receipts/partials/receipt_form.html",
+                        {"receipt": receipt, "form": form},
+                    )
 
             # ---------------------------------
             # Response
@@ -244,6 +282,10 @@ def receipt_delete(request, pk):
         # ---------------------------------
 
         invoice.update_payment_status()
+
+        # A receipt deletion can make a previously-paid invoice unpaid.  The
+        # service cancels its generated sale and returns its stock once.
+        reconcile_invoice_sale(invoice)
 
         # ---------------------------------
         # Response

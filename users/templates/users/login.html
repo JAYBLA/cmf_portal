@@ -1,12 +1,121 @@
-<form method="post">
-    {% csrf_token %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+{% include "partials/head.html" %}
+<style>
+  .login-page {
+    background: url("{% static 'images/login-farm-background.png' %}") center center / cover no-repeat;
+    min-height: 100vh;
+    position: relative;
+  }
 
-    {{ form.username }}
+  .login-page::before {
+    background: linear-gradient(135deg, rgba(7, 31, 23, .76), rgba(11, 49, 61, .60));
+    content: "";
+    inset: 0;
+    position: absolute;
+  }
 
-    {{ form.password }}
+  .login-content {
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
 
-    <button class="btn btn-primary w-100">
-        Login
-    </button>
+  .login-card {
+    background: rgba(255, 255, 255, .96);
+    border: 1px solid rgba(255, 255, 255, .7);
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .28);
+    max-width: 464px;
+    min-height: 560px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
 
-</form>
+  .login-heading { text-align: center; }
+
+  .login-logo {
+    display: block;
+    height: auto;
+    margin: 0 auto;
+    max-width: 100%;
+    width: 220px;
+  }
+
+  .login-card form {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .login-card form button[type="submit"] { margin-top: auto !important; }
+
+  @media (max-width: 575.98px) {
+    .login-card { border-radius: 16px; min-height: 520px; padding: 1.5rem; }
+  }
+</style>
+<body>
+  <section class="login-page">
+    <div class="login-content d-flex align-items-center justify-content-center p-3">
+      <div class="login-card">
+        <div class="login-heading">
+          <a href="/" class="mb-32 d-inline-block">
+            <img src="{% static 'images/logo.png' %}" alt="Cyber Mech Farms Portal" class="login-logo">
+          </a>
+          <h4 class="mb-12">Sign in to your account</h4>
+          <p class="mb-32 text-secondary-light text-lg">Enter your username and password to continue.</p>
+        </div>
+
+        <form method="post" action="{% url 'users:login' %}" novalidate>
+          {% csrf_token %}
+          {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+              {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="icon-field mb-16">
+            <span class="icon top-50 translate-middle-y"><iconify-icon icon="mage:user"></iconify-icon></span>
+            {{ form.username }}
+          </div>
+          {% for error in form.username.errors %}<div class="text-danger text-sm mb-16">{{ error }}</div>{% endfor %}
+
+          <div class="position-relative mb-20">
+            <div class="icon-field">
+              <span class="icon top-50 translate-middle-y"><iconify-icon icon="solar:lock-password-outline"></iconify-icon></span>
+              {{ form.password }}
+            </div>
+            <span class="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light" data-toggle="#id_password"></span>
+          </div>
+          {% for error in form.password.errors %}<div class="text-danger text-sm mb-16">{{ error }}</div>{% endfor %}
+
+          <button type="submit" class="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-12">
+            Sign In
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script src="{% static 'js/lib/jquery-3.7.1.min.js' %}"></script>
+  <script src="{% static 'js/lib/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/lib/iconify-icon.min.js' %}"></script>
+  <script src="{% static 'js/app.js' %}"></script>
+  <script>
+    document.querySelectorAll('.toggle-password').forEach(function (toggle) {
+      toggle.addEventListener('click', function () {
+        const input = document.querySelector(this.dataset.toggle);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        this.classList.toggle('ri-eye-line');
+        this.classList.toggle('ri-eye-off-line');
+      });
+    });
+  </script>
+</body>
+</html>

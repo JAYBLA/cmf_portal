@@ -95,6 +95,17 @@
                 {{ sale.sale_date|date:"M d, Y" }}
             </span>
 
+            {% if sale.source_invoice %}
+
+                <span>|</span>
+
+                <span>
+                    <span class="fw-light">Paid invoice:</span>
+                    {{ sale.source_invoice.invoice_number }}
+                </span>
+
+            {% endif %}
+
             <span>|</span>
 
             <span>
@@ -144,6 +155,7 @@
 
         <div class="row g-1">
 
+            {% if request.user.role != "employee" and not sale.source_invoice %}
             <!-- EDIT -->
             <div class="col-6">
 
@@ -183,6 +195,7 @@
             </div>
 
             <!-- PAYMENT -->
+            {% if request.user.role != "admin" %}
             <div class="col-6">
 
                 <a
@@ -200,6 +213,8 @@
                 </a>
 
             </div>
+            {% endif %}
+            {% endif %}
 
             <!-- DETAILS -->
             <div class="col-6">
