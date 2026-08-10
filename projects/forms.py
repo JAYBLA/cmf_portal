@@ -20,8 +20,8 @@ class ProjectForm(forms.ModelForm):
         )
         widgets = {
             "project_name": forms.TextInput(attrs={"placeholder": "Enter project name"}),
-            "start_date": forms.DateInput(attrs={"class": "flatpickr", "placeholder": "Select start date"}),
-            "end_date": forms.DateInput(attrs={"class": "flatpickr", "placeholder": "Select end date"}),
+            "start_date": forms.DateInput(attrs={"class": "flatpickr", "autocomplete": "off", "placeholder": "Select project start date"}),
+            "end_date": forms.DateInput(attrs={"class": "flatpickr", "autocomplete": "off", "placeholder": "Select project end date"}),
             "budget": forms.NumberInput(attrs={"placeholder": "0.00", "min": "0", "step": "0.01"}),
             "description": forms.Textarea(attrs={"placeholder": "Project scope or notes", "rows": 3}),
         }
@@ -63,7 +63,7 @@ class ProjectExpenseForm(forms.ModelForm):
         fields = ("expense_type", "description", "quantity", "unit_price", "expense_date")
         widgets = {
             "expense_type": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "expense_date": forms.DateInput(attrs={"class": "flatpickr", "placeholder": "Today (default)"}),
+            "expense_date": forms.DateInput(attrs={"class": "flatpickr", "autocomplete": "off", "placeholder": "Select expense date"}),
             "description": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "What was purchased or paid for?"}),
             "quantity": forms.NumberInput(attrs={"class": "form-control form-control-sm expense-quantity", "placeholder": "1", "min": "0.01", "step": "0.01"}),
             "unit_price": forms.NumberInput(attrs={"class": "form-control form-control-sm expense-unit-price", "placeholder": "0.00", "min": "0", "step": "0.01"}),

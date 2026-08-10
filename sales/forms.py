@@ -35,6 +35,8 @@ class SaleForm(forms.ModelForm):
             "sale_date": forms.DateInput(
                 attrs={
                     "class": "form-control flatpickr",
+                    "autocomplete": "off",
+                    "placeholder": "Select sale date",
                 }
             ),
 
@@ -146,6 +148,8 @@ class SalePaymentForm(forms.ModelForm):
             "payment_date": forms.DateInput(
                 attrs={
                     "class": "form-control flatpickr",
+                    "autocomplete": "off",
+                    "placeholder": "Select payment date",
                 }
             ),
 

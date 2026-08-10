@@ -9,15 +9,86 @@
         <button class="btn btn-primary" hx-get="{% url 'projects:project_create' %}" hx-target="#modal-body" hx-swap="innerHTML">Add Project</button>
       {% endif %}
     </div>
-    <div class="card-body p-1">
-      <table id="responsiveTable" class="table table-sm table-hover align-middle" style="width:100%;">
-        <thead class="table-light">
-          <tr><th class="text-center" style="width:50px;">#</th><th>Project details</th><th class="text-end" style="width:140px;">Actions</th></tr>
-        </thead>
-        <tbody id="table-container" data-refresh-url="{% url 'projects:project_table' %}">
-          {% include "projects/partials/project_table.html" %}
-        </tbody>
-      </table>
+    <div class="card-body">
+      <form id="project-filter-form"
+            class="border rounded bg-light p-3 mb-3"
+            hx-get="{% url 'projects:project_table' %}"
+            hx-target="#table-container"
+            hx-swap="innerHTML"
+            hx-trigger="submit, input changed delay:350ms, change"
+            hx-sync="this:replace"
+            hx-indicator="#project-filter-loading">
+        <div class="row g-2 align-items-end">
+          <div class="col-lg-3 col-md-6">
+            <label class="form-label small mb-1">Project name</label>
+            <input type="search" name="project_name" value="{{ request.GET.project_name }}" class="form-control form-control-sm" placeholder="Search project">
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <label class="form-label small mb-1">Client</label>
+            <input type="search" name="client_name" value="{{ request.GET.client_name }}" class="form-control form-control-sm" placeholder="Search client">
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <label class="form-label small mb-1">Status</label>
+            <select name="status" class="form-select form-select-sm">
+              <option value="">All statuses</option>
+              {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <label class="form-label small mb-1">Expense category</label>
+            <select name="expense_type" class="form-select form-select-sm">
+              <option value="">All categories</option>
+              {% for value, label in expense_type_choices %}
+                <option value="{{ value }}" {% if active_expense_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-lg-2 col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm flex-grow-1">Filter</button>
+            <a href="{% url 'projects:project_list' %}" class="btn btn-outline-secondary btn-sm">Clear</a>
+          </div>
+          <div class="col-lg-2 col-md-3">
+            <label class="form-label small mb-1">Start date from</label>
+            <input type="text" name="start_date_from" value="{{ request.GET.start_date_from }}" class="form-control form-control-sm flatpickr" autocomplete="off" placeholder="Select earliest start date">
+          </div>
+          <div class="col-lg-2 col-md-3">
+            <label class="form-label small mb-1">Start date to</label>
+            <input type="text" name="start_date_to" value="{{ request.GET.start_date_to }}" class="form-control form-control-sm flatpickr" autocomplete="off" placeholder="Select latest start date">
+          </div>
+          <div class="col-lg-2 col-md-3">
+            <label class="form-label small mb-1">End date from</label>
+            <input type="text" name="end_date_from" value="{{ request.GET.end_date_from }}" class="form-control form-control-sm flatpickr" autocomplete="off" placeholder="Select earliest end date">
+          </div>
+          <div class="col-lg-2 col-md-3">
+            <label class="form-label small mb-1">End date to</label>
+            <input type="text" name="end_date_to" value="{{ request.GET.end_date_to }}" class="form-control form-control-sm flatpickr" autocomplete="off" placeholder="Select latest end date">
+          </div>
+          <div class="col-lg-2 col-md-3">
+            <label class="form-label small mb-1">Minimum budget</label>
+            <input type="number" name="budget_min" value="{{ request.GET.budget_min }}" min="0" step="1" class="form-control form-control-sm" placeholder="0">
+          </div>
+          <div class="col-lg-2 col-md-3">
+            <label class="form-label small mb-1">Maximum budget</label>
+            <input type="number" name="budget_max" value="{{ request.GET.budget_max }}" min="0" step="1" class="form-control form-control-sm" placeholder="Any">
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <label class="form-label small mb-1">Description</label>
+            <input type="search" name="description" value="{{ request.GET.description }}" class="form-control form-control-sm" placeholder="Search scope or notes">
+          </div>
+          <div class="col-12">
+            <span id="project-filter-loading" class="htmx-indicator small text-primary">
+              <i class="fa-solid fa-spinner fa-spin me-1"></i>Updating results…
+            </span>
+          </div>
+        </div>
+      </form>
+
+      <div id="table-container"
+           data-refresh-url="{% url 'projects:project_table' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">
+        {% include "projects/partials/project_results.html" %}
+      </div>
     </div>
   </div>
 </div>

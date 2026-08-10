@@ -59,7 +59,8 @@ class PurchaseForm(forms.ModelForm):
             "purchase_date": forms.DateInput(
                 attrs={
                     "class": "form-control flatpickr",
-                    "placeholder": "Select date",
+                    "autocomplete": "off",
+                    "placeholder": "Select purchase date",
                 }
             ),
             "notes": forms.Textarea(
@@ -163,7 +164,13 @@ class PurchasePaymentForm(forms.ModelForm):
         ]
 
         widgets = {
-            "payment_date": forms.DateInput(attrs={"type": "date"}),
+            "payment_date": forms.DateInput(
+                attrs={
+                    "class": "form-control flatpickr",
+                    "autocomplete": "off",
+                    "placeholder": "Select payment date",
+                }
+            ),
             "notes": forms.Textarea(attrs={"rows": 3}),           
         }
 

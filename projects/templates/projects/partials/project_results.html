@@ -1,0 +1,44 @@
+{% load humanize %}
+<div class="row g-2 mb-3">
+  <div class="col-lg-3 col-sm-6">
+    <div class="border rounded p-2 h-100">
+      <div class="small text-muted">Filtered projects</div>
+      <div class="fw-bold fs-5">{{ totals.project_count|intcomma }}</div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-sm-6">
+    <div class="border rounded p-2 h-100">
+      <div class="small text-muted">Total budget</div>
+      <div class="fw-bold fs-5 text-primary">TZS {{ totals.total_budget|floatformat:0|intcomma }}</div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-sm-6">
+    <div class="border rounded p-2 h-100">
+      <div class="small text-muted">{% if active_expense_type %}Filtered category cost{% else %}Total expense cost{% endif %}</div>
+      <div class="fw-bold fs-5 text-danger">TZS {{ totals.total_cost|floatformat:0|intcomma }}</div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-sm-6">
+    <div class="border rounded p-2 h-100">
+      <div class="small text-muted">Budget balance</div>
+      <div class="fw-bold fs-5 {% if totals.total_profit < 0 %}text-danger{% else %}text-success{% endif %}">
+        TZS {{ totals.total_profit|floatformat:0|intcomma }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table id="responsiveTable" class="table table-sm table-hover align-middle" style="width:100%;">
+    <thead class="table-light">
+      <tr>
+        <th class="text-center" style="width:50px;">#</th>
+        <th>Project details</th>
+        <th class="text-end" style="width:140px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% include "projects/partials/project_table.html" %}
+    </tbody>
+  </table>
+</div>

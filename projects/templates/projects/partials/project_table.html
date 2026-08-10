@@ -30,15 +30,15 @@
         {% if project.budget is not None %}
           <span><span class="fw-light">Budget:</span> <strong>TZS {{ project.budget|floatformat:0|intcomma }}</strong></span>
         {% endif %}
-        <span>|</span><span><span class="fw-light">Expenses:</span> TZS {{ project.total_expenses|floatformat:0|intcomma }}</span>
+        <span>|</span><span><span class="fw-light">{% if active_expense_type %}Filtered expenses{% else %}Expenses{% endif %}:</span> TZS {{ project.filtered_expense_total|floatformat:0|intcomma }}</span>
         <span>|</span><span>
           <span class="fw-light">Profit:</span>
-          <strong class="{% if project.profit < 0 %}
+          <strong class="{% if project.filtered_profit < 0 %}
               text-danger
             {% else %}
               text-success
             {% endif %}">
-            TZS {{ project.profit|floatformat:0|intcomma }}
+            TZS {{ project.filtered_profit|floatformat:0|intcomma }}
           </strong>
         </span>
       </div>

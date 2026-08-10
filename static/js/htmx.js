@@ -225,6 +225,19 @@ document.addEventListener(
 
       function () {
 
+        const projectFilterForm =
+          document.getElementById(
+            "project-filter-form"
+          );
+
+        if (projectFilterForm) {
+          htmx.trigger(
+            projectFilterForm,
+            "submit"
+          );
+          return;
+        }
+
         const tableContainer =
           document.getElementById(
             "table-container"
