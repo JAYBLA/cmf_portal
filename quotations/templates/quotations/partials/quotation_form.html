@@ -1,5 +1,8 @@
-<form hx-post=" {% if quotation %} {% url 'quotations:quotation_update' quotation.id %} {% else %} {% url 'quotations:quotation_create' %} {% endif %} "
-      hx-swap="none">
+<form hx-post="{% if quotation %}{% url 'quotations:quotation_update' quotation.id %}{% else %}{% url 'quotations:quotation_create' %}{% endif %}"
+      hx-target="#modal-body"
+      hx-swap="innerHTML"
+      hx-disabled-elt="find button[type='submit']"
+      hx-indicator="find .quotation-save-spinner">
     {% csrf_token %}
     {{ formset.management_form }}
     <!-- =========================================
@@ -114,7 +117,11 @@
 ========================================== -->
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-success">Save Quotation</button>
+        <button type="submit" class="btn btn-success">
+            <span class="spinner-border spinner-border-sm quotation-save-spinner htmx-indicator"
+                  aria-hidden="true"></span>
+            Save Quotation
+        </button>
     </div>
 </form>
 <script>

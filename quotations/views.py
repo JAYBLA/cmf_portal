@@ -204,6 +204,11 @@ def quotation_create(request):
 
             response = HttpResponse("")
 
+            # The form swaps validation responses back into the modal so users
+            # can see what needs fixing. A successful save must not clear the
+            # modal before the recordSaved event has closed it.
+            response["HX-Reswap"] = "none"
+
             response["HX-Trigger"] = json.dumps(
                 {
                     "recordSaved": True,
@@ -355,6 +360,8 @@ def quotation_update(request, pk):
             # =================================
 
             response = HttpResponse("")
+
+            response["HX-Reswap"] = "none"
 
             response["HX-Trigger"] = json.dumps(
                 {
