@@ -1,4 +1,5 @@
 from decimal import Decimal
+from pathlib import Path
 
 from django.db import models
 from django.db.models import Sum
@@ -325,6 +326,12 @@ class QuotationItem(models.Model):
         null=True,
     )
 
+    image = models.ImageField(
+        upload_to="quotations/items/%Y/%m/",
+        blank=True,
+        null=True,
+    )
+
 
     # =========================================
     # QUANTITY
@@ -365,6 +372,17 @@ class QuotationItem(models.Model):
     def __str__(self):
 
         return self.item_name
+
+    @property
+    def image_uri(self):
+        """Absolute file URI used by WeasyPrint when rendering the PDF."""
+        if not self.image:
+            return ""
+
+        try:
+            return Path(self.image.path).resolve().as_uri()
+        except (NotImplementedError, ValueError):
+            return self.image.url
 
 
     # =========================================

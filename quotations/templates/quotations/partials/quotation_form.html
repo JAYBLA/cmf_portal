@@ -1,4 +1,5 @@
 <form hx-post="{% if quotation %}{% url 'quotations:quotation_update' quotation.id %}{% else %}{% url 'quotations:quotation_create' %}{% endif %}"
+      enctype="multipart/form-data"
       hx-target="#modal-body"
       hx-swap="innerHTML"
       hx-disabled-elt="find button[type='submit']"
@@ -97,6 +98,7 @@
                         <tr>
                             <th>Product</th>
                             <th>Item Name</th>
+                            <th style="min-width: 190px;">Photo</th>
                             <th width="100">Qty</th>
                             <th width="130">Unit Price</th>
                             <th width="100">Tangible</th>

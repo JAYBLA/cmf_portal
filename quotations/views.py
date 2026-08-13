@@ -82,6 +82,7 @@ def quotation_create(request):
 
     formset = QuotationItemFormSet(
         request.POST or None,
+        request.FILES or None,
         prefix="items",
     )
 
@@ -258,6 +259,7 @@ def quotation_update(request, pk):
 
     formset = QuotationItemFormSet(
         request.POST or None,
+        request.FILES or None,
         instance=quotation,
         prefix="items",
     )
@@ -571,7 +573,7 @@ def download_quotation_pdf(request, pk):
         Quotation.objects.select_related(
             "customer",
         ).prefetch_related(
-            "items",
+            "items__product__product_unit",
             "payment_terms",
         ),
         pk=pk,

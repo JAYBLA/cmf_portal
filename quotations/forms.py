@@ -180,6 +180,7 @@ class QuotationItemForm(forms.ModelForm):
         fields = [
             "product",
             "description",
+            "image",
             "quantity",
             "unit_price",
             "is_tangible",
@@ -201,6 +202,12 @@ class QuotationItemForm(forms.ModelForm):
                 attrs={
                     "class": ("form-control " "form-control-sm"),
                     "placeholder": ("Or type custom item"),
+                }
+            ),
+            "image": forms.ClearableFileInput(
+                attrs={
+                    "class": "form-control form-control-sm",
+                    "accept": "image/png,image/jpeg,image/webp",
                 }
             ),
             # =====================================

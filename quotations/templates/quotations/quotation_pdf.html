@@ -247,6 +247,43 @@ body {
 
 }
 
+.items-table tfoot {
+
+    /* WeasyPrint repeats table footer groups on every page. The quotation
+       total belongs only after the final item, so keep it as a normal group. */
+    display: table-row-group;
+
+}
+
+.item-photo-cell {
+
+    padding: 2mm !important;
+    text-align: center;
+    vertical-align: middle;
+
+}
+
+.item-photo-cell.has-photo {
+
+    height: 24mm;
+
+}
+
+.item-photo {
+
+    display: block;
+    width: 100%;
+    height: 22mm;
+    object-fit: contain;
+
+}
+
+.no-photo {
+
+    color: #999999;
+
+}
+
 
 .items-table tbody tr:nth-child(even) {
 
@@ -459,28 +496,34 @@ body {
             </th>
 
 
-            <th style="width:43%;">
+            <th style="width:31%;">
 
                 DESCRIPTION
 
             </th>
 
+            <th style="width:18%; text-align: center;">
 
-            <th style="width:10%; text-align: center;">
+                PHOTO
+
+            </th>
+
+
+            <th style="width:8%; text-align: center;">
 
                 QTY
 
             </th>
 
 
-            <th style="width:20%; text-align: right;">
+            <th style="width:18%; text-align: right;">
 
                 UNIT PRICE
 
             </th>
 
 
-            <th style="width:20%; text-align: right;">
+            <th style="width:18%; text-align: right;">
 
                 AMOUNT
 
@@ -512,6 +555,18 @@ body {
                 <td>
 
                     {{ item.item_name }}
+
+                </td>
+
+                <td class="item-photo-cell{% if item.image %} has-photo{% endif %}">
+
+                    {% if item.image %}
+                        <img class="item-photo"
+                             src="{{ item.image_uri }}"
+                             alt="{{ item.item_name }}">
+                    {% else %}
+                        <span class="no-photo">-</span>
+                    {% endif %}
 
                 </td>
 
@@ -551,6 +606,8 @@ body {
 
         <tr>
 
+
+            <td style="border:none;"></td>
 
             <td style="border:none;"></td>
 

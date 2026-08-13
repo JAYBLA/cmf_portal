@@ -8,6 +8,7 @@ django = "*"
 python-decouple = "*"
 django-widget-tweaks = "*"
 pymysql = "*"
+pillow = "*"
 
 [dev-packages]
 
