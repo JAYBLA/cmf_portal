@@ -30,21 +30,27 @@ body {
 
 .project-details {
   position: absolute;
-  top: -36mm;
+  top: -38mm;
   left: 98mm;
-  width: 82mm;
+  width: 84mm;
   color: #fff;
+  font-size: 8px;
+  line-height: 1.18;
 }
 .project-details table { width: 100%; border-collapse: collapse; }
-.project-details td { padding: 1.1mm 0; vertical-align: top; }
+.project-details td { padding: .55mm 0; vertical-align: top; }
 .project-details .label {
-  width: 31mm;
+  width: 29mm;
   color: #e7f3eb;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
   text-transform: uppercase;
 }
-.project-details .value { font-weight: 700; }
+.project-details .value {
+  font-size: 8px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
 
 .description {
   margin: 1mm 0 5mm;
