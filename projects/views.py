@@ -1,10 +1,17 @@
 import json
 from decimal import Decimal
+from pathlib import Path
 
+from django.contrib.staticfiles import finders
 from django.db.models import DecimalField, ExpressionWrapper, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+from django.utils.text import slugify
+from weasyprint import HTML
+
+from utils import apply_document_backgrounds
 
 from .forms import ProjectExpenseForm, ProjectExpenseFormSet, ProjectForm
 from .models import Project, ProjectExpense
@@ -142,6 +149,41 @@ def project_delete(request, pk):
 def expense_list(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     return render(request, "projects/expense_list.html", {"project": project, "expenses": project.expenses.all()})
+
+
+def download_project_pdf(request, pk):
+    project = get_object_or_404(Project.objects.prefetch_related("expenses"), pk=pk)
+    header_path = finders.find("images/project_header.png")
+    footer_path = finders.find("images/project_footer.png")
+    font_path = finders.find("fonts/Poppins-Regular.ttf")
+    semibold_font_path = finders.find("fonts/Poppins-SemiBold.ttf")
+    bold_font_path = finders.find("fonts/Poppins-Bold.ttf")
+
+    if not header_path or not footer_path:
+        raise FileNotFoundError("Project PDF header or footer image was not found.")
+
+    expenses = list(project.expenses.all())
+    total_expenses = sum((expense.amount for expense in expenses), Decimal("0.00"))
+    context = {
+        "project": project,
+        "expenses": expenses,
+        "total_expenses": total_expenses,
+        "profit": (project.budget or Decimal("0.00")) - total_expenses,
+        "poppins_font": Path(font_path).resolve().as_uri() if font_path else None,
+        "poppins_semibold_font": Path(semibold_font_path).resolve().as_uri() if semibold_font_path else None,
+        "poppins_bold_font": Path(bold_font_path).resolve().as_uri() if bold_font_path else None,
+    }
+    html = render_to_string("projects/project_pdf.html", context, request=request)
+    content_pdf = HTML(string=html).write_pdf()
+    pdf = apply_document_backgrounds(
+        content_pdf=content_pdf,
+        header_bg=Path(header_path).resolve().as_uri(),
+        footer_bg=Path(footer_path).resolve().as_uri(),
+    )
+    filename = f"project-{project.pk}-{slugify(project.project_name) or 'details'}.pdf"
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
 
 
 def expense_table(request, project_id):

@@ -98,6 +98,33 @@ def create_background_pdf(image_uri):
     ).write_pdf()
 
 
+def create_combined_background_pdf(header_uri, footer_uri):
+    """Build a single-page background from the visible header/footer regions."""
+    html = f"""
+    <!doctype html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            @page {{ size: A4 portrait; margin: 0; }}
+            html, body {{ margin: 0; width: 210mm; height: 297mm; }}
+            .slice {{ position: absolute; left: 0; width: 210mm; overflow: hidden; }}
+            .slice img {{ position: absolute; left: 0; width: 210mm; height: 297mm; }}
+            .header {{ top: 0; height: 50mm; }}
+            .header img {{ top: 0; }}
+            .footer {{ bottom: 0; height: 48mm; }}
+            .footer img {{ bottom: 0; }}
+        </style>
+    </head>
+    <body>
+        <div class="slice header"><img src="{header_uri}"></div>
+        <div class="slice footer"><img src="{footer_uri}"></div>
+    </body>
+    </html>
+    """
+    return HTML(string=html).write_pdf()
+
+
 # =====================================================
 # APPLY PAGE BACKGROUNDS
 # USED BY WEASYPRINT DOCUMENTS
@@ -107,7 +134,7 @@ def apply_document_backgrounds(
     content_pdf,
     header_bg,
     footer_bg,
-    single_bg,
+    single_bg=None,
 ):
 
     # =========================================
@@ -134,9 +161,10 @@ def apply_document_backgrounds(
         footer_bg
     )
 
-    single_pdf = create_background_pdf(
-        single_bg
-    )
+    if single_bg:
+        single_pdf = create_background_pdf(single_bg)
+    else:
+        single_pdf = create_combined_background_pdf(header_bg, footer_bg)
 
     # =========================================
     # PDF WRITER

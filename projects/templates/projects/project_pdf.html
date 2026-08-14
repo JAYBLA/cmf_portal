@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  {% load humanize %}
+  <head>
+    <meta charset="utf-8" />
+    <style></style>
+  </head>
+  <body>
+    <div class="project-details">
+      <table>
+        <tr>
+          <td class="label">Project</td>
+          <td class="value">{{ project.project_name }}</td>
+        </tr>
+        <tr>
+          <td class="label">Client</td>
+          <td class="value">{{ project.client_name|default:'-' }}</td>
+        </tr>
+        <tr>
+          <td class="label">Status</td>
+          <td class="value">{{ project.get_status_display }}</td>
+        </tr>
+        <tr>
+          <td class="label">Duration</td>
+          <td class="value">{{ project.start_date|date:'d M Y'|default:'-' }} - {{ project.end_date|date:'d M Y'|default:'-' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    {% if project.description %}
+      <div class="description">
+        <span class="description-title">Scope / Description</span><br />{{ project.description|linebreaksbr }}
+      </div>
+    {% endif %}
+
+    <table class="summary">
+      <tr>
+        <td class="budget-card">
+          <span class="caption">Project budget</span><strong>TZS {{ project.budget|default_if_none:0|floatformat:0|intcomma }}</strong>
+        </td>
+        <td class="expenses-card">
+          <span class="caption">Total expenses</span><strong>TZS {{ total_expenses|floatformat:0|intcomma }}</strong>
+        </td>
+        <td>
+          <span class="caption">Profit</span><strong>TZS {{ profit|floatformat:0|intcomma }}</strong>
+        </td>
+      </tr>
+    </table>
+
+    <div class="section-title">Project Expenses &amp; Materials</div>
+    <table class="expenses">
+      <thead>
+        <tr>
+          <th style="width:6%" class="center">S/N</th>
+          <th style="width:13%">Date</th>
+          <th style="width:13%">Type</th>
+          <th>Description / Material</th>
+          <th style="width:9%" class="number">Qty</th>
+          <th style="width:17%" class="number">Unit Price</th>
+          <th style="width:17%" class="number">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for expense in expenses %}
+          <tr>
+            <td class="center">{{ forloop.counter }}</td>
+            <td>{{ expense.expense_date|date:'d/m/Y' }}</td>
+            <td>{{ expense.get_expense_type_display }}</td>
+            <td>{{ expense.description }}</td>
+            <td class="number">{{ expense.quantity|floatformat:- 2|intcomma }}</td>
+            <td class="number">{{ expense.unit_price|floatformat:0|intcomma }}</td>
+            <td class="number">{{ expense.amount|floatformat:0|intcomma }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="empty">No project expenses have been recorded.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="6" class="number">TOTAL EXPENSES</td>
+          <td class="number">TZS {{ total_expenses|floatformat:0|intcomma }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </body>
+</html>

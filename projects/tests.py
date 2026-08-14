@@ -98,6 +98,17 @@ class ProjectListFilterTests(TestCase):
         self.assertEqual(response.context["totals"]["total_cost"], Decimal("80"))
         self.assertEqual(response.context["totals"]["total_profit"], Decimal("420"))
 
+    def test_project_pdf_download_contains_project_and_expenses(self):
+        response = self.client.get(
+            reverse("projects:download_project_pdf", args=[self.active_project.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertIn("attachment;", response["Content-Disposition"])
+        self.assertTrue(response.content.startswith(b"%PDF"))
+        self.assertGreater(len(response.content), 1000)
+
 
 class DateWidgetTests(TestCase):
     def test_all_editable_date_fields_use_flatpickr_and_placeholders(self):

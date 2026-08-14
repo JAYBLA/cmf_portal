@@ -9,6 +9,7 @@
         </div>
         <div class="d-flex gap-2">
           <a href="{% url 'projects:project_list' %}" class="btn btn-outline-secondary">Back to Projects</a>{% if request.user.can_manage_records %}
+            <a href="{% url 'projects:download_project_pdf' project.id %}" class="btn btn-success"><i class="fa-solid fa-file-pdf me-1"></i> Download PDF</a>
             <button class="btn btn-primary" hx-get="{% url 'projects:expense_create' project.id %}" hx-target="#modal-body" hx-swap="innerHTML">Add Expense</button>
           {% endif %}
         </div>

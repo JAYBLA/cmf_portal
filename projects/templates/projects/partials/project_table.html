@@ -6,13 +6,21 @@
       <div class="d-flex flex-wrap align-items-center gap-1 small">
         <span class="fw-bold text-primary">{{ project.project_name }}</span>
         <span class="badge {% if project.status == 'active' %}
+            
             bg-success
+
           {% elif project.status == 'completed' %}
+            
             bg-primary
+
           {% elif project.status == 'cancelled' %}
+            
             bg-danger
+
           {% else %}
+            
             bg-warning text-dark
+
           {% endif %}">
           {{ project.get_status_display }}
         </span>
@@ -30,13 +38,25 @@
         {% if project.budget is not None %}
           <span><span class="fw-light">Budget:</span> <strong>TZS {{ project.budget|floatformat:0|intcomma }}</strong></span>
         {% endif %}
-        <span>|</span><span><span class="fw-light">{% if active_expense_type %}Filtered expenses{% else %}Expenses{% endif %}:</span> TZS {{ project.filtered_expense_total|floatformat:0|intcomma }}</span>
+        <span>|</span><span>
+          <span class="fw-light">
+            {% if active_expense_type %}
+              Filtered expenses
+            {% else %}
+              Expenses
+            {% endif %}:
+          </span> TZS {{ project.filtered_expense_total|floatformat:0|intcomma }}
+        </span>
         <span>|</span><span>
           <span class="fw-light">Profit:</span>
           <strong class="{% if project.filtered_profit < 0 %}
+              
               text-danger
+
             {% else %}
+              
               text-success
+
             {% endif %}">
             TZS {{ project.filtered_profit|floatformat:0|intcomma }}
           </strong>
@@ -44,8 +64,9 @@
       </div>
     </td>
     <td class="text-end">
+      <a class="btn btn-success btn-sm mb-1" href="{% url 'projects:download_project_pdf' project.id %}" title="Download Project PDF"><i class="fa-solid fa-file-pdf"></i></a>
       {% if request.user.can_manage_records %}
-        <a class="btn btn-info btn-sm" href="{% url 'projects:expense_list' project.id %}" title="Project Expenses"><i class="fa-solid fa-receipt"></i></a>
+        <a class="btn btn-info btn-sm mb-1" href="{% url 'projects:expense_list' project.id %}" title="Project Expenses"><i class="fa-solid fa-receipt"></i></a>
         <button class="btn btn-warning btn-sm mb-1" hx-get="{% url 'projects:project_update' project.id %}" hx-target="#modal-body" hx-swap="innerHTML" title="Edit Project"><i class="fa-solid fa-pen-to-square"></i></button>
         <button class="btn btn-danger btn-sm" hx-get="{% url 'projects:project_delete' project.id %}" hx-target="#modal-body" hx-swap="innerHTML" title="Delete Project"><i class="fa-solid fa-trash-can"></i></button>
       {% endif %}
