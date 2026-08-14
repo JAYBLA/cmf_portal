@@ -3,7 +3,7 @@
   {% load humanize %}
   <head>
     <meta charset="utf-8" />
-    <style></style>
+    <link rel="stylesheet" href="{{ project_pdf_css }}" />
   </head>
   <body>
     <div class="project-details">
@@ -67,7 +67,7 @@
             <td>{{ expense.expense_date|date:'d/m/Y' }}</td>
             <td>{{ expense.get_expense_type_display }}</td>
             <td>{{ expense.description }}</td>
-            <td class="number">{{ expense.quantity|floatformat:- 2|intcomma }}</td>
+            <td class="number">{{ expense.quantity|floatformat:-2|intcomma }}</td>
             <td class="number">{{ expense.unit_price|floatformat:0|intcomma }}</td>
             <td class="number">{{ expense.amount|floatformat:0|intcomma }}</td>
           </tr>

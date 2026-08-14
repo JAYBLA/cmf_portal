@@ -1,0 +1,105 @@
+@font-face {
+  font-family: "Poppins";
+  src: url("../fonts/Poppins-Regular.ttf");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("../fonts/Poppins-SemiBold.ttf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("../fonts/Poppins-Bold.ttf");
+  font-weight: 700;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  color: #26332a;
+  font-family: "Poppins", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+@page { size: A4 portrait; margin: 15mm 13mm 30mm; }
+@page :first { margin-top: 52mm; }
+
+.project-details {
+  position: absolute;
+  top: -36mm;
+  left: 98mm;
+  width: 82mm;
+  color: #fff;
+}
+.project-details table { width: 100%; border-collapse: collapse; }
+.project-details td { padding: 1.1mm 0; vertical-align: top; }
+.project-details .label {
+  width: 31mm;
+  color: #e7f3eb;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.project-details .value { font-weight: 700; }
+
+.description {
+  margin: 1mm 0 5mm;
+  padding: 3mm 4mm;
+  border-left: 1.5mm solid #ee7623;
+  background: #f5f8f6;
+}
+.description-title, .section-title {
+  color: #0c6b37;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.section-title { margin: 0 0 2mm; font-size: 13px; }
+
+.summary { width: 100%; border-spacing: 2mm 0; margin: 0 -2mm 5mm; }
+.summary td {
+  width: 33.33%;
+  padding: 3mm;
+  border: .3mm solid #dce6df;
+  background: #f8faf9;
+}
+.summary .caption {
+  display: block;
+  color: #536359;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.summary strong { color: #0c6b37; font-size: 11px; font-weight: 700; }
+.summary .budget-card strong { color: #0d6efd; }
+.summary .expenses-card strong { color: #ee7623; }
+
+.expenses { width: 100%; border-collapse: collapse; line-height: 1.35; }
+.expenses thead { display: table-header-group; }
+.expenses tr { break-inside: avoid; }
+.expenses th {
+  padding: 2.2mm 1.8mm;
+  color: #fff;
+  background: #0c6b37;
+  font-weight: 700;
+  text-align: left;
+}
+.expenses td {
+  padding: 2mm 1.8mm;
+  border-bottom: .25mm solid #dce3de;
+  font-weight: 600;
+}
+.expenses tbody tr:nth-child(even) { background: #f4f7f5; }
+.expenses .number { text-align: right; white-space: nowrap; }
+.expenses .center { text-align: center; }
+.expenses tfoot { display: table-row-group; }
+.expenses tfoot td {
+  padding-top: 2.5mm;
+  color: #0c6b37;
+  font-weight: 700;
+  border-top: .5mm solid #0c6b37;
+}
+.empty { padding: 8mm !important; color: #7b887f; text-align: center; }

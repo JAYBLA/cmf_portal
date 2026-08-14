@@ -105,7 +105,11 @@ class ProjectListFilterTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/pdf")
-        self.assertIn("attachment;", response["Content-Disposition"])
+        self.assertEqual(
+            response["Content-Disposition"],
+            'attachment; filename="CMFP00%s-warehouse-build-to-alpha-client.pdf"'
+            % self.active_project.pk,
+        )
         self.assertTrue(response.content.startswith(b"%PDF"))
         self.assertGreater(len(response.content), 1000)
 

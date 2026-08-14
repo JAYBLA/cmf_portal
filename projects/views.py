@@ -158,9 +158,10 @@ def download_project_pdf(request, pk):
     font_path = finders.find("fonts/Poppins-Regular.ttf")
     semibold_font_path = finders.find("fonts/Poppins-SemiBold.ttf")
     bold_font_path = finders.find("fonts/Poppins-Bold.ttf")
+    project_pdf_css_path = finders.find("css/project_pdf.css")
 
-    if not header_path or not footer_path:
-        raise FileNotFoundError("Project PDF header or footer image was not found.")
+    if not header_path or not footer_path or not project_pdf_css_path:
+        raise FileNotFoundError("Project PDF header, footer, or stylesheet was not found.")
 
     expenses = list(project.expenses.all())
     total_expenses = sum((expense.amount for expense in expenses), Decimal("0.00"))
@@ -172,6 +173,7 @@ def download_project_pdf(request, pk):
         "poppins_font": Path(font_path).resolve().as_uri() if font_path else None,
         "poppins_semibold_font": Path(semibold_font_path).resolve().as_uri() if semibold_font_path else None,
         "poppins_bold_font": Path(bold_font_path).resolve().as_uri() if bold_font_path else None,
+        "project_pdf_css": Path(project_pdf_css_path).resolve().as_uri(),
     }
     html = render_to_string("projects/project_pdf.html", context, request=request)
     content_pdf = HTML(string=html).write_pdf()
@@ -180,7 +182,9 @@ def download_project_pdf(request, pk):
         header_bg=Path(header_path).resolve().as_uri(),
         footer_bg=Path(footer_path).resolve().as_uri(),
     )
-    filename = f"project-{project.pk}-{slugify(project.project_name) or 'details'}.pdf"
+    project_title = slugify(project.project_name) or "project"
+    customer_name = slugify(project.client_name) or "customer"
+    filename = f"CMFP00{project.pk}-{project_title}-to-{customer_name}.pdf"
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
