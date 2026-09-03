@@ -1,0 +1,58 @@
+<form method="post" enctype="multipart/form-data"
+      hx-post="{% if expense %}{% url 'expenses:expense_update' expense.id %}{% else %}{% url 'expenses:expense_create' %}{% endif %}"
+      hx-swap="none">
+  {% csrf_token %}
+  <div class="modal-header">
+    <h5 class="modal-title">{% if expense %}Edit Expense{% else %}New Expense{% endif %}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body" style="overflow-y:auto; max-height:calc(95vh - 180px);">
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Expense Date</label>{{ form.expense_date }}
+        <div class="text-danger small">{{ form.expense_date.errors }}</div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Category</label>{{ form.category }}
+        <div class="text-danger small">{{ form.category.errors }}</div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Amount (TZS)</label>{{ form.amount }}
+        <div class="text-danger small">{{ form.amount.errors }}</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Payee</label>{{ form.payee_text }}
+        <div class="text-danger small">{{ form.payee_text.errors }}</div>
+      </div>
+      <div class="col-12"><div class="form-text">Choose an existing customer, or type a new payee and press Enter to add them as a customer.</div></div>
+      <div class="col-md-6">
+        <label class="form-label">Description</label>{{ form.description }}
+        <div class="text-danger small">{{ form.description.errors }}</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Payment Method</label>{{ form.payment_method }}
+        <div class="text-danger small">{{ form.payment_method.errors }}</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Reference Number</label>{{ form.reference_number }}
+        <div class="text-danger small">{{ form.reference_number.errors }}</div>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Supporting Document</label>{{ form.supporting_document }}
+        <div class="text-danger small">{{ form.supporting_document.errors }}</div>
+        {% if expense.supporting_document %}
+          <a class="small" href="{{ expense.supporting_document.url }}" target="_blank">View current document</a>
+        {% endif %}
+      </div>
+      <div class="col-12">
+        <label class="form-label">Notes</label>{{ form.notes }}
+        <div class="text-danger small">{{ form.notes.errors }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-success">Save Expense</button>
+  </div>
+</form>

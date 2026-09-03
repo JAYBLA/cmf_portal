@@ -15187,6 +15187,63 @@ td.fc-header-center {
     height: 18px;
     background: #009444;
 }
+
+/* Collapsible group headings keep the existing visual style while their
+   submenu participates in the sidebar accordion. */
+.sidebar-menu .sidebar-menu-group-title.dropdown {
+  display: block;
+  padding-left: 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-menu .sidebar-menu-group-title.dropdown::before,
+.sidebar-menu .sidebar-menu-group-title.dropdown::after {
+  content: none;
+}
+
+.sidebar-menu .sidebar-menu-group-title > .sidebar-group-toggle {
+  position: relative;
+  padding: 0 2.5rem 0 24px;
+  color: #036635;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  border-radius: 0;
+}
+
+.sidebar-menu .sidebar-menu-group-title > .sidebar-group-toggle::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  height: 18px;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, #f58220 0 50%, #009444 50% 100%);
+}
+
+.sidebar-menu .sidebar-menu-group-title > .sidebar-group-toggle:hover,
+.sidebar-menu li.dropdown.open > .sidebar-group-toggle,
+.sidebar-menu li.dropdown.dropdown-open > .sidebar-group-toggle,
+.sidebar-menu li.dropdown.open > .sidebar-group-toggle:hover,
+.sidebar-menu li.dropdown.dropdown-open > .sidebar-group-toggle:hover {
+  color: #036635;
+}
+
+.sidebar-menu .sidebar-menu-group-title > .sidebar-submenu {
+  padding-block-start: 0.5rem;
+  padding-inline-start: 0;
+}
+
+.sidebar-menu .sidebar-menu-group-title > .sidebar-submenu li a {
+  padding-inline-start: 0.75rem;
+  color: var(--text-secondary-light);
+}
+
+.sidebar-menu .sidebar-menu-group-title > .sidebar-submenu li a:hover {
+  color: var(--text-secondary-light);
+}
 @media (min-width: 1650px) {
   .sidebar-menu .sidebar-menu-group-title {
     font-size: 1rem;

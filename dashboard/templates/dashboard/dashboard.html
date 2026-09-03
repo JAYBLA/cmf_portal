@@ -4,6 +4,7 @@
 {% block content %}
   <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
     <div class="col">
+      <a href="{% url 'customers:customer_list' %}" class="d-block h-100 text-decoration-none text-reset" aria-label="View customers">
       <div class="card shadow-none border bg-gradient-start-1 h-100">
         <div class="card-body p-20">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -17,9 +18,11 @@
           </div>
         </div>
       </div>
+      </a>
       <!-- card end -->
     </div>
     <div class="col">
+      <a href="{% url 'quotations:quotation_list' %}" class="d-block h-100 text-decoration-none text-reset" aria-label="View quotations">
       <div class="card shadow-none border bg-gradient-start-2 h-100">
         <div class="card-body p-20">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -33,9 +36,11 @@
           </div>
         </div>
       </div>
+      </a>
       <!-- card end -->
     </div>
     <div class="col">
+      <a href="{% url 'invoices:invoice_list' %}" class="d-block h-100 text-decoration-none text-reset" aria-label="View invoices">
       <div class="card shadow-none border bg-gradient-start-3 h-100">
         <div class="card-body p-20">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -49,9 +54,11 @@
           </div>
         </div>
       </div>
+      </a>
       <!-- card end -->
     </div>
     <div class="col">
+      <a href="{% url 'receipts:receipt_list' %}" class="d-block h-100 text-decoration-none text-reset" aria-label="View receipts">
       <div class=" card shadow-none border bg-gradient-start-4 h-100 ">
         <div class="card-body p-20">
           <div class=" d-flex flex-wrap align-items-center justify-content-between gap-3 ">
@@ -65,8 +72,10 @@
           </div>
         </div>
       </div>
+      </a>
     </div>
     <div class="col">
+      <a href="{% url 'vouchers:voucher_list' %}" class="d-block h-100 text-decoration-none text-reset" aria-label="View vouchers">
       <div class=" card shadow-none border bg-gradient-start-5 h-100 ">
         <div class="card-body p-20">
           <div class=" d-flex flex-wrap align-items-center justify-content-between gap-3 ">
@@ -80,6 +89,7 @@
           </div>
         </div>
       </div>
+      </a>
     </div>
   </div>
   <div class="row gy-4 mt-1">
@@ -115,7 +125,7 @@
       <div class="card h-100">
         <div class="card-body p-24 mb-8">
           <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-            <h6 class="mb-2 fw-bold text-lg mb-0">Income Vs Expense</h6>
+            <h6 class="mb-2 fw-bold text-lg mb-0">Cash Income Vs Expenses</h6>
             <select class="form-select form-select-sm w-auto bg-base border text-secondary-light"
                     onchange="changeDashboardYear(this.value)">
               {% for year in available_years %}

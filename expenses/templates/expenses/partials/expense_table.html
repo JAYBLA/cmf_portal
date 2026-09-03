@@ -1,0 +1,49 @@
+{% load humanize %}
+
+{% for expense in expenses %}
+<tr id="expense-{{ expense.id }}">
+  <td class="text-center fw-semibold text-muted">{{ forloop.counter }}</td>
+  <td>
+    <div class="d-flex flex-wrap align-items-center gap-1 small">
+      <span class="fw-bold text-primary">{{ expense.expense_number }}</span>
+      <span class="text-muted">|</span>
+      <span><span class="fw-light">Payee:</span> {{ expense.payee }}</span>
+      <span class="text-muted">|</span>
+      <span><span class="fw-light">Description:</span> {{ expense.description }}</span>
+      <span class="text-muted">|</span>
+      <span class="fw-semibold text-danger">TZS {{ expense.amount|floatformat:0|intcomma }}</span>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-1 small text-muted">
+      <span><span class="fw-light">Date:</span> {{ expense.expense_date|date:"Y-m-d" }}</span>
+      <span>|</span>
+      <span><span class="fw-light">Category:</span> {{ expense.category }}</span>
+      <span>|</span>
+      <span><span class="fw-light">Method:</span> {{ expense.get_payment_method_display }}</span>
+      {% if expense.reference_number %}
+        <span>|</span><span><span class="fw-light">Reference:</span> {{ expense.reference_number }}</span>
+      {% endif %}
+    </div>
+  </td>
+  <td class="text-end">
+    <div class="d-flex justify-content-end gap-1">
+      <button type="button" class="btn btn-info btn-sm"
+              hx-get="{% url 'expenses:expense_detail' expense.id %}"
+              hx-target="#modal-body" hx-swap="innerHTML" title="View Expense">
+        <i class="fa-solid fa-eye"></i>
+      </button>
+      <button type="button" class="btn btn-warning btn-sm"
+              hx-get="{% url 'expenses:expense_update' expense.id %}"
+              hx-target="#modal-body" hx-swap="innerHTML" title="Edit Expense">
+        <i class="fa-solid fa-pen-to-square"></i>
+      </button>
+      <button type="button" class="btn btn-danger btn-sm"
+              hx-get="{% url 'expenses:expense_delete' expense.id %}"
+              hx-target="#modal-body" hx-swap="innerHTML" title="Delete Expense">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </div>
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="3" class="text-center text-muted py-4">No expenses recorded.</td></tr>
+{% endfor %}

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'dashboard',
     'products',
     'projects',
+    'lendings',
     'widget_tweaks',
     'suppliers',
     'purchases',
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
     'vouchers',
     'deliverynotes',
     'receipts',
+    'expenses',
 ]
 
 MIDDLEWARE = [

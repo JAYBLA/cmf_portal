@@ -1,0 +1,51 @@
+{% load humanize %}
+{% for lending in lendings %}
+  <tr id="lending-{{ lending.id }}">
+    <td class="text-center fw-semibold text-muted">{{ forloop.counter }}</td>
+    <td>
+      <div class="fw-bold text-primary">{{ lending.lending_number }} · {{ lending.customer.customer_name }}</div>
+      {% if lending.customer.company_name %}
+        <div class="small">{{ lending.customer.company_name }}</div>
+      {% endif %}
+      <div class="small text-muted">
+        Lent: {{ lending.lending_date|date:'d M Y' }}{% if lending.due_date %}
+          · Due: {{ lending.due_date|date:'d M Y' }}
+        {% endif %}
+      </div>
+      {% if lending.purpose %}
+        <div class="small text-muted">{{ lending.purpose }}</div>
+      {% endif %}
+    </td>
+    <td>
+      <span class="fw-semibold">{{ lending.returned_quantity|intcomma }}/{{ lending.total_quantity|intcomma }}</span> returned<div class="small text-muted">{{ lending.outstanding_quantity|intcomma }} outstanding</div>
+    </td>
+    <td>
+      <span class="badge {% if lending.return_status == 'returned' %}
+          
+          bg-success
+
+        {% elif lending.is_overdue %}
+          
+          bg-danger
+
+        {% elif lending.return_status == 'partial' %}
+          
+          bg-warning text-dark
+
+        {% else %}
+          
+          bg-primary
+
+        {% endif %}">
+        {{ lending.display_status }}
+      </span>
+    </td>
+    <td class="text-end">      
+        <button class="btn btn-warning btn-sm" hx-get="{% url 'lendings:lending_update' lending.id %}" hx-target="#modal-body" hx-swap="innerHTML" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button> <button class="btn btn-danger btn-sm" hx-get="{% url 'lendings:lending_delete' lending.id %}" hx-target="#modal-body" hx-swap="innerHTML" title="Delete"><i class="fa-solid fa-trash-can"></i></button>     
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="5" class="text-center text-muted py-4">No lending records found.</td>
+  </tr>
+{% endfor %}

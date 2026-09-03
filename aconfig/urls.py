@@ -25,6 +25,7 @@ urlpatterns = [
     path("", include("dashboard.urls")),
     path("products/", include("products.urls")),
     path("projects/", include("projects.urls")),
+    path("lendings/", include("lendings.urls")),
     path("suppliers/", include("suppliers.urls")),
     path("purchases/", include("purchases.urls")),
     path("agents/", include("agents.urls")),
@@ -37,6 +38,7 @@ urlpatterns = [
     path("vouchers/", include("vouchers.urls")),
     path("delivery_notes/", include("deliverynotes.urls")),
     path("receipts/", include("receipts.urls")),
+    path("expenses/", include("expenses.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,23 @@
+{% load humanize %}
+<div class="modal-header">
+  <h5 class="modal-title"><i class="fa-solid fa-money-bill-wave me-2"></i>Expense Details</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+  <dl class="row mb-0">
+    <dt class="col-sm-4">Expense Number</dt><dd class="col-sm-8">{{ expense.expense_number }}</dd>
+    <dt class="col-sm-4">Date</dt><dd class="col-sm-8">{{ expense.expense_date|date:"Y-m-d" }}</dd>
+    <dt class="col-sm-4">Category</dt><dd class="col-sm-8">{{ expense.category }}</dd>
+    <dt class="col-sm-4">Payee</dt><dd class="col-sm-8">{{ expense.payee }}</dd>
+    <dt class="col-sm-4">Description</dt><dd class="col-sm-8">{{ expense.description }}</dd>
+    <dt class="col-sm-4">Amount</dt><dd class="col-sm-8 fw-semibold">TZS {{ expense.amount|floatformat:2|intcomma }}</dd>
+    <dt class="col-sm-4">Payment Method</dt><dd class="col-sm-8">{{ expense.get_payment_method_display }}</dd>
+    <dt class="col-sm-4">Reference</dt><dd class="col-sm-8">{{ expense.reference_number|default:"—" }}</dd>
+    <dt class="col-sm-4">Notes</dt><dd class="col-sm-8">{{ expense.notes|default:"—"|linebreaksbr }}</dd>
+    <dt class="col-sm-4">Document</dt>
+    <dd class="col-sm-8">
+      {% if expense.supporting_document %}<a href="{{ expense.supporting_document.url }}" target="_blank">Open document</a>{% else %}—{% endif %}
+    </dd>
+  </dl>
+</div>
+<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>

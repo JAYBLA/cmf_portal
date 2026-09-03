@@ -19,18 +19,6 @@ from sales.services.invoice_conversion import (
 )
 
 
-def _reconcile_paid_invoice(invoice, form):
-    """Return False and show a form error if conversion cannot be completed."""
-    try:
-        reconcile_invoice_sale(invoice)
-    except InvoiceSaleConversionError as error:
-        # This view is wrapped in transaction.atomic. Mark it for rollback so
-        # a receipt can never mark an invoice paid without its matching sale.
-        transaction.set_rollback(True)
-        form.add_error(None, str(error))
-        return False
-    return True
-
 # =========================================
 # RECEIPT LIST
 # =========================================
@@ -93,20 +81,17 @@ def receipt_create(request):
     if request.method == "POST":
 
         if form.is_valid():
-
-            # ---------------------------------
-            # Save receipt
-            # ---------------------------------
-
-            receipt = form.save()
-
-            # ---------------------------------
-            # Update invoice payment status
-            # ---------------------------------
-
-            receipt.invoice.update_payment_status()
-
-            if not _reconcile_paid_invoice(receipt.invoice, form):
+            try:
+                # Keep the receipt, invoice status, and generated sale in a
+                # savepoint. If conversion fails, Django rolls this block back
+                # before the form is rendered, leaving the outer transaction
+                # usable for template queries.
+                with transaction.atomic():
+                    receipt = form.save()
+                    receipt.invoice.update_payment_status()
+                    reconcile_invoice_sale(receipt.invoice)
+            except InvoiceSaleConversionError as error:
+                form.add_error(None, str(error))
                 return render(
                     request,
                     "receipts/partials/receipt_form.html",
@@ -174,47 +159,30 @@ def receipt_update(request, pk):
     if request.method == "POST":
 
         if form.is_valid():
+            try:
+                with transaction.atomic():
+                    receipt = form.save()
+                    new_invoice = receipt.invoice
 
-            # ---------------------------------
-            # Save receipt
-            # ---------------------------------
+                    old_invoice.update_payment_status()
+                    reconcile_invoice_sale(old_invoice)
 
-            receipt = form.save()
-            if (
-                old_payment_proof
-                and old_payment_proof != receipt.payment_proof
-            ):
-                old_payment_proof.delete(save=False)
-
-            new_invoice = receipt.invoice
-
-            # ---------------------------------
-            # Update old invoice
-            # ---------------------------------
-
-            old_invoice.update_payment_status()
-
-            if not _reconcile_paid_invoice(old_invoice, form):
+                    if old_invoice.pk != new_invoice.pk:
+                        new_invoice.update_payment_status()
+                        reconcile_invoice_sale(new_invoice)
+            except InvoiceSaleConversionError as error:
+                form.add_error(None, str(error))
                 return render(
                     request,
                     "receipts/partials/receipt_form.html",
                     {"receipt": receipt, "form": form},
                 )
 
-            # ---------------------------------
-            # Update new invoice
-            # ---------------------------------
-
-            if old_invoice.pk != new_invoice.pk:
-
-                new_invoice.update_payment_status()
-
-                if not _reconcile_paid_invoice(new_invoice, form):
-                    return render(
-                        request,
-                        "receipts/partials/receipt_form.html",
-                        {"receipt": receipt, "form": form},
-                    )
+            if (
+                old_payment_proof
+                and old_payment_proof != receipt.payment_proof
+            ):
+                old_payment_proof.delete(save=False)
 
             # ---------------------------------
             # Response

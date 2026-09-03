@@ -1,0 +1,54 @@
+{% load widget_tweaks %}
+<div class="modal-header py-2">
+  <h5 class="modal-title mb-0">{% if lending %}Edit Lending{% else %}Add Lending{% endif %}</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<form method="post"
+      hx-post="{% if lending %}{% url 'lendings:lending_update' lending.id %}{% else %}{% url 'lendings:lending_create' %}{% endif %}"
+      hx-target="#modal-body"
+      hx-disabled-elt="button[type='submit']"
+      hx-swap="innerHTML">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  <div class="modal-body" style="max-height:75vh;overflow-y:auto">
+    <div class="row g-3">
+      <div class="col-12"><label class="form-label">Customer / Borrower</label>{% render_field form.customer class="form-select choices-single" %}{{ form.customer.errors }}</div>
+      <div class="col-md-6"><label class="form-label">Lending date</label>{% render_field form.lending_date class="form-control flatpickr" %}{{ form.lending_date.errors }}</div>
+      <div class="col-md-6"><label class="form-label">Expected return date</label>{% render_field form.due_date class="form-control flatpickr" %}{{ form.due_date.errors }}</div>
+      <div class="col-md-6"><label class="form-label">Purpose</label>{% render_field form.purpose class="form-control" %}{{ form.purpose.errors }}</div>
+      <div class="col-md-6"><label class="form-label">Notes</label>{% render_field form.notes class="form-control" rows="1" %}{{ form.notes.errors }}</div>
+    </div>
+
+    <hr class="my-4">
+    <div class="mb-2"><h6 class="mb-0">Lended Items</h6><small class="text-muted">Start typing in the available row and another blank item row will be added automatically.</small></div>
+    {% if formset.non_form_errors %}<div class="alert alert-danger py-2">{{ formset.non_form_errors }}</div>{% endif %}
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered align-middle mb-0">
+        <thead class="table-light"><tr><th style="min-width:200px">Item</th><th style="min-width:90px">Qty lent</th><th style="min-width:105px">Qty returned</th><th style="min-width:130px">Issued condition</th><th style="min-width:130px">Return condition</th><th style="width:75px">Remove</th></tr></thead>
+        <tbody>
+          {% for item_form in formset %}
+          <tr>
+            {% for hidden in item_form.hidden_fields %}{{ hidden }}{% endfor %}
+            <td>{{ item_form.item_name }}{{ item_form.item_name.errors }}</td>
+            <td>{{ item_form.quantity }}{{ item_form.quantity.errors }}</td>
+            <td>{{ item_form.returned_quantity }}{{ item_form.returned_quantity.errors }}</td>
+            <td>{{ item_form.condition_out }}{{ item_form.condition_out.errors }}</td>
+            <td>{{ item_form.condition_return }}{{ item_form.condition_return.errors }}</td>
+            <td class="text-center">
+              {% if item_form.instance.pk %}<label class="small text-danger mb-0">{{ item_form.DELETE }} Delete</label>{% else %}<button type="button" class="btn btn-outline-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" type="submit">Save Lending &amp; Items</button></div>
+</form>
+
+<template id="empty-form-template">
+  <tr>
+    <td>{{ formset.empty_form.item_name }}</td><td>{{ formset.empty_form.quantity }}</td><td>{{ formset.empty_form.returned_quantity }}</td><td>{{ formset.empty_form.condition_out }}</td><td>{{ formset.empty_form.condition_return }}</td>
+    <td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button></td>
+  </tr>
+</template>

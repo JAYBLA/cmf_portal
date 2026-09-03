@@ -2,8 +2,11 @@
   'use strict';
 
   // sidebar submenu collapsible js
-  $(".sidebar-menu .dropdown").on("click", function(){
-    var item = $(this);
+  $(".sidebar-menu .sidebar-group-toggle").on("click", function(event){
+    event.preventDefault();
+
+    var item = $(this).parent(".dropdown");
+    var wasOpen = item.hasClass("open") || item.hasClass("dropdown-open");
     item.siblings(".dropdown").children(".sidebar-submenu").slideUp();
 
     item.siblings(".dropdown").removeClass("dropdown-open");
@@ -12,7 +15,17 @@
 
     item.children(".sidebar-submenu").slideToggle();
 
-    item.toggleClass("dropdown-open");
+    item.toggleClass("dropdown-open", !wasOpen);
+    item.toggleClass("open", !wasOpen);
+
+    item.children(".sidebar-group-toggle").attr(
+      "aria-expanded",
+      item.hasClass("open") ? "true" : "false"
+    );
+
+    item.siblings(".dropdown")
+      .children(".sidebar-group-toggle")
+      .attr("aria-expanded", "false");
   });
 
   $(".sidebar-toggle").on("click", function(){

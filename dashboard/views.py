@@ -13,6 +13,7 @@ from django.shortcuts import render
 
 from customers.models import Customer
 from dashboard.financials import chart_data
+from dashboard.services import financial_years
 from invoices.models import Invoice
 from products.models import Product
 from quotations.models import Quotation
@@ -73,20 +74,7 @@ def dashboard(request):
     # AVAILABLE YEARS
     # =========================================
 
-    sale_years = (
-        Sale.objects
-        .dates(
-            "sale_date",
-            "year",
-            order="DESC",
-        )
-    )
-
-
-    available_years = {
-        year.year
-        for year in sale_years
-    }
+    available_years = financial_years()
 
 
     # =========================================

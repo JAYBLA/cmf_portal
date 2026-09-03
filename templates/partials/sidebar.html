@@ -1,216 +1,90 @@
 {% load static %}
 
 <aside class="sidebar">
-  <!--  =========================================
-       SIDEBAR CLOSE
-  ==========================================  -->
-
   <button type="button" class="sidebar-close-btn"><i class="fa-solid fa-xmark"></i></button>
-
-  <!--  =========================================
-       LOGO
-  ==========================================  -->
-
   <div>
     <a href="/" class="sidebar-logo">
       <img src="{% static 'images/logo.png' %}" alt="Site Logo" class="light-logo" />
-
       <img src="{% static 'images/logo.png' %}" alt="Site Logo" class="dark-logo" />
-
       <img src="{% static 'images/logo.png' %}" alt="Site Logo" class="logo-icon" />
     </a>
   </div>
 
-  <!--  =========================================
-       SIDEBAR MENU
-  ==========================================  -->
-
   <div class="sidebar-menu-area">
     <ul class="sidebar-menu" id="sidebar-menu">
       {% if request.user.role == "employee" %}
-      <li class="sidebar-menu-group-title">Customer Management</li>
-      <li>
-        <a href="{% url 'customers:customer_list' %}" class="{% if request.resolver_match.url_name == 'customer_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-users menu-icon"></i><span>Customers</span>
-        </a>
-      </li>
-      <li class="sidebar-menu-group-title">Sales Orders</li>
-      <li>
-        <a href="{% url 'sales:sales_list' %}" class="{% if request.resolver_match.url_name == 'sales_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-bag-shopping menu-icon"></i><span>Sales</span>
-        </a>
-      </li>
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'customers' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'customers' %}true{% else %}false{% endif %}"><span>Customer Management</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'customers:customer_list' %}" class="{% if request.resolver_match.url_name == 'customer_list' %}active-page{% endif %}"><i class="fa-solid fa-users menu-icon"></i><span>Customers</span></a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'sales' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'sales' %}true{% else %}false{% endif %}"><span>Sales Orders</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'sales:sales_list' %}" class="{% if request.resolver_match.url_name == 'sales_list' %}active-page{% endif %}"><i class="fa-solid fa-bag-shopping menu-icon"></i><span>Sales</span></a></li>
+          </ul>
+        </li>
       {% else %}
-      <!--  =====================================
-           CUSTOMER MANAGEMENT
-      ======================================  -->
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'customers' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'customers' %}true{% else %}false{% endif %}"><span>Customer Management</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'customers:customer_list' %}" class="{% if request.resolver_match.url_name == 'customer_list' %}active-page{% endif %}"><i class="fa-solid fa-users menu-icon"></i><span>Customers</span></a></li>
+          </ul>
+        </li>
 
-      <li class="sidebar-menu-group-title">Customer Management</li>
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'products' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'products' %}true{% else %}false{% endif %}"><span>Product Catalog</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'products:product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active-page{% endif %}"><i class="fa-solid fa-boxes-stacked menu-icon"></i><span>Products</span></a></li>
+          </ul>
+        </li>
 
-      <li>
-        <a href="{% url 'customers:customer_list' %}" class="{% if request.resolver_match.url_name == 'customer_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-users menu-icon"></i>
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'suppliers' or request.resolver_match.namespace == 'purchases' or request.resolver_match.namespace == 'agents' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'suppliers' or request.resolver_match.namespace == 'purchases' or request.resolver_match.namespace == 'agents' %}true{% else %}false{% endif %}"><span>Procurement</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'suppliers:supplier_list' %}" class="{% if request.resolver_match.url_name == 'supplier_list' %}active-page{% endif %}"><i class="fa-solid fa-truck menu-icon"></i><span>Suppliers</span></a></li>
+            <li><a href="{% url 'purchases:purchase_list' %}" class="{% if request.resolver_match.url_name == 'purchase_list' %}active-page{% endif %}"><i class="fa-solid fa-cart-shopping menu-icon"></i><span>Purchases</span></a></li>
+            <li><a href="{% url 'agents:clearing_agent_list' %}" class="{% if request.resolver_match.url_name == 'clearing_agent_list' %}active-page{% endif %}"><i class="fa-solid fa-user-tie menu-icon"></i><span>Clearing Agents</span></a></li>
+          </ul>
+        </li>
 
-          <span>Customers</span>
-        </a>
-      </li>
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'sales' or request.resolver_match.namespace == 'quotations' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'sales' or request.resolver_match.namespace == 'quotations' %}true{% else %}false{% endif %}"><span>Sales Orders</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'sales:sales_list' %}" class="{% if request.resolver_match.url_name == 'sales_list' %}active-page{% endif %}"><i class="fa-solid fa-bag-shopping menu-icon"></i><span>Sales</span></a></li>
+            {% if request.user.role != "admin" %}
+              <li><a href="{% url 'sales:declared_price_list' %}" class="{% if request.resolver_match.url_name == 'declared_price_list' %}active-page{% endif %}"><i class="fa-solid fa-file-invoice menu-icon"></i><span>Declare Sales Prices</span></a></li>
+            {% endif %}
+            <li><a href="{% url 'quotations:quotation_list' %}" class="{% if request.resolver_match.url_name == 'quotation_list' %}active-page{% endif %}"><i class="fa-solid fa-file-signature menu-icon"></i><span>Quotations</span></a></li>
+          </ul>
+        </li>
 
-      <!--  =====================================
-           PRODUCT CATALOG
-      ======================================  -->
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'invoices' or request.resolver_match.namespace == 'receipts' or request.resolver_match.namespace == 'delivery_notes' or request.resolver_match.namespace == 'vouchers' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'invoices' or request.resolver_match.namespace == 'receipts' or request.resolver_match.namespace == 'delivery_notes' or request.resolver_match.namespace == 'vouchers' %}true{% else %}false{% endif %}"><span>Invoicing &amp; Delivery</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'invoices:invoice_list' %}" class="{% if request.resolver_match.url_name == 'invoice_list' %}active-page{% endif %}"><i class="fa-solid fa-file-invoice menu-icon"></i><span>Invoices</span></a></li>
+            <li><a href="{% url 'receipts:receipt_list' %}" class="{% if request.resolver_match.url_name == 'receipt_list' %}active-page{% endif %}"><i class="fa-solid fa-receipt menu-icon"></i><span>Receipts</span></a></li>
+            <li><a href="{% url 'delivery_notes:delivery_note_list' %}" class="{% if request.resolver_match.url_name == 'delivery_note_list' %}active-page{% endif %}"><i class="fa-solid fa-truck-fast menu-icon"></i><span>Delivery Notes</span></a></li>
+            <li><a href="{% url 'vouchers:voucher_list' %}" class="{% if request.resolver_match.url_name == 'voucher_list' %}active-page{% endif %}"><i class="fa-solid fa-money-check-dollar menu-icon"></i><span>Vouchers</span></a></li>
+          </ul>
+        </li>
 
-      <li class="sidebar-menu-group-title">Product Catalog</li>
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'expenses' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'expenses' %}true{% else %}false{% endif %}"><span>Expenses</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'expenses:expense_list' %}" class="{% if request.resolver_match.namespace == 'expenses' %}active-page{% endif %}"><i class="fa-solid fa-money-bill-wave menu-icon"></i><span>Expense Records</span></a></li>
+          </ul>
+        </li>
 
-      <li>
-        <a href="{% url 'products:product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-boxes-stacked menu-icon"></i>
-
-          <span>Products</span>
-        </a>
-      </li>
-
-      <!--  =====================================
-           PROCUREMENT
-      ======================================  -->
-
-      <li class="sidebar-menu-group-title">Procurement</li>
-
-      <!-- SUPPLIERS -->
-
-      <li>
-        <a href="{% url 'suppliers:supplier_list' %}" class="{% if request.resolver_match.url_name == 'supplier_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-truck menu-icon"></i>
-
-          <span>Suppliers</span>
-        </a>
-      </li>
-
-      <!-- PURCHASES -->
-
-      <li>
-        <a href="{% url 'purchases:purchase_list' %}" class="{% if request.resolver_match.url_name == 'purchase_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-cart-shopping menu-icon"></i>
-
-          <span>Purchases</span>
-        </a>
-      </li>
-
-      <!-- CLEARING AGENTS -->
-
-      <li>
-        <a href="{% url 'agents:clearing_agent_list' %}" class="{% if request.resolver_match.url_name == 'clearing_agent_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-user-tie menu-icon"></i>
-
-          <span>Clearing Agents</span>
-        </a>
-      </li>
-
-      <!--  =====================================
-           SALES ORDERS
-      ======================================  -->
-
-      <li class="sidebar-menu-group-title">Sales Orders</li>
-
-      <!-- SALES -->
-
-      <li>
-        <a href="{% url 'sales:sales_list' %}" class="{% if request.resolver_match.url_name == 'sales_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-bag-shopping menu-icon"></i>
-
-          <span>Sales</span>
-        </a>
-      </li>
-      {% if request.user.role != "admin" %}
-      <li>
-        <a href="{% url 'sales:declared_price_list' %}" class="{% if request.resolver_match.url_name == 'declared_price_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-file-invoice menu-icon"></i>
-
-          <span>Declare Sales Prices</span>
-        </a>
-      </li>
-      {% endif %}
-
-      <!-- QUOTATIONS -->
-
-      <li>
-        <a href="{% url 'quotations:quotation_list' %}" class="{% if request.resolver_match.url_name == 'quotation_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-file-signature menu-icon"></i>
-
-          <span>Quotations</span>
-        </a>
-      </li>
-
-      <!--  =====================================
-           INVOICING & DELIVERY
-      ======================================  -->
-
-      <li class="sidebar-menu-group-title">Invoicing & Delivery</li>
-
-      <!-- INVOICES -->
-
-      <li>
-        <a href="{% url 'invoices:invoice_list' %}" class="{% if request.resolver_match.url_name == 'invoice_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-file-invoice menu-icon"></i>
-
-          <span>Invoices</span>
-        </a>
-      </li>
-
-      <!-- RECEIPTS -->
-
-      <li>
-        <a href="{% url 'receipts:receipt_list' %}" class="{% if request.resolver_match.url_name == 'receipt_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-receipt menu-icon"></i>
-
-          <span>Receipts</span>
-        </a>
-      </li>
-
-      <!-- DELIVERY NOTES -->
-
-      <li>
-        <a href="{% url 'delivery_notes:delivery_note_list' %}" class="{% if request.resolver_match.url_name == 'delivery_note_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-truck-fast menu-icon"></i>
-
-          <span>Delivery Notes</span>
-        </a>
-      </li>
-
-      <!-- VOUCHERS -->
-
-      <li>
-        <a href="{% url 'vouchers:voucher_list' %}" class="{% if request.resolver_match.url_name == 'voucher_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-money-check-dollar menu-icon"></i>
-
-          <span>Vouchers</span>
-        </a>
-      </li>
-
-      <!--  =====================================
-           OFFICE OPERATIONS
-      ======================================  -->
-
-      <li class="sidebar-menu-group-title">Office Operations</li>
-
-      <!-- PROJECTS -->
-
-      <li>
-        <a href="{% url 'projects:project_list' %}" class="{% if request.resolver_match.url_name == 'project_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-diagram-project menu-icon"></i>
-
-          <span>Projects</span>
-        </a>
-      </li>
-
-      <!-- LENDINGS -->
-
-      <li>
-        <a href="#" class="{% if request.resolver_match.url_name == 'lending_list' %}active-page{% endif %}">
-          <i class="fa-solid fa-hand-holding-dollar menu-icon"></i>
-
-          <span>Lendings</span>
-        </a>
-      </li>
+        <li class="dropdown sidebar-menu-group-title {% if request.resolver_match.namespace == 'projects' or request.resolver_match.namespace == 'lendings' %}open{% endif %}">
+          <a href="#" class="sidebar-group-toggle" aria-expanded="{% if request.resolver_match.namespace == 'projects' or request.resolver_match.namespace == 'lendings' %}true{% else %}false{% endif %}"><span>Office Operations</span></a>
+          <ul class="sidebar-submenu">
+            <li><a href="{% url 'projects:project_list' %}" class="{% if request.resolver_match.url_name == 'project_list' %}active-page{% endif %}"><i class="fa-solid fa-diagram-project menu-icon"></i><span>Projects</span></a></li>
+            <li><a href="{% url 'lendings:lending_list' %}" class="{% if request.resolver_match.namespace == 'lendings' %}active-page{% endif %}"><i class="fa-solid fa-hand-holding-dollar menu-icon"></i><span>Lendings</span></a></li>
+          </ul>
+        </li>
       {% endif %}
     </ul>
   </div>

@@ -1,0 +1,8 @@
+{% load humanize %}
+<div class="row g-2 mb-3">
+  <div class="col-lg-3 col-sm-6"><div class="border rounded p-2 h-100"><div class="small text-muted">Lending records</div><div class="fw-bold fs-5">{{ totals.lending_count|intcomma }}</div></div></div>
+  <div class="col-lg-3 col-sm-6"><div class="border rounded p-2 h-100"><div class="small text-muted">Items lent</div><div class="fw-bold fs-5 text-primary">{{ totals.total_quantity|intcomma }}</div></div></div>
+  <div class="col-lg-3 col-sm-6"><div class="border rounded p-2 h-100"><div class="small text-muted">Items returned</div><div class="fw-bold fs-5 text-success">{{ totals.returned_quantity|intcomma }}</div></div></div>
+  <div class="col-lg-3 col-sm-6"><div class="border rounded p-2 h-100"><div class="small text-muted">Items outstanding</div><div class="fw-bold fs-5 text-danger">{{ totals.outstanding_quantity|intcomma }}</div></div></div>
+</div>
+<div class="table-responsive"><table id="responsiveTable" class="table table-sm table-hover align-middle" style="width:100%"><thead class="table-light"><tr><th style="width:55px" class="text-center">#</th><th>Lending details</th><th>Items</th><th>Status</th><th class="text-end" style="width:155px">Actions</th></tr></thead><tbody>{% include "lendings/partials/lending_table.html" %}</tbody></table></div>

@@ -703,13 +703,26 @@
     function appendQuotationRow() {
 
 
+        const container =
+            document.getElementById(
+                "quotation-items-container"
+            );
+
+
         const totalForms =
             document.getElementById(
                 "id_items-TOTAL_FORMS"
             );
 
 
-        if (!totalForms) {
+        if (
+            !container
+            ||
+            !totalForms
+            ||
+            container.dataset.quotationRowAppending
+                === "true"
+        ) {
 
             return;
 
@@ -723,25 +736,52 @@
             );
 
 
-        htmx.ajax(
-            "GET",
-
-            "{% url 'quotations:quotation_item_empty_row' %}"
-            + "?total_forms="
-            + current,
-
-            {
-                target:
-                    "#quotation-items-container",
-
-                swap:
-                    "beforeend",
-            }
-        );
+        container.dataset.quotationRowAppending =
+            "true";
 
 
-        totalForms.value =
-            current + 1;
+        try {
+
+            const request = htmx.ajax(
+                "GET",
+
+                "{% url 'quotations:quotation_item_empty_row' %}"
+                + "?total_forms="
+                + current,
+
+                {
+                    target:
+                        "#quotation-items-container",
+
+                    swap:
+                        "beforeend",
+                }
+            );
+
+
+            totalForms.value =
+                current + 1;
+
+
+            Promise.resolve(request).finally(
+                function () {
+
+                    delete container.dataset
+                        .quotationRowAppending;
+
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            delete container.dataset
+                .quotationRowAppending;
+
+            throw error;
+
+        }
 
     }
 
