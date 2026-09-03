@@ -4,6 +4,7 @@ from django.forms import inlineformset_factory
 from .models import *
 from products.models import Product
 from core.widgets import IntegerDisplay
+from customers.services import configure_customer_tag_field
 
 
 
@@ -12,6 +13,7 @@ from core.widgets import IntegerDisplay
 # =========================================
 
 class SaleForm(forms.ModelForm):
+    customer = forms.CharField(required=True)
 
     class Meta:
 
@@ -25,12 +27,6 @@ class SaleForm(forms.ModelForm):
         ]
 
         widgets = {
-
-            "customer": forms.Select(
-                attrs={
-                    "class": "form-select choices-select",
-                }
-            ),
 
             "sale_date": forms.DateInput(
                 attrs={
@@ -53,6 +49,19 @@ class SaleForm(forms.ModelForm):
                 }
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        selected = self.instance.customer if self.instance.pk else None
+        initial = configure_customer_tag_field(self.fields["customer"], selected)
+        if initial:
+            self.initial["customer"] = initial
+
+    def clean_customer(self):
+        value = (self.cleaned_data.get("customer") or "").strip()
+        if not value:
+            raise forms.ValidationError("Please select or enter a customer.")
+        return value
 
 
 # =========================================

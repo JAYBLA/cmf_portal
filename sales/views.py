@@ -19,6 +19,7 @@ from .forms import *
 
 from products.models import Product
 from products.services.stock import move_stock
+from customers.services import resolve_customer
 
 # =========================================
 # SALE LIST
@@ -68,6 +69,7 @@ def sale_create(request):
         if form.is_valid() and formset.is_valid():
 
             sale = form.save(commit=False)
+            sale.customer = resolve_customer(form.cleaned_data["customer"])
 
             sale.subtotal = Decimal("0.00")
             sale.total_amount = Decimal("0.00")
@@ -168,6 +170,7 @@ def sale_update(request, pk):
                 )
 
             sale = form.save(commit=False)
+            sale.customer = resolve_customer(form.cleaned_data["customer"])
 
             sale.save()
 
