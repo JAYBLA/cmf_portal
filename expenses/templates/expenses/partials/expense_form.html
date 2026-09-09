@@ -21,22 +21,13 @@
         <label class="form-label">Amount (TZS)</label>{{ form.amount }}
         <div class="text-danger small">{{ form.amount.errors }}</div>
       </div>
-      <div class="col-md-6">
-        <label class="form-label">Payee</label>{{ form.payee_text }}
-        <div class="text-danger small">{{ form.payee_text.errors }}</div>
-      </div>
-      <div class="col-12"><div class="form-text">Choose an existing customer, or type a new payee and press Enter to add them as a customer.</div></div>
-      <div class="col-md-6">
-        <label class="form-label">Description</label>{{ form.description }}
-        <div class="text-danger small">{{ form.description.errors }}</div>
+      <div class="col-12">
+        <label class="form-label">Title of the Expense</label>{{ form.title }}
+        <div class="text-danger small">{{ form.title.errors }}</div>
       </div>
       <div class="col-md-6">
         <label class="form-label">Payment Method</label>{{ form.payment_method }}
         <div class="text-danger small">{{ form.payment_method.errors }}</div>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">Reference Number</label>{{ form.reference_number }}
-        <div class="text-danger small">{{ form.reference_number.errors }}</div>
       </div>
       <div class="col-12">
         <label class="form-label">Supporting Document</label>{{ form.supporting_document }}
@@ -46,7 +37,7 @@
         {% endif %}
       </div>
       <div class="col-12">
-        <label class="form-label">Notes</label>{{ form.notes }}
+        <label class="form-label">Notes (Description)</label>{{ form.notes }}
         <div class="text-danger small">{{ form.notes.errors }}</div>
       </div>
     </div>

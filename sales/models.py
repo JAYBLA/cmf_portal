@@ -125,6 +125,14 @@ class SaleItem(models.Model):
         Product,
         on_delete=models.PROTECT,
         related_name="sale_items",
+        blank=True,
+        null=True,
+    )
+
+    description = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
     )
 
     quantity = models.DecimalField(

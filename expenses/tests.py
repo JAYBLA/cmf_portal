@@ -5,7 +5,6 @@ from decimal import Decimal
 from django.test import TestCase
 from django.urls import reverse
 
-from customers.models import Customer
 from users.models import CustomUser
 
 from .models import Expense, ExpenseCategory
@@ -20,7 +19,6 @@ class ExpenseTests(TestCase):
         )
         self.client.force_login(self.user)
         self.category = ExpenseCategory.objects.get(name="Operations")
-        self.payee = Customer.objects.create(customer_name="Existing Payee")
 
     def test_create_expense(self):
         response = self.client.post(
@@ -28,11 +26,9 @@ class ExpenseTests(TestCase):
             {
                 "expense_date": date.today().isoformat(),
                 "category": self.category.pk,
-                "payee_text": "Office Supplier",
-                "description": "Office supplies",
+                "title": "Office supplies",
                 "amount": "125000.00",
                 "payment_method": "cash",
-                "reference_number": "",
                 "notes": "",
             },
         )
@@ -42,8 +38,6 @@ class ExpenseTests(TestCase):
         expense = Expense.objects.get()
         self.assertEqual(expense.amount, Decimal("125000.00"))
         self.assertEqual(expense.expense_number, f"CMFE00{expense.pk}")
-        self.assertEqual(expense.payee.customer_name, "Office Supplier")
-        self.assertTrue(Customer.objects.filter(customer_name="Office Supplier").exists())
 
     def test_invalid_create_replaces_modal_with_errors(self):
         response = self.client.post(
@@ -61,8 +55,7 @@ class ExpenseTests(TestCase):
         expense = Expense.objects.create(
             expense_date=date.today(),
             category=self.category,
-            payee=self.payee,
-            description="Delivery fuel",
+            title="Delivery fuel",
             amount=Decimal("50000.00"),
             payment_method="cash",
         )
@@ -71,11 +64,9 @@ class ExpenseTests(TestCase):
             {
                 "expense_date": date.today().isoformat(),
                 "category": self.category.pk,
-                "payee_text": self.payee.pk,
-                "description": "Delivery fuel",
+                "title": "Delivery fuel",
                 "amount": "60000.00",
                 "payment_method": "cash",
-                "reference_number": "",
                 "notes": "Updated",
             },
         )

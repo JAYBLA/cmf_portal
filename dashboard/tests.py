@@ -116,8 +116,7 @@ class FinancialDashboardTests(TestCase):
         Expense.objects.create(
             expense_date=self.january,
             category=ExpenseCategory.objects.get(name="Operations"),
-            payee=self.customer,
-            description="Office expense",
+            title="Office expense",
             amount=Decimal("6000.00"),
             payment_method="cash",
         )

@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from customers.models import Customer
 from invoices.models import Invoice, InvoiceItem
+from sales.models import Sale
 from users.models import CustomUser
 
 from .models import Receipt
@@ -35,7 +36,7 @@ class ReceiptCreateTransactionTests(TestCase):
             unit_price=Decimal("100.00"),
         )
 
-    def test_conversion_error_renders_form_and_rolls_back_receipt(self):
+    def test_custom_invoice_item_creates_receipt_and_non_stock_sale_item(self):
         response = self.client.post(
             reverse("receipts:receipt_create"),
             {
@@ -48,11 +49,16 @@ class ReceiptCreateTransactionTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "without a product")
-        self.assertFalse(Receipt.objects.filter(invoice=self.invoice).exists())
+        self.assertIn("recordSaved", response.headers["HX-Trigger"])
+        self.assertTrue(Receipt.objects.filter(invoice=self.invoice).exists())
 
         self.invoice.refresh_from_db()
-        self.assertEqual(self.invoice.status, "unpaid")
-        self.assertEqual(self.invoice.amount_paid, 0)
+        self.assertEqual(self.invoice.status, "paid")
+        self.assertEqual(self.invoice.amount_paid, Decimal("100.00"))
+
+        sale = Sale.objects.get(source_invoice=self.invoice)
+        item = sale.items.get()
+        self.assertIsNone(item.product)
+        self.assertEqual(item.description, "Service without stock product")
 
 # Create your tests here.

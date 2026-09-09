@@ -4,9 +4,6 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-from customers.models import Customer
-
-
 class ExpenseCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(default=True)
@@ -35,12 +32,7 @@ class Expense(models.Model):
         on_delete=models.PROTECT,
         related_name="expenses",
     )
-    payee = models.ForeignKey(
-        Customer,
-        on_delete=models.PROTECT,
-        related_name="expenses",
-    )
-    description = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
     amount = models.DecimalField(
         max_digits=14,
         decimal_places=2,
@@ -51,7 +43,6 @@ class Expense(models.Model):
         choices=PAYMENT_METHODS,
         default="cash",
     )
-    reference_number = models.CharField(max_length=100, blank=True)
     supporting_document = models.FileField(
         upload_to="expenses/documents/%Y/%m/",
         blank=True,
@@ -75,4 +66,4 @@ class Expense(models.Model):
             )
 
     def __str__(self):
-        return f"{self.expense_number} - {self.description}"
+        return f"{self.expense_number} - {self.title}"

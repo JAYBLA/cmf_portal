@@ -101,7 +101,7 @@
           <tbody>
             {% for item in sale.items.all %}
               <tr>
-                <td>{{ item.product.product_name }}</td>
+                <td>{{ item.product.product_name|default:item.description }}</td>
                 <td class="text-end">{{ item.quantity|floatformat:0|intcomma }}</td>
                 <td class="text-end">{{ item.unit_price|floatformat:0|intcomma }}</td>
                 <td class="text-end fw-semibold">{{ item.subtotal|floatformat:0|intcomma }}</td>

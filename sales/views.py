@@ -69,7 +69,7 @@ def sale_create(request):
         if form.is_valid() and formset.is_valid():
 
             sale = form.save(commit=False)
-            sale.customer = resolve_customer(form.cleaned_data["customer"])
+            sale.customer = resolve_customer(form.cleaned_data["customer_text"])
 
             sale.subtotal = Decimal("0.00")
             sale.total_amount = Decimal("0.00")
@@ -170,7 +170,7 @@ def sale_update(request, pk):
                 )
 
             sale = form.save(commit=False)
-            sale.customer = resolve_customer(form.cleaned_data["customer"])
+            sale.customer = resolve_customer(form.cleaned_data["customer_text"])
 
             sale.save()
 

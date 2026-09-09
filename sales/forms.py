@@ -13,14 +13,13 @@ from customers.services import configure_customer_tag_field
 # =========================================
 
 class SaleForm(forms.ModelForm):
-    customer = forms.CharField(required=True)
+    customer_text = forms.CharField(required=True)
 
     class Meta:
 
         model = Sale
 
         fields = [
-            "customer",
             "sale_date",
             "notes",
             "status",
@@ -53,12 +52,12 @@ class SaleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         selected = self.instance.customer if self.instance.pk else None
-        initial = configure_customer_tag_field(self.fields["customer"], selected)
+        initial = configure_customer_tag_field(self.fields["customer_text"], selected)
         if initial:
-            self.initial["customer"] = initial
+            self.initial["customer_text"] = initial
 
-    def clean_customer(self):
-        value = (self.cleaned_data.get("customer") or "").strip()
+    def clean_customer_text(self):
+        value = (self.cleaned_data.get("customer_text") or "").strip()
         if not value:
             raise forms.ValidationError("Please select or enter a customer.")
         return value

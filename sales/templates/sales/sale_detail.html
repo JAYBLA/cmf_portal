@@ -171,7 +171,7 @@
                             <tr>
                                 <td class="text-center text-muted small">{{ forloop.counter }}</td>
                                 <td>
-                                    <span class="fw-medium">{{ item.product.product_name }}</span>
+                                    <span class="fw-medium">{{ item.product.product_name|default:item.description }}</span>
                                 </td>
                                 <td class="text-center">{{ item.quantity|floatformat:0|intcomma }}</td>
                                 <td class="text-end font-monospace">{{ item.unit_price|floatformat:0|intcomma }}</td>

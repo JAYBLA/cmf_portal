@@ -16,6 +16,8 @@ class InvoiceSaleConversionError(Exception):
 def _move_sale_stock(sale, direction, notes):
     """Create a stock movement for every product line on a generated sale."""
     for item in sale.items.select_related("product"):
+        if item.product_id is None:
+            continue
         move_stock(
             product=item.product,
             quantity=item.quantity,
@@ -23,19 +25,6 @@ def _move_sale_stock(sale, direction, notes):
             movement_type="sale",
             reference=sale,
             notes=notes,
-        )
-
-
-def _validate_invoice_items(invoice):
-    missing_product = [
-        item.description or f"line {item.pk}"
-        for item in invoice.items.all()
-        if item.product_id is None
-    ]
-    if missing_product:
-        raise InvoiceSaleConversionError(
-            "This invoice has item(s) without a product: "
-            f"{', '.join(missing_product)}. Add products before recording its final receipt."
         )
 
 
@@ -128,8 +117,6 @@ def reconcile_invoice_sale(invoice):
             )
         return sale
 
-    _validate_invoice_items(invoice)
-
     if sale is None:
         sale = Sale.objects.create(
             customer=invoice.customer,
@@ -147,6 +134,7 @@ def reconcile_invoice_sale(invoice):
             SaleItem.objects.create(
                 sale=sale,
                 product=invoice_item.product,
+                description=invoice_item.description,
                 quantity=invoice_item.quantity,
                 unit_price=invoice_item.unit_price,
             )

@@ -16,14 +16,12 @@ class ExpenseAdmin(admin.ModelAdmin):
         "expense_number",
         "expense_date",
         "category",
-        "payee",
+        "title",
         "amount",
         "payment_method",
     )
     list_filter = ("category", "payment_method", "expense_date")
     search_fields = (
         "expense_number",
-        "payee__customer_name",
-        "description",
-        "reference_number",
+        "title",
     )

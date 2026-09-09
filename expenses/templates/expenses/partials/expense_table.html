@@ -7,9 +7,7 @@
     <div class="d-flex flex-wrap align-items-center gap-1 small">
       <span class="fw-bold text-primary">{{ expense.expense_number }}</span>
       <span class="text-muted">|</span>
-      <span><span class="fw-light">Payee:</span> {{ expense.payee }}</span>
-      <span class="text-muted">|</span>
-      <span><span class="fw-light">Description:</span> {{ expense.description }}</span>
+      <span><span class="fw-light">Title:</span> {{ expense.title }}</span>
       <span class="text-muted">|</span>
       <span class="fw-semibold text-danger">TZS {{ expense.amount|floatformat:0|intcomma }}</span>
     </div>
@@ -19,9 +17,6 @@
       <span><span class="fw-light">Category:</span> {{ expense.category }}</span>
       <span>|</span>
       <span><span class="fw-light">Method:</span> {{ expense.get_payment_method_display }}</span>
-      {% if expense.reference_number %}
-        <span>|</span><span><span class="fw-light">Reference:</span> {{ expense.reference_number }}</span>
-      {% endif %}
     </div>
   </td>
   <td class="text-end">
