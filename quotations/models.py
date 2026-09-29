@@ -54,6 +54,8 @@ class Quotation(models.Model):
         max_length=255,
     )
 
+    proforma_sync_ended = models.BooleanField(default=False, editable=False)
+
     description = models.TextField(
         blank=True,
         null=True,

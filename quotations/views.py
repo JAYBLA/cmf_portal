@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from pathlib import Path
 from django import forms
 from django.contrib.staticfiles import finders
@@ -8,11 +9,14 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils.text import slugify
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 from weasyprint import HTML
 from customers.models import Customer
 from products.models import Product
-from .forms import QuotationForm, QuotationItemFormSet
-from .models import Quotation
+from invoices.quotation_sync import sync_quotation_proforma
+from .forms import QuotationCopyForm, QuotationForm, QuotationItemFormSet
+from .models import Quotation, QuotationItem
 from utils import apply_document_backgrounds
 
 
@@ -45,6 +49,56 @@ def quotation_list(request):
 # =====================================================
 # QUOTATION TABLE
 # =====================================================
+
+
+@require_http_methods(["GET", "POST"])
+@transaction.atomic
+def quotation_copy(request, pk):
+    source = get_object_or_404(
+        Quotation.objects.prefetch_related("items", "payment_terms"), pk=pk
+    )
+    today = timezone.localdate()
+    form = QuotationCopyForm(
+        request.POST if request.method == "POST" else None,
+        source=source,
+        initial={
+            "title": source.title,
+            "quote_date": today,
+            "due_date": today + max(source.due_date - source.quote_date, timedelta(0)),
+        },
+    )
+    if request.method == "POST" and form.is_valid():
+        quotation = Quotation.objects.create(
+            **form.cleaned_data,
+            description=source.description,
+            completion_period_from=source.completion_period_from,
+            completion_period_to=source.completion_period_to,
+            completion_period_unit=source.completion_period_unit,
+        )
+        quotation.payment_terms.set(source.payment_terms.all())
+        # New item records retain the quoted values, without delivery links.
+        QuotationItem.objects.bulk_create([
+            QuotationItem(
+                quotation=quotation,
+                product_id=item.product_id,
+                description=item.description,
+                image=item.image.name,
+                quantity=item.quantity,
+                unit_price=item.unit_price,
+                is_tangible=item.is_tangible,
+            )
+            for item in source.items.all()
+        ])
+        sync_quotation_proforma(quotation)
+        response = HttpResponse("")
+        response["HX-Reswap"] = "none"
+        response["HX-Trigger"] = json.dumps({
+            "recordSaved": True,
+            "refreshTable": True,
+            "showMessage": {"type": "success", "message": "Quotation copied successfully."},
+        })
+        return response
+    return render(request, "quotations/partials/quotation_copy.html", {"form": form, "source": source})
 
 
 def quotation_table(request):
@@ -198,6 +252,7 @@ def quotation_create(request):
             # ---------------------------------
 
             formset.save_m2m()
+            sync_quotation_proforma(quotation)
 
             # ---------------------------------
             # Response
@@ -356,6 +411,7 @@ def quotation_update(request, pk):
             # =================================
 
             formset.save_m2m()
+            sync_quotation_proforma(quotation)
 
             # =================================
             # RESPONSE

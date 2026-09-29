@@ -140,6 +140,7 @@ def invoice_create(request):
 
     formset = InvoiceItemFormSet(
         request.POST or None,
+        request.FILES or None,
         prefix="items",
     )
 
@@ -286,6 +287,7 @@ def invoice_update(request, pk):
 
     formset = InvoiceItemFormSet(
         request.POST or None,
+        request.FILES or None,
         instance=invoice,
         prefix="items",
     )
@@ -755,6 +757,7 @@ def download_invoice_pdf(request, pk):
             "invoice_no": invoice_no,
 
             "page_count": page_count,
+            "poppins_font": poppins_font,
 
         }
 

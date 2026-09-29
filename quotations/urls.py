@@ -7,6 +7,7 @@ app_name = "quotations"
 
 
 urlpatterns = [
+    path("<int:pk>/copy/", views.quotation_copy, name="quotation_copy"),
 
     # =========================================
     # QUOTATION LIST

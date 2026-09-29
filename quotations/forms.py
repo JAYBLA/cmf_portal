@@ -171,6 +171,34 @@ class QuotationForm(forms.ModelForm):
 # =========================================
 
 
+class QuotationCopyForm(forms.Form):
+    customer = forms.ModelChoiceField(
+        queryset=Customer.objects.order_by("customer_name"),
+        empty_label="Select Customer",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    title = forms.CharField(max_length=255, widget=forms.TextInput(attrs={"class": "form-control"}))
+    quote_date = forms.DateField(widget=forms.DateInput(
+        attrs={"class": "form-control flatpickr", "autocomplete": "off", "placeholder": "Select quotation date"},
+        format="%Y-%m-%d",
+    ))
+    due_date = forms.DateField(widget=forms.DateInput(
+        attrs={"class": "form-control flatpickr", "autocomplete": "off", "placeholder": "Select due date"},
+        format="%Y-%m-%d",
+    ))
+
+    def __init__(self, *args, source, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["customer"].queryset = self.fields["customer"].queryset.exclude(pk=source.customer_id)
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("quote_date") and cleaned.get("due_date"):
+            if cleaned["due_date"] < cleaned["quote_date"]:
+                self.add_error("due_date", "Due date cannot be before the quotation date.")
+        return cleaned
+
+
 class QuotationItemForm(forms.ModelForm):
 
     class Meta:

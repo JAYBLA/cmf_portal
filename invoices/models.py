@@ -1,6 +1,7 @@
 from decimal import Decimal
+from pathlib import Path
 
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Sum
 
 from customers.models import *
@@ -26,6 +27,10 @@ class Invoice(models.Model):
     )
 
     invoice_number = models.CharField(max_length=30, unique=True, blank=True, null=True)
+    quotation = models.OneToOneField(
+        "quotations.Quotation", on_delete=models.SET_NULL,
+        related_name="associated_invoice", blank=True, null=True,
+    )
     title = models.CharField(max_length=255, blank=True, null=True)
 
     customer = models.ForeignKey(
@@ -49,6 +54,7 @@ class Invoice(models.Model):
     status = models.CharField(max_length=20, choices=STATUS, default="draft")
 
     notes = models.TextField(blank=True, null=True)
+    terms_conditions = models.TextField(blank=True, default="")
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -58,8 +64,14 @@ class Invoice(models.Model):
 
         ordering = ["-id"]
 
+    @transaction.atomic
     def save(self, *args, **kwargs):
         is_new = self._state.adding
+        if self.invoice_type != "proforma" and self.quotation_id:
+            Quotation.objects.filter(pk=self.quotation_id).update(proforma_sync_ended=True)
+            self.quotation = None
+            if kwargs.get("update_fields") is not None:
+                kwargs["update_fields"] = set(kwargs["update_fields"]) | {"quotation", "invoice_type"}
         super().save(*args, **kwargs)
 
         if is_new:
@@ -144,6 +156,17 @@ class Invoice(models.Model):
 
 
 class InvoiceItem(models.Model):
+
+    image = models.ImageField(upload_to="invoices/items/%Y/%m/", blank=True, null=True)
+
+    @property
+    def image_uri(self):
+        if not self.image:
+            return ""
+        try:
+            return Path(self.image.path).resolve().as_uri()
+        except (NotImplementedError, ValueError):
+            return self.image.url
 
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="items")
 

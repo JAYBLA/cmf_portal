@@ -20,6 +20,12 @@ from core.widgets import IntegerDisplay
 
 class InvoiceForm(forms.ModelForm):
 
+    terms_conditions = forms.MultipleChoiceField(
+        label="Terms & Conditions",
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     customer_text = forms.CharField(
         required=False,
     )
@@ -33,6 +39,7 @@ class InvoiceForm(forms.ModelForm):
             "due_date",
             "discount_amount",            
             "notes",
+            "terms_conditions",
             "invoice_type",
             "title",
         ]
@@ -93,6 +100,13 @@ class InvoiceForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
+        # Store selected wording on the invoice so conversion preserves it.
+        saved_terms = (self.instance.terms_conditions or "").splitlines()
+        available_terms = list(PaymentTerm.objects.values_list("term", flat=True))
+        choices = list(dict.fromkeys(available_terms + saved_terms))
+        self.fields["terms_conditions"].choices = [(term, term) for term in choices if term]
+        self.initial["terms_conditions"] = saved_terms
+
         self.fields[
             "customer_text"
         ].widget = forms.Select(
@@ -138,6 +152,9 @@ class InvoiceForm(forms.ModelForm):
     # VALIDATE CUSTOMER
     # =========================================
 
+    def clean_terms_conditions(self):
+        return "\n".join(self.cleaned_data["terms_conditions"])
+
     def clean_customer_text(self):
 
         customer_text = (
@@ -164,12 +181,14 @@ class InvoiceItemForm(forms.ModelForm):
         fields = [
             "product",
             "description",
+            "image",
             "quantity",
             "unit_price",
         ]
 
         widgets = {
 
+            "image": forms.ClearableFileInput(attrs={"class": "form-control form-control-sm", "accept": "image/*"}),
             "product": forms.Select(
                 attrs={
                     "class": "form-select",

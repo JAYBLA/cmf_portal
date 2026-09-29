@@ -48,6 +48,13 @@
             <span class="badge bg-secondary">Pending</span>
           {% endif %}
         </span>
+        <button type="button" class="btn btn-link btn-sm p-0 ms-1"
+                hx-get="{% url 'quotations:quotation_copy' quotation.id %}"
+                hx-target="#modal-body" hx-swap="innerHTML"
+                title="Copy quotation to another customer"
+                aria-label="Copy quotation {{ quotation.title }} to another customer">
+          <i class="fa-solid fa-copy" aria-hidden="true"></i>
+        </button>
       </div>
 
       <!--  =====================================

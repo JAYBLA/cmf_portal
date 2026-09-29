@@ -417,6 +417,21 @@ body {
 
 
 </style>
+<style>
+.invoice-header { position: static; height: auto; }
+.invoice-info { top: -41mm; }
+.customer-info { top: -8mm; }
+.items-table { table-layout: fixed; }
+.items-table td { overflow-wrap: break-word; }
+.item-photo-cell { padding: 2mm !important; text-align: center; vertical-align: middle; }
+.item-photo-cell.has-photo { height: 24mm; }
+.item-photo { display: block; width: 100%; height: 22mm; object-fit: contain; }
+.no-photo { color: #999; }
+.terms { margin-top: 6mm; }
+.terms-title { font-weight: bold; color: #ee7623; margin-bottom: 2mm; break-after: avoid; }
+.terms ul { margin: 0; padding-left: 5mm; }
+.terms li { margin-bottom: 1mm; overflow-wrap: break-word; }
+</style>
 
 </head>
 
@@ -566,11 +581,13 @@ body {
             </th>
 
 
-            <th style="width:43%;">
+            <th style="width:27%;">
 
                 DESCRIPTION
 
             </th>
+
+            <th style="width:16%; text-align: center;">PHOTO</th>
 
 
             <th style="width:10%; text-align: center;">
@@ -643,9 +660,14 @@ body {
                 </td>
 
 
+                <td class="item-photo-cell{% if item.image %} has-photo{% endif %}">
+                    {% if item.image %}
+                        <img class="item-photo" src="{{ item.image_uri }}" alt="Item photo">
+                    {% else %}
+                        <span class="no-photo">-</span>
+                    {% endif %}
+                </td>
                 <td class="text-center">
-
-
                     {{ item.quantity|floatformat:0|intcomma }}
 
 
@@ -829,6 +851,16 @@ body {
 </div>
 
 
+<div class="terms">
+    <div class="terms-title">Terms &amp; Conditions</div>
+    <ul>
+        {% for term in invoice.terms_conditions.splitlines %}
+            {% if term %}<li>{{ term }}</li>{% endif %}
+        {% empty %}
+            <li>No payment terms specified.</li>
+        {% endfor %}
+    </ul>
+</div>
 </body>
 
 </html>

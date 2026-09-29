@@ -1,4 +1,9 @@
 from datetime import date
+import tempfile
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.template.loader import render_to_string
+from django.test import override_settings
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +11,8 @@ from django.urls import reverse
 from customers.models import Customer
 from deliverynotes.models import DeliveryNote
 from invoices.models import Invoice
-from quotations.models import Quotation
+from quotations.models import PaymentTerm, Quotation
+from invoices.forms import InvoiceForm
 from receipts.models import Receipt
 from users.models import CustomUser
 from vouchers.models import Voucher
@@ -60,6 +66,66 @@ class InvoiceModalSaveTests(TestCase):
         self.assertEqual(response.headers["HX-Reswap"], "innerHTML")
         self.assertContains(response, "Please select or enter a customer.")
         self.assertEqual(Invoice.objects.count(), 0)
+
+    def test_photo_and_terms_survive_invoice_conversion_and_render_in_pdf(self):
+        PaymentTerm.objects.create(term="50% deposit.")
+        PaymentTerm.objects.create(term="Balance on delivery.")
+        with tempfile.TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
+            data = self._post_data()
+            data.update({
+                "invoice_type": "proforma",
+                "terms_conditions": ["50% deposit.", "Balance on delivery."],
+                "items-0-image": SimpleUploadedFile(
+                    "item.gif",
+                    b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00"
+                    b"\xff\xff\xff,\x00\x00\x00\x00\x01\x00\x01\x00\x00"
+                    b"\x02\x02D\x01\x00;", content_type="image/gif",
+                ),
+            })
+            response = self.client.post(self.url, data)
+            self.assertIn("recordSaved", response.headers["HX-Trigger"])
+            invoice = Invoice.objects.get()
+            item = invoice.items.get()
+            self.assertTrue(item.image.storage.exists(item.image.name))
+            invoice.invoice_type = "invoice"
+            invoice.save()
+            invoice.refresh_from_db()
+            html = render_to_string("invoices/invoice_pdf.html", {"invoice": invoice, "page_count": 1})
+            self.assertIn("Terms &amp; Conditions", html)
+            self.assertIn("50% deposit.", html)
+            self.assertIn("Balance on delivery.", html)
+            self.assertIn(item.image_uri, html)
+            self.assertIn("PHOTO", html)
+
+    def test_terms_checkboxes_preserve_existing_wording_and_can_be_cleared(self):
+        PaymentTerm.objects.create(term="100% Advance Payment.")
+        response = self.client.get(self.url)
+        self.assertContains(response, 'type="checkbox" name="terms_conditions"')
+        self.assertContains(response, "100% Advance Payment.")
+        invoice = Invoice.objects.create(
+            customer=self.customer, invoice_date=date.today(),
+            terms_conditions="Legacy custom term.\n100% Advance Payment.",
+        )
+        form = InvoiceForm(instance=invoice)
+        self.assertEqual(form["terms_conditions"].value(), ["Legacy custom term.", "100% Advance Payment."])
+        response = self.client.get(
+            reverse("invoices:invoice_update", args=[invoice.pk]), HTTP_HX_REQUEST="true",
+        )
+        self.assertContains(response, "Edit Invoice")
+        self.assertContains(response, 'type="checkbox" name="terms_conditions"')
+        self.assertRegex(response.content.decode(), r'value="100% Advance Payment\."[^>]* checked')
+        self.assertRegex(response.content.decode(), r'value="Legacy custom term\."[^>]* checked')
+        data = {**self._post_data(), "terms_conditions": ["Legacy custom term."]}
+        form = InvoiceForm(data, instance=invoice)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        invoice.refresh_from_db()
+        self.assertEqual(invoice.terms_conditions, "Legacy custom term.")
+        form = InvoiceForm(self._post_data(), instance=invoice)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        invoice.refresh_from_db()
+        self.assertEqual(invoice.terms_conditions, "")
 
 
 class DocumentNumberTests(TestCase):

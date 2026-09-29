@@ -1,4 +1,5 @@
 <form hx-post="{% if invoice %}{% url 'invoices:invoice_update' invoice.id %}{% else %}{% url 'invoices:invoice_create' %}{% endif %}"
+      enctype="multipart/form-data"
       hx-swap="none">
     {% csrf_token %}
     {{ formset.management_form }}
@@ -41,28 +42,35 @@
                         <div class="text-danger small">{{ form.title.errors }}</div>
                     </div>
                     <!-- INVOICE DATE -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">Invoice Date</label>
                         {{ form.invoice_date }}
                         <div class="text-danger small">{{ form.invoice_date.errors }}</div>
                     </div>
                     <!-- DUE DATE -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">Due Date</label>
                         {{ form.due_date }}
                         <div class="text-danger small">{{ form.due_date.errors }}</div>
                     </div>
                     <!-- DISCOUNT -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">Discount Amount</label>
                         {{ form.discount_amount }}
                         <div class="text-danger small">{{ form.discount_amount.errors }}</div>
                     </div>
                     <!-- NOTES -->
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <label class="form-label">Notes</label>
                         {{ form.notes }}
                         <div class="text-danger small">{{ form.notes.errors }}</div>
+                    </div>
+                                        <div class="col-md-6">
+                        <fieldset>
+                            <legend class="form-label fs-6">Terms &amp; Conditions</legend>
+                            <div class="border rounded p-2">{{ form.terms_conditions }}</div>
+                            <div class="text-danger small">{{ form.terms_conditions.errors }}</div>
+                        </fieldset>
                     </div>
                 </div>
             </div>
@@ -83,6 +91,7 @@
                         <tr>
                             <th>Product</th>
                             <th>Item Name</th>
+                            <th>Photo</th>
                             <th width="100">Qty</th>
                             <th width="130">Unit Price</th>
                             <th width="60">Del</th>

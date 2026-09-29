@@ -15,6 +15,10 @@
     {% endif %}
   </td>
   <td>
+    {{ form.image }}
+    <div class="text-danger small">{{ form.image.errors }}</div>
+  </td>
+  <td>
     {{ form.quantity }}
     <div class="text-danger small">{{ form.quantity.errors }}</div>
   </td>
